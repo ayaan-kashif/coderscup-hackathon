@@ -1,0 +1,67 @@
+{
+  "shell": {
+    "banner": "Prototype — not an official service. All people, documents and government systems are simulated.",
+    "simulated": "SIMULATED",
+    "appName": "AMANAT AI",
+    "language": "اردو",
+    "signOut": "Sign out",
+    "offline": "Offline — your answers are saved on this phone"
+  },
+  "home": {
+    "title": "Relief that reaches her, in full",
+    "subtitle": "Saaya Relief Programme (fictional) · Coder's Cup '26 prototype",
+    "citizen": "I am applying (citizen)",
+    "helper": "Community helper",
+    "staff": "Staff sign-in (officer, admin, auditor)",
+    "mockPhone": "Mock phone (SMS inbox)",
+    "status": "System status",
+    "docs": "API docs"
+  },
+  "login": {
+    "title": "Staff sign-in",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "demo": "Demo accounts",
+    "demoHint": "Fictional .test accounts. In demo mode you can also pick a role without a password."
+  },
+  "citizen": {
+    "phoneTitle": "Your phone number",
+    "phoneHint": "We will send a code to the mock phone. No real SMS is ever sent.",
+    "sendCode": "Send code",
+    "codeTitle": "Enter the code",
+    "codeHint": "Open the mock phone to hear and read your code.",
+    "verify": "Continue",
+    "pinTitle": "Enter your 4-digit PIN",
+    "pinSetTitle": "Choose a 4-digit PIN",
+    "locked": "Too many wrong tries. Try again in 15 minutes.",
+    "wrongPin": "Wrong PIN. Tries left: {left}",
+    "home": "Your application",
+    "playPrompt": "Play the question again",
+    "startDraft": "Start my application",
+    "outbox": "Saved items"
+  },
+  "ticks": {
+    "saved": "Saved on phone",
+    "sent": "Reached the office",
+    "opened": "An officer opened it",
+    "failed": "Please redo this item"
+  },
+  "staff": {
+    "officer": "Officer console",
+    "admin": "Admin console",
+    "auditor": "Auditor console",
+    "helper": "Helper Mode",
+    "tenant": "Tenant",
+    "role": "Role"
+  },
+  "errors": {
+    "UNAUTHENTICATED": "Please sign in again.",
+    "FORBIDDEN_ROLE": "You do not have permission for this action.",
+    "NOT_FOUND": "Not found.",
+    "GRANT_REQUIRED": "Ask the family to unlock their case.",
+    "CONSENT_WITHDRAWN": "Access withdrawn by the citizen.",
+    "RATE_LIMITED": "Too many requests. Please wait.",
+    "INTERNAL": "Something went wrong. Please try again."
+  }
+}

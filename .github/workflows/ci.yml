@@ -1,0 +1,40 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      # unit, golden and PGlite-backed integration tests (audit chain, RLS, idempotency, permissions)
+      - run: pnpm test:coverage
+      - run: pnpm build
+        env:
+          DEMO_MODE: 'true'
+
+  ml:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r ml/requirements.txt
+      # the generator is deterministic: regenerating the JSON datasets must reproduce the committed files exactly
+      - run: python ml/generate.py --seed 2026 --no-images --check
+      - run: python ml/train.py --check

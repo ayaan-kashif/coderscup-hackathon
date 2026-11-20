@@ -20,7 +20,8 @@ export async function call(handler: Handler, path: string, o: ApiCall = {}) {
   const req = new Request(url, { method: o.method ?? (o.body !== undefined ? 'POST' : 'GET'), headers, body: o.body !== undefined ? JSON.stringify(o.body) : undefined });
   const res = await handler(req, { params: Promise.resolve(o.params ?? {}) });
   const text = await res.text();
-  return { status: res.status, headers: res.headers, body: text ? JSON.parse(text) : null, text };
+  const isJson = (res.headers.get('content-type') ?? '').includes('json');
+  return { status: res.status, headers: res.headers, body: text && isJson ? JSON.parse(text) : null, text };
 }
 
 export async function seededDb(): Promise<TestDb & { ids: Awaited<ReturnType<typeof seedCore>> }> {

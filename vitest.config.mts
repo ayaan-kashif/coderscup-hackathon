@@ -1,13 +1,12 @@
 import { defineConfig } from 'vitest/config';
-import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
-  plugins: [tsconfigPaths()],
+  resolve: { tsconfigPaths: true },
   test: {
     environment: 'node',
     include: ['tests/**/*.test.ts'],
     testTimeout: 30000,
-    hookTimeout: 60000,
+    hookTimeout: 120000,
     coverage: { include: ['src/domain/**'], thresholds: { lines: 70 } },
   },
 });

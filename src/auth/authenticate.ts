@@ -27,7 +27,8 @@ export function parseApiKey(key: string) {
  * Bearer JWT, X-API-Key, or the session cookie. Returns null actor for anonymous requests;
  * throws UNAUTHENTICATED for a credential that is present but invalid, expired or revoked.
  */
-export async function authenticate(req: Request, db: DbOrTx): Promise<AuthResult> {
+/** Accepts a Request or any object with headers.get(): server components pass a plain Headers (a Request would drop the forbidden Cookie header). */
+export async function authenticate(req: { headers: { get(name: string): string | null } }, db: DbOrTx): Promise<AuthResult> {
   const apiKey = req.headers.get('x-api-key');
   if (apiKey) return authenticateApiKey(apiKey, db);
 

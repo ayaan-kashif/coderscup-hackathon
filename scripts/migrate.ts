@@ -8,7 +8,7 @@ async function main() {
   loadEnvFiles();
   const url = process.env.DATABASE_URL_DIRECT ?? process.env.DATABASE_URL;
   if (!url) throw new Error('Set DATABASE_URL_DIRECT (or DATABASE_URL)');
-  const client = postgres(url, { max: 1, prepare: false, onnotice: () => {} });
+  const client = postgres(url, { max: 1, prepare: false, onnotice: () => {}, fetch_types: process.env.DB_FETCH_TYPES !== 'false' });
   const started = Date.now();
   await migrate(drizzle(client), { migrationsFolder: 'src/db/migrations' });
   const [row] = await client<{ n: number }[]>`select count(*)::int as n from pg_tables where schemaname in ('public','mock')`;

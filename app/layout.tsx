@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale } from 'next-intl/server';
 import { PrototypeBanner } from '@/components/shell/prototype-banner';
+import { ServiceWorkerRegister } from '@/components/shell/sw-register';
 import { dirOf, isLocale } from '@/i18n/config';
 import './globals.css';
 
@@ -22,6 +23,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <NextIntlClientProvider>
           <PrototypeBanner />
           {children}
+          <ServiceWorkerRegister />
         </NextIntlClientProvider>
       </body>
     </html>

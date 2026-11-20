@@ -1,7 +1,7 @@
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { ROLES } from '@/auth/actor';
-import { ACCESS_TOKEN_TTL_SEC, signAccessToken } from '@/auth/tokens';
+import { ACCESS_TOKEN_TTL_SEC, sessionCookie, signAccessToken } from '@/auth/tokens';
 import { citizens, memberships, tenants, users } from '@/db/schema/all';
 import { route } from '@/lib/api/route';
 import { isDemoMode } from '@/lib/env';
@@ -31,7 +31,7 @@ export const POST = route({
       const [u] = await db.select({ id: users.id, cid: citizens.id }).from(users).innerJoin(citizens, eq(citizens.userId, users.id)).where(eq(users.phone, phone)).limit(1);
       if (!u) throw new ApiError('NOT_FOUND', 'Demo data is not seeded. Run pnpm db:seed.');
       const token = await signAccessToken({ sub: u.id, kind: 'citizen', app_role: 'citizen', cid: u.cid, stage: 'full', demo: true });
-      return { status: 201, body: { token, tokenType: 'Bearer', expiresIn: ACCESS_TOKEN_TTL_SEC, role, account: phone, curl: curlHint(token) }, audit: { resourceId: u.id, subjectCitizenId: u.cid, details: { role } } };
+      return { status: 201, cookies: [sessionCookie(token)], body: { token, tokenType: 'Bearer', expiresIn: ACCESS_TOKEN_TTL_SEC, role, account: phone, curl: curlHint(token) }, audit: { resourceId: u.id, subjectCitizenId: u.cid, details: { role } } };
     }
     const email = c.body.email ?? DEMO_ROLE_ACCOUNTS[role].email!;
     const known = DEMO_STAFF.find((s) => s.email === email && s.role === role);
@@ -41,7 +41,7 @@ export const POST = route({
       .where(and(eq(users.email, email), eq(memberships.role, role))).limit(1);
     if (!m) throw new ApiError('NOT_FOUND', 'Demo data is not seeded. Run pnpm db:seed.');
     const token = await signAccessToken({ sub: m.userId, kind: 'staff', app_role: m.role, tid: m.tenantId, senior: m.senior, demo: true });
-    return { status: 201, body: { token, tokenType: 'Bearer', expiresIn: ACCESS_TOKEN_TTL_SEC, role, account: email, tenant: m.code, curl: curlHint(token) }, audit: { resourceId: m.userId, tenantId: m.tenantId, details: { role } } };
+    return { status: 201, cookies: [sessionCookie(token)], body: { token, tokenType: 'Bearer', expiresIn: ACCESS_TOKEN_TTL_SEC, role, account: email, tenant: m.code, curl: curlHint(token) }, audit: { resourceId: m.userId, tenantId: m.tenantId, details: { role } } };
   },
 });
 

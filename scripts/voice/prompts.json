@@ -1,0 +1,26 @@
+{
+  "note": "Prompt library v0. Clips in public/voice/ur are PLACEHOLDERS spoken from the Roman-Urdu text by the Windows built-in TTS voice, so the offline path works today. The Phase 1 bake-off (PRD §28.2, owner C) regenerates them in Urdu with the chosen TTS provider from text_ur. No human voice is recorded.",
+  "prompts": [
+    { "key": "welcome", "text_ur": "خوش آمدید۔ یہ امانت کا نمونہ ہے، سرکاری سروس نہیں۔", "text_roman": "Khush aamdeed. Yeh Amanat ka namoona hai, sarkari service nahin." },
+    { "key": "ask_phone", "text_ur": "اپنا فون نمبر بتائیں۔", "text_roman": "Apna phone number batayein." },
+    { "key": "ask_code", "text_ur": "فرضی فون پر آیا ہوا کوڈ درج کریں۔", "text_roman": "Farzi phone par aaya hua code darj karein." },
+    { "key": "ask_pin", "text_ur": "اپنا چار ہندسوں کا پن درج کریں۔", "text_roman": "Apna chaar hindson ka pin darj karein." },
+    { "key": "wrong_pin", "text_ur": "پن غلط ہے۔ دوبارہ کوشش کریں۔", "text_roman": "Pin ghalat hai. Dobara koshish karein." },
+    { "key": "pin_locked", "text_ur": "بہت زیادہ غلط کوششیں۔ پندرہ منٹ بعد دوبارہ کوشش کریں۔", "text_roman": "Bohat zyada ghalat koshishein. Pandrah minute baad dobara koshish karein." },
+    { "key": "home", "text_ur": "یہ آپ کی درخواست کا صفحہ ہے۔", "text_roman": "Yeh aap ki darkhwast ka safha hai." },
+    { "key": "saved_on_phone", "text_ur": "آپ کا جواب اس فون میں محفوظ ہے۔", "text_roman": "Aap ka jawab is phone mein mehfooz hai." },
+    { "key": "reached_office", "text_ur": "آپ کی درخواست دفتر پہنچ گئی۔", "text_roman": "Aap ki darkhwast daftar pohanch gayi." },
+    { "key": "officer_opened", "text_ur": "افسر نے آپ کی درخواست کھول لی ہے۔", "text_roman": "Afsar ne aap ki darkhwast khol li hai." },
+    { "key": "offline", "text_ur": "انٹرنیٹ نہیں ہے۔ فکر نہ کریں، سب کچھ محفوظ ہے۔", "text_roman": "Internet nahin hai. Fikar na karein, sab kuch mehfooz hai." },
+    { "key": "digit_0", "text_ur": "صفر", "text_roman": "sifar" },
+    { "key": "digit_1", "text_ur": "ایک", "text_roman": "aik" },
+    { "key": "digit_2", "text_ur": "دو", "text_roman": "do" },
+    { "key": "digit_3", "text_ur": "تین", "text_roman": "teen" },
+    { "key": "digit_4", "text_ur": "چار", "text_roman": "chaar" },
+    { "key": "digit_5", "text_ur": "پانچ", "text_roman": "paanch" },
+    { "key": "digit_6", "text_ur": "چھ", "text_roman": "chhe" },
+    { "key": "digit_7", "text_ur": "سات", "text_roman": "saat" },
+    { "key": "digit_8", "text_ur": "آٹھ", "text_roman": "aath" },
+    { "key": "digit_9", "text_ur": "نو", "text_roman": "nau" }
+  ]
+}

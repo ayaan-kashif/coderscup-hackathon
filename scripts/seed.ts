@@ -21,8 +21,8 @@ async function main() {
   const citizenPin = process.env.DEMO_CITIZEN_PIN;
   if (!url) throw new Error('Set DATABASE_URL_DIRECT or DATABASE_URL');
   if (!staffPassword || !citizenPin) throw new Error('Set DEMO_STAFF_PASSWORD and DEMO_CITIZEN_PIN (see .env.example)');
-  const client = postgres(url, { max: 1, prepare: false, onnotice: () => {} });
-  const db = drizzle(client, { schema }) as unknown as Db;
+  const client = postgres(url, { max: 1, prepare: false, onnotice: () => {}, fetch_types: process.env.DB_FETCH_TYPES !== 'false' });
+  const db = drizzle(client, { schema, logger: process.env.SQL_LOG === '1' }) as unknown as Db;
   const started = Date.now();
   const ids = await db.transaction(async (tx) => {
     const ids = await seedCore(tx, { staffPassword, citizenPin, reset });

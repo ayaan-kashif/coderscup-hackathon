@@ -1,0 +1,173 @@
+{
+    "version":  "prompts-v0-placeholder",
+    "clips":  [
+                  {
+                      "key":  "welcome",
+                      "file":  "/voice/ur/welcome.wav",
+                      "text_ur":  "خوش آمدید۔ یہ امانت کا نمونہ ہے، سرکاری سروس نہیں۔",
+                      "text_roman":  "Khush aamdeed. Yeh Amanat ka namoona hai, sarkari service nahin.",
+                      "placeholder":  true,
+                      "bytes":  104046
+                  },
+                  {
+                      "key":  "ask_phone",
+                      "file":  "/voice/ur/ask_phone.wav",
+                      "text_ur":  "اپنا فون نمبر بتائیں۔",
+                      "text_roman":  "Apna phone number batayein.",
+                      "placeholder":  true,
+                      "bytes":  42286
+                  },
+                  {
+                      "key":  "ask_code",
+                      "file":  "/voice/ur/ask_code.wav",
+                      "text_ur":  "فرضی فون پر آیا ہوا کوڈ درج کریں۔",
+                      "text_roman":  "Farzi phone par aaya hua code darj karein.",
+                      "placeholder":  true,
+                      "bytes":  70686
+                  },
+                  {
+                      "key":  "ask_pin",
+                      "file":  "/voice/ur/ask_pin.wav",
+                      "text_ur":  "اپنا چار ہندسوں کا پن درج کریں۔",
+                      "text_roman":  "Apna chaar hindson ka pin darj karein.",
+                      "placeholder":  true,
+                      "bytes":  58926
+                  },
+                  {
+                      "key":  "wrong_pin",
+                      "file":  "/voice/ur/wrong_pin.wav",
+                      "text_ur":  "پن غلط ہے۔ دوبارہ کوشش کریں۔",
+                      "text_roman":  "Pin ghalat hai. Dobara koshish karein.",
+                      "placeholder":  true,
+                      "bytes":  71726
+                  },
+                  {
+                      "key":  "pin_locked",
+                      "file":  "/voice/ur/pin_locked.wav",
+                      "text_ur":  "بہت زیادہ غلط کوششیں۔ پندرہ منٹ بعد دوبارہ کوشش کریں۔",
+                      "text_roman":  "Bohat zyada ghalat koshishein. Pandrah minute baad dobara koshish karein.",
+                      "placeholder":  true,
+                      "bytes":  106766
+                  },
+                  {
+                      "key":  "home",
+                      "file":  "/voice/ur/home.wav",
+                      "text_ur":  "یہ آپ کی درخواست کا صفحہ ہے۔",
+                      "text_roman":  "Yeh aap ki darkhwast ka safha hai.",
+                      "placeholder":  true,
+                      "bytes":  59646
+                  },
+                  {
+                      "key":  "saved_on_phone",
+                      "file":  "/voice/ur/saved_on_phone.wav",
+                      "text_ur":  "آپ کا جواب اس فون میں محفوظ ہے۔",
+                      "text_roman":  "Aap ka jawab is phone mein mehfooz hai.",
+                      "placeholder":  true,
+                      "bytes":  59166
+                  },
+                  {
+                      "key":  "reached_office",
+                      "file":  "/voice/ur/reached_office.wav",
+                      "text_ur":  "آپ کی درخواست دفتر پہنچ گئی۔",
+                      "text_roman":  "Aap ki darkhwast daftar pohanch gayi.",
+                      "placeholder":  true,
+                      "bytes":  61646
+                  },
+                  {
+                      "key":  "officer_opened",
+                      "file":  "/voice/ur/officer_opened.wav",
+                      "text_ur":  "افسر نے آپ کی درخواست کھول لی ہے۔",
+                      "text_roman":  "Afsar ne aap ki darkhwast khol li hai.",
+                      "placeholder":  true,
+                      "bytes":  64926
+                  },
+                  {
+                      "key":  "offline",
+                      "file":  "/voice/ur/offline.wav",
+                      "text_ur":  "انٹرنیٹ نہیں ہے۔ فکر نہ کریں، سب کچھ محفوظ ہے۔",
+                      "text_roman":  "Internet nahin hai. Fikar na karein, sab kuch mehfooz hai.",
+                      "placeholder":  true,
+                      "bytes":  102606
+                  },
+                  {
+                      "key":  "digit_0",
+                      "file":  "/voice/ur/digit_0.wav",
+                      "text_ur":  "صفر",
+                      "text_roman":  "sifar",
+                      "placeholder":  true,
+                      "bytes":  25006
+                  },
+                  {
+                      "key":  "digit_1",
+                      "file":  "/voice/ur/digit_1.wav",
+                      "text_ur":  "ایک",
+                      "text_roman":  "aik",
+                      "placeholder":  true,
+                      "bytes":  20526
+                  },
+                  {
+                      "key":  "digit_2",
+                      "file":  "/voice/ur/digit_2.wav",
+                      "text_ur":  "دو",
+                      "text_roman":  "do",
+                      "placeholder":  true,
+                      "bytes":  20046
+                  },
+                  {
+                      "key":  "digit_3",
+                      "file":  "/voice/ur/digit_3.wav",
+                      "text_ur":  "تین",
+                      "text_roman":  "teen",
+                      "placeholder":  true,
+                      "bytes":  22446
+                  },
+                  {
+                      "key":  "digit_4",
+                      "file":  "/voice/ur/digit_4.wav",
+                      "text_ur":  "چار",
+                      "text_roman":  "chaar",
+                      "placeholder":  true,
+                      "bytes":  21886
+                  },
+                  {
+                      "key":  "digit_5",
+                      "file":  "/voice/ur/digit_5.wav",
+                      "text_ur":  "پانچ",
+                      "text_roman":  "paanch",
+                      "placeholder":  true,
+                      "bytes":  24526
+                  },
+                  {
+                      "key":  "digit_6",
+                      "file":  "/voice/ur/digit_6.wav",
+                      "text_ur":  "چھ",
+                      "text_roman":  "chhe",
+                      "placeholder":  true,
+                      "bytes":  22926
+                  },
+                  {
+                      "key":  "digit_7",
+                      "file":  "/voice/ur/digit_7.wav",
+                      "text_ur":  "سات",
+                      "text_roman":  "saat",
+                      "placeholder":  true,
+                      "bytes":  22606
+                  },
+                  {
+                      "key":  "digit_8",
+                      "file":  "/voice/ur/digit_8.wav",
+                      "text_ur":  "آٹھ",
+                      "text_roman":  "aath",
+                      "placeholder":  true,
+                      "bytes":  21326
+                  },
+                  {
+                      "key":  "digit_9",
+                      "file":  "/voice/ur/digit_9.wav",
+                      "text_ur":  "نو",
+                      "text_roman":  "nau",
+                      "placeholder":  true,
+                      "bytes":  20046
+                  }
+              ]
+}

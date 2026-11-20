@@ -17,7 +17,9 @@ export function getDb(): Db {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error('DATABASE_URL is not set');
   // transaction-mode pooler (port 6543) does not support prepared statements
-  const client = postgres(url, { prepare: false, max: 5, idle_timeout: 20, connect_timeout: 10 });
+  const max = Number(process.env.DB_POOL_MAX ?? 5);
+  // DB_FETCH_TYPES=false only for the local PGlite socket server (scripts/local-db.ts), which mishandles the type lookup
+  const client = postgres(url, { prepare: false, max, idle_timeout: 20, connect_timeout: 10, onnotice: () => {}, fetch_types: process.env.DB_FETCH_TYPES !== 'false' });
   current = drizzle(client, { schema }) as unknown as Db;
   return current;
 }

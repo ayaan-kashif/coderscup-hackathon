@@ -20,7 +20,9 @@
     "db:seed": "tsx scripts/seed.ts",
     "demo:reset": "tsx scripts/seed.ts --reset",
     "ml:generate": "python ml/generate.py --seed 2026",
-    "ml:train": "python ml/train.py"
+    "ml:train": "python ml/train.py",
+    "db:local": "tsx scripts/local-db.ts",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@node-rs/argon2": "^2.2.2",
@@ -29,6 +31,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dexie": "^4.4.7",
+    "dexie-react-hooks": "^4.4.0",
     "drizzle-orm": "^0.45.4",
     "jose": "^6.2.18",
     "lucide-react": "^1.76.0",
@@ -38,12 +41,15 @@
     "radix-ui": "^1.8.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
+    "server-only": "^0.0.1",
     "tailwind-merge": "^3.7.0",
     "zod": "^4.6.7"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.17",
     "@electric-sql/pglite-pgvector": "^0.0.18",
+    "@electric-sql/pglite-socket": "^0.2.20",
+    "@playwright/test": "^1.65.1",
     "@tailwindcss/postcss": "^4.3.5",
     "@types/node": "^22.20.5",
     "@types/react": "^19.3.0",

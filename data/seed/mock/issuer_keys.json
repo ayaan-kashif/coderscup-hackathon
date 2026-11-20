@@ -1,0 +1,8 @@
+[
+ {
+  "kid": "mock-issuer-2026",
+  "algorithm": "Ed25519",
+  "publicKey": "02bPx9x-Gie0zfkjdGWtP9qv3U4ql9OAj4Ns3rS7EAM",
+  "status": "active"
+ }
+]

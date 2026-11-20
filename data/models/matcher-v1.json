@@ -1,0 +1,112 @@
+{
+ "version": "matcher-v1",
+ "fields": {
+  "name": {
+   "exact": {
+    "m": 0.410256,
+    "u": 0.016393
+   },
+   "phonetic": {
+    "m": 0.314103,
+    "u": 0.016393
+   },
+   "close": {
+    "m": 0.25,
+    "u": 0.016393
+   },
+   "different": {
+    "m": 0.025641,
+    "u": 0.95082
+   }
+  },
+  "relationName": {
+   "exact": {
+    "m": 0.660256,
+    "u": 0.016393
+   },
+   "phonetic": {
+    "m": 0.185897,
+    "u": 0.016393
+   },
+   "close": {
+    "m": 0.147436,
+    "u": 0.016393
+   },
+   "different": {
+    "m": 0.00641,
+    "u": 0.95082
+   }
+  },
+  "dob": {
+   "exact": {
+    "m": 0.95,
+    "u": 0.016393
+   },
+   "swapped": {
+    "m": 0.035714,
+    "u": 0.016393
+   },
+   "year": {
+    "m": 0.007143,
+    "u": 0.081967
+   },
+   "different": {
+    "m": 0.007143,
+    "u": 0.885246
+   }
+  },
+  "cnic": {
+   "exact": {
+    "m": 0.847059,
+    "u": 0.027778
+   },
+   "near": {
+    "m": 0.141176,
+    "u": 0.027778
+   },
+   "different": {
+    "m": 0.011765,
+    "u": 0.944444
+   }
+  },
+  "district": {
+   "exact": {
+    "m": 0.993506,
+    "u": 0.101695
+   },
+   "different": {
+    "m": 0.006494,
+    "u": 0.898305
+   }
+  },
+  "gender": {
+   "exact": {
+    "m": 0.993506,
+    "u": 0.983051
+   },
+   "different": {
+    "m": 0.006494,
+    "u": 0.016949
+   }
+  }
+ },
+ "thresholds": {
+  "upperBits": 7.779544,
+  "lowerBits": 2.000493
+ },
+ "ambiguityBits": 2,
+ "prior": 0.1,
+ "metrics": {
+  "dataset": "D3 test",
+  "n": 200,
+  "auto_match_precision": 1.0,
+  "recall_auto_match": 1.0,
+  "review_zone_rate": 0.01,
+  "false_auto_matches": 0,
+  "targets": {
+   "precision": 1.0,
+   "recall": 0.9,
+   "review_zone_rate_max": 0.1
+  }
+ }
+}

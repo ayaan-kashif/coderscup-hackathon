@@ -1,0 +1,1655 @@
+{
+ "dataset": "D6",
+ "count": 60,
+ "issuer_kid": "mock-issuer-2026",
+ "documents": [
+  {
+   "id": "D6-01",
+   "kind": "cnic_front",
+   "variant": "clean",
+   "file": "documents/01-cnic_front-clean.png",
+   "case_ref": "D1-0003",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-4769860-4",
+    "cnic": "00000-4769860-4",
+    "name": "TAHIRA BANO",
+    "relation_name": "MUHAMMAD YOUSAF",
+    "dob": "1957-05-23",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "TAHIRA BANO",
+    "Husband": "MUHAMMAD YOUSAF",
+    "CNIC (mock)": "00000-4769860-4",
+    "Date of birth": "1957-05-23",
+    "District": "Thatta"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNDc2OTg2MC00IiwiZG9iIjoiMTk1Ny0wNS0yMyIsImRvY19ubyI6IjAwMDAwLTQ3Njk4NjAtNCIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IlRBSElSQSBCQU5PIiwicmVsYXRpb25fbmFtZSI6Ik1VSEFNTUFEIFlPVVNBRiJ9.cLIp7Z2AO4vhsK09ut2d0I_lsrU5X_Twv_nLZ4IlxgsWNnI6Yzm7bTiQ-ewRNl-clqTfrXdWOIw-oKs4S_hRCA",
+   "expected": {
+    "stop": null
+   }
+  },
+  {
+   "id": "D6-02",
+   "kind": "death_certificate",
+   "variant": "clean",
+   "file": "documents/02-death_certificate-clean.png",
+   "case_ref": "D1-0006",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-RJP-2019-00193",
+    "cnic": "00000-2003468-5",
+    "name": "GUL MUHAMMAD",
+    "relation_name": "REHANA AKHTAR",
+    "date_of_death": "2019-04-04",
+    "issued_at": "2019-04-04",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-RJP-2019-00193",
+    "Deceased": "GUL MUHAMMAD",
+    "CNIC (mock)": "00000-2003468-5",
+    "Spouse": "REHANA AKHTAR",
+    "Date of death": "2019-04-04"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtMjAwMzQ2OC01IiwiZGF0ZV9vZl9kZWF0aCI6IjIwMTktMDQtMDQiLCJkb2Nfbm8iOiJEQy1SSlAtMjAxOS0wMDE5MyIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDE5LTA0LTA0Iiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJHVUwgTVVIQU1NQUQiLCJyZWxhdGlvbl9uYW1lIjoiUkVIQU5BIEFLSFRBUiJ9.hNQdQM1H7QCcDtL1ktvfNq-qM-nAM3F_edLSPIJXTAqd5s7r0XSUQafAZ8EACYKczoh00LGsqs_uwzIo9J6XAg",
+   "expected": {
+    "stop": null
+   }
+  },
+  {
+   "id": "D6-03",
+   "kind": "cnic_front",
+   "variant": "clean",
+   "file": "documents/03-cnic_front-clean.png",
+   "case_ref": "D1-0011",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-7680112-2",
+    "cnic": "00000-7680112-2",
+    "name": "BANO BEGUM",
+    "relation_name": "MUHAMMAD AKRAM",
+    "dob": "1967-12-17",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "BANO BEGUM",
+    "Husband": "MUHAMMAD AKRAM",
+    "CNIC (mock)": "00000-7680112-2",
+    "Date of birth": "1967-12-17",
+    "District": "Faisalabad"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNzY4MDExMi0yIiwiZG9iIjoiMTk2Ny0xMi0xNyIsImRvY19ubyI6IjAwMDAwLTc2ODAxMTItMiIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IkJBTk8gQkVHVU0iLCJyZWxhdGlvbl9uYW1lIjoiTVVIQU1NQUQgQUtSQU0ifQ.erlpmU19c_JOGuh0YM4_PeGtZe94JscSiQGVMGuFxokFc9pmeTOHRsTG8uBkIge0GLuvo2mB6a0VfkfDtHHgCA",
+   "expected": {
+    "stop": null
+   }
+  },
+  {
+   "id": "D6-04",
+   "kind": "death_certificate",
+   "variant": "clean",
+   "file": "documents/04-death_certificate-clean.png",
+   "case_ref": "D1-0012",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-BWP-2021-00546",
+    "cnic": "00000-0878967-5",
+    "name": "HUSSAIN BUX",
+    "relation_name": "AMINA PARVEEN",
+    "date_of_death": "2021-12-14",
+    "issued_at": "2021-12-14",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-BWP-2021-00546",
+    "Deceased": "HUSSAIN BUX",
+    "CNIC (mock)": "00000-0878967-5",
+    "Spouse": "AMINA PARVEEN",
+    "Date of death": "2021-12-14"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtMDg3ODk2Ny01IiwiZGF0ZV9vZl9kZWF0aCI6IjIwMjEtMTItMTQiLCJkb2Nfbm8iOiJEQy1CV1AtMjAyMS0wMDU0NiIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDIxLTEyLTE0Iiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJIVVNTQUlOIEJVWCIsInJlbGF0aW9uX25hbWUiOiJBTUlOQSBQQVJWRUVOIn0.sT382hHnxmWwgeWgWiAEiB2SKHiRauH2WB1Hu8LZcHznSCawruISbnPuyn3dSdEA7cj4oR63ieV-gaIkYITNDQ",
+   "expected": {
+    "stop": null
+   }
+  },
+  {
+   "id": "D6-05",
+   "kind": "cnic_front",
+   "variant": "clean",
+   "file": "documents/05-cnic_front-clean.png",
+   "case_ref": "D1-0013",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-5446443-2",
+    "cnic": "00000-5446443-2",
+    "name": "NARGIS BANO",
+    "relation_name": "MUHAMMAD YOUSAF",
+    "dob": "1967-08-21",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "NARGIS BANO",
+    "Husband": "MUHAMMAD YOUSAF",
+    "CNIC (mock)": "00000-5446443-2",
+    "Date of birth": "1967-08-21",
+    "District": "Faisalabad"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNTQ0NjQ0My0yIiwiZG9iIjoiMTk2Ny0wOC0yMSIsImRvY19ubyI6IjAwMDAwLTU0NDY0NDMtMiIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6Ik5BUkdJUyBCQU5PIiwicmVsYXRpb25fbmFtZSI6Ik1VSEFNTUFEIFlPVVNBRiJ9.UPsLRTCbIlGdXeRC1vP0qHTF4F0d05XR5kKGxa55LUq8WFz-GuiiymWBy__xHCjkBMKcKoTvH6bxexq4UGiGDg",
+   "expected": {
+    "stop": null
+   }
+  },
+  {
+   "id": "D6-06",
+   "kind": "death_certificate",
+   "variant": "clean",
+   "file": "documents/06-death_certificate-clean.png",
+   "case_ref": "D1-0014",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-BDN-2025-00187",
+    "cnic": "00000-0654771-3",
+    "name": "NAZIR AHMAD",
+    "relation_name": "SAKINA BIBI",
+    "date_of_death": "2025-01-31",
+    "issued_at": "2025-01-31",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-BDN-2025-00187",
+    "Deceased": "NAZIR AHMAD",
+    "CNIC (mock)": "00000-0654771-3",
+    "Spouse": "SAKINA BIBI",
+    "Date of death": "2025-01-31"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtMDY1NDc3MS0zIiwiZGF0ZV9vZl9kZWF0aCI6IjIwMjUtMDEtMzEiLCJkb2Nfbm8iOiJEQy1CRE4tMjAyNS0wMDE4NyIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDI1LTAxLTMxIiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJOQVpJUiBBSE1BRCIsInJlbGF0aW9uX25hbWUiOiJTQUtJTkEgQklCSSJ9.4Hciwq6jd0iUW-hnW2-uoFMeadRM45n1Ai-LlSMDAQLGeS3UpOhGk-R9UG9ntEN9M5UyoHCbCKEsfPWOv0wnCw",
+   "expected": {
+    "stop": null
+   }
+  },
+  {
+   "id": "D6-07",
+   "kind": "cnic_front",
+   "variant": "clean",
+   "file": "documents/07-cnic_front-clean.png",
+   "case_ref": "D1-0015",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-8006417-2",
+    "cnic": "00000-8006417-2",
+    "name": "SUGHRA BANO",
+    "relation_name": "KHADIM HUSSAIN",
+    "dob": "1983-07-28",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "SUGHRA BANO",
+    "Husband": "KHADIM HUSSAIN",
+    "CNIC (mock)": "00000-8006417-2",
+    "Date of birth": "1983-07-28",
+    "District": "Rajanpur"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtODAwNjQxNy0yIiwiZG9iIjoiMTk4My0wNy0yOCIsImRvY19ubyI6IjAwMDAwLTgwMDY0MTctMiIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IlNVR0hSQSBCQU5PIiwicmVsYXRpb25fbmFtZSI6IktIQURJTSBIVVNTQUlOIn0.62PSDL-GaiboAY_eliLBCI7GPKBfDT4QTbp5fcJ3RxJveu_UtwDD51tWGotjnQwriNdYhNbYYf3o3MdrvuENDg",
+   "expected": {
+    "stop": null
+   }
+  },
+  {
+   "id": "D6-08",
+   "kind": "death_certificate",
+   "variant": "clean",
+   "file": "documents/08-death_certificate-clean.png",
+   "case_ref": "D1-0020",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-KHS-2025-00335",
+    "cnic": "00000-1183827-7",
+    "name": "ALI AHMAD",
+    "relation_name": "SHAZIA MAI",
+    "date_of_death": "2025-04-16",
+    "issued_at": "2025-04-16",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-KHS-2025-00335",
+    "Deceased": "ALI AHMAD",
+    "CNIC (mock)": "00000-1183827-7",
+    "Spouse": "SHAZIA MAI",
+    "Date of death": "2025-04-16"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtMTE4MzgyNy03IiwiZGF0ZV9vZl9kZWF0aCI6IjIwMjUtMDQtMTYiLCJkb2Nfbm8iOiJEQy1LSFMtMjAyNS0wMDMzNSIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDI1LTA0LTE2Iiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJBTEkgQUhNQUQiLCJyZWxhdGlvbl9uYW1lIjoiU0hBWklBIE1BSSJ9.VLOd7MD5i60VIKCMFTB1oi9vyIkWj6gofZpdMMOy-MhToAZjUFXcsM5TRPLTOsxNmctYWDDXIrm4_lOfZmpBBg",
+   "expected": {
+    "stop": null
+   }
+  },
+  {
+   "id": "D6-09",
+   "kind": "cnic_front",
+   "variant": "clean",
+   "file": "documents/09-cnic_front-clean.png",
+   "case_ref": "D1-0023",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-9231197-4",
+    "cnic": "00000-9231197-4",
+    "name": "REHANA MAI",
+    "relation_name": "HUSSAIN BUX",
+    "dob": "1966-10-02",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "REHANA MAI",
+    "Husband": "HUSSAIN BUX",
+    "CNIC (mock)": "00000-9231197-4",
+    "Date of birth": "1966-10-02",
+    "District": "Hyderabad"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtOTIzMTE5Ny00IiwiZG9iIjoiMTk2Ni0xMC0wMiIsImRvY19ubyI6IjAwMDAwLTkyMzExOTctNCIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IlJFSEFOQSBNQUkiLCJyZWxhdGlvbl9uYW1lIjoiSFVTU0FJTiBCVVgifQ.X9BK_JK4uyPmIlq8z3oic4MS5L-Oko93yB1m_f1jwRvcqolotN1X56kHMjNStdV5XUpAeO8qgCeyxlbRGa9zAA",
+   "expected": {
+    "stop": null
+   }
+  },
+  {
+   "id": "D6-10",
+   "kind": "death_certificate",
+   "variant": "clean",
+   "file": "documents/10-death_certificate-clean.png",
+   "case_ref": "D1-0024",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-KHS-2020-00331",
+    "cnic": "00000-4051860-3",
+    "name": "ABDUL RASHID",
+    "relation_name": "NASREEN BIBI",
+    "date_of_death": "2020-10-26",
+    "issued_at": "2020-10-26",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-KHS-2020-00331",
+    "Deceased": "ABDUL RASHID",
+    "CNIC (mock)": "00000-4051860-3",
+    "Spouse": "NASREEN BIBI",
+    "Date of death": "2020-10-26"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNDA1MTg2MC0zIiwiZGF0ZV9vZl9kZWF0aCI6IjIwMjAtMTAtMjYiLCJkb2Nfbm8iOiJEQy1LSFMtMjAyMC0wMDMzMSIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDIwLTEwLTI2Iiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJBQkRVTCBSQVNISUQiLCJyZWxhdGlvbl9uYW1lIjoiTkFTUkVFTiBCSUJJIn0.YYI0vwBVUBx0UygbddjvCrbX5VLEY-1pv_UtQN0ZLtTGqv7UwsLqKVnOUwFJGIpJK05VwI66AEKwET3sC3NpDQ",
+   "expected": {
+    "stop": null
+   }
+  },
+  {
+   "id": "D6-11",
+   "kind": "cnic_front",
+   "variant": "clean",
+   "file": "documents/11-cnic_front-clean.png",
+   "case_ref": "D1-0025",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-0951179-0",
+    "cnic": "00000-0951179-0",
+    "name": "TAHIRA KHATOON",
+    "relation_name": "ABDUL RASHID",
+    "dob": "1964-06-13",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "TAHIRA KHATOON",
+    "Husband": "ABDUL RASHID",
+    "CNIC (mock)": "00000-0951179-0",
+    "Date of birth": "1964-06-13",
+    "District": "Karachi South"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtMDk1MTE3OS0wIiwiZG9iIjoiMTk2NC0wNi0xMyIsImRvY19ubyI6IjAwMDAwLTA5NTExNzktMCIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IlRBSElSQSBLSEFUT09OIiwicmVsYXRpb25fbmFtZSI6IkFCRFVMIFJBU0hJRCJ9.5Ufy6ELM-rW_mdSNRloNc8DVEmkiIOXgI61NNmh468Za9J5OvGmUu6d6f_TJtFQAREtO4_j3ei9T0GtDtp2LAQ",
+   "expected": {
+    "stop": null
+   }
+  },
+  {
+   "id": "D6-12",
+   "kind": "death_certificate",
+   "variant": "clean",
+   "file": "documents/12-death_certificate-clean.png",
+   "case_ref": "D1-0026",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-RJP-2025-00292",
+    "cnic": "00000-8803436-3",
+    "name": "ABDUL GHAFOOR",
+    "relation_name": "PARVEEN MAI",
+    "date_of_death": "2025-08-24",
+    "issued_at": "2025-08-24",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-RJP-2025-00292",
+    "Deceased": "ABDUL GHAFOOR",
+    "CNIC (mock)": "00000-8803436-3",
+    "Spouse": "PARVEEN MAI",
+    "Date of death": "2025-08-24"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtODgwMzQzNi0zIiwiZGF0ZV9vZl9kZWF0aCI6IjIwMjUtMDgtMjQiLCJkb2Nfbm8iOiJEQy1SSlAtMjAyNS0wMDI5MiIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDI1LTA4LTI0Iiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJBQkRVTCBHSEFGT09SIiwicmVsYXRpb25fbmFtZSI6IlBBUlZFRU4gTUFJIn0.gm3dDlfB-LnFfxydWOrQyR_OQBnju2TWfUGQOvu2AAO3c4dEJDWRYUZmL9wC-kw1uvDmlTuqiD5FYUmjYfmWBQ",
+   "expected": {
+    "stop": null
+   }
+  },
+  {
+   "id": "D6-13",
+   "kind": "cnic_front",
+   "variant": "clean",
+   "file": "documents/13-cnic_front-clean.png",
+   "case_ref": "D1-0028",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-4448020-0",
+    "cnic": "00000-4448020-0",
+    "name": "ZARINA BIBI",
+    "relation_name": "HUSSAIN BUX",
+    "dob": "1990-06-25",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "ZARINA BIBI",
+    "Husband": "HUSSAIN BUX",
+    "CNIC (mock)": "00000-4448020-0",
+    "Date of birth": "1990-06-25",
+    "District": "Hyderabad"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNDQ0ODAyMC0wIiwiZG9iIjoiMTk5MC0wNi0yNSIsImRvY19ubyI6IjAwMDAwLTQ0NDgwMjAtMCIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IlpBUklOQSBCSUJJIiwicmVsYXRpb25fbmFtZSI6IkhVU1NBSU4gQlVYIn0.x_CQg7s1lFYu25m6fF4VVkqqHmm37rpirkSUiQxT6pUyHn6jE0nZl4Uybuox2wzAlBJdSvRysINbdnY85wm8Ag",
+   "expected": {
+    "stop": null
+   }
+  },
+  {
+   "id": "D6-14",
+   "kind": "death_certificate",
+   "variant": "clean",
+   "file": "documents/14-death_certificate-clean.png",
+   "case_ref": "D1-0029",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-BDN-2022-00159",
+    "cnic": "00000-4153447-9",
+    "name": "MUHAMMAD IQBAL",
+    "relation_name": "BUSHRA BANO",
+    "date_of_death": "2022-01-16",
+    "issued_at": "2022-01-16",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-BDN-2022-00159",
+    "Deceased": "MUHAMMAD IQBAL",
+    "CNIC (mock)": "00000-4153447-9",
+    "Spouse": "BUSHRA BANO",
+    "Date of death": "2022-01-16"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNDE1MzQ0Ny05IiwiZGF0ZV9vZl9kZWF0aCI6IjIwMjItMDEtMTYiLCJkb2Nfbm8iOiJEQy1CRE4tMjAyMi0wMDE1OSIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDIyLTAxLTE2Iiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJNVUhBTU1BRCBJUUJBTCIsInJlbGF0aW9uX25hbWUiOiJCVVNIUkEgQkFOTyJ9.9ThMKQ317e7yid-OEhImSr4On9i6QNrV6HXYp-f0bbdTwAiB02KBCnqYb8E0PvRhkCgUqiIa7II73yZ_PS_eDw",
+   "expected": {
+    "stop": null
+   }
+  },
+  {
+   "id": "D6-15",
+   "kind": "cnic_front",
+   "variant": "clean",
+   "file": "documents/15-cnic_front-clean.png",
+   "case_ref": "D1-0030",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-3248340-6",
+    "cnic": "00000-3248340-6",
+    "name": "SHAZIA AKHTAR",
+    "relation_name": "GHULAM RASOOL",
+    "dob": "1998-08-16",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "SHAZIA AKHTAR",
+    "Husband": "GHULAM RASOOL",
+    "CNIC (mock)": "00000-3248340-6",
+    "Date of birth": "1998-08-16",
+    "District": "Tharparkar"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtMzI0ODM0MC02IiwiZG9iIjoiMTk5OC0wOC0xNiIsImRvY19ubyI6IjAwMDAwLTMyNDgzNDAtNiIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IlNIQVpJQSBBS0hUQVIiLCJyZWxhdGlvbl9uYW1lIjoiR0hVTEFNIFJBU09PTCJ9.AAG078c1_IclpYeO1fLhb3vRlkfuRqvY9_X-Ws3evUiiwy19u8y8gelaYoAnF2cLRCVWlQ6sWTHysTg3aR40Cg",
+   "expected": {
+    "stop": null
+   }
+  },
+  {
+   "id": "D6-16",
+   "kind": "death_certificate",
+   "variant": "clean",
+   "file": "documents/16-death_certificate-clean.png",
+   "case_ref": "D1-0031",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-SKR-2021-00116",
+    "cnic": "00000-6517883-7",
+    "name": "ABDUL GHAFOOR",
+    "relation_name": "SHAHNAZ BEGUM",
+    "date_of_death": "2021-08-17",
+    "issued_at": "2021-08-17",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-SKR-2021-00116",
+    "Deceased": "ABDUL GHAFOOR",
+    "CNIC (mock)": "00000-6517883-7",
+    "Spouse": "SHAHNAZ BEGUM",
+    "Date of death": "2021-08-17"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNjUxNzg4My03IiwiZGF0ZV9vZl9kZWF0aCI6IjIwMjEtMDgtMTciLCJkb2Nfbm8iOiJEQy1TS1ItMjAyMS0wMDExNiIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDIxLTA4LTE3Iiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJBQkRVTCBHSEFGT09SIiwicmVsYXRpb25fbmFtZSI6IlNIQUhOQVogQkVHVU0ifQ.3vo_SssFpQLluZh9v2kp2Fgj2mW_dvYD0lsrCkHJMwd6auWWdlqlyWIYcYNMJ-xlTPXmgZFpw4IGGRvS42nkDg",
+   "expected": {
+    "stop": null
+   }
+  },
+  {
+   "id": "D6-17",
+   "kind": "cnic_front",
+   "variant": "clean",
+   "file": "documents/17-cnic_front-clean.png",
+   "case_ref": "D1-0033",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-3369795-0",
+    "cnic": "00000-3369795-0",
+    "name": "SUGHRA MAI",
+    "relation_name": "GHULAM HUSSAIN",
+    "dob": "1989-06-18",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "SUGHRA MAI",
+    "Husband": "GHULAM HUSSAIN",
+    "CNIC (mock)": "00000-3369795-0",
+    "Date of birth": "1989-06-18",
+    "District": "Multan"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtMzM2OTc5NS0wIiwiZG9iIjoiMTk4OS0wNi0xOCIsImRvY19ubyI6IjAwMDAwLTMzNjk3OTUtMCIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IlNVR0hSQSBNQUkiLCJyZWxhdGlvbl9uYW1lIjoiR0hVTEFNIEhVU1NBSU4ifQ.2riFbukHpuYEwm8BQQjr7ZNwgVOL67yw7IAXpFelkWzn2rcJwEePRFAJtY4aCa0stJ_CNS_8IG59zvnwCQJRBA",
+   "expected": {
+    "stop": null
+   }
+  },
+  {
+   "id": "D6-18",
+   "kind": "death_certificate",
+   "variant": "clean",
+   "file": "documents/18-death_certificate-clean.png",
+   "case_ref": "D1-0034",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-HYD-2021-00274",
+    "cnic": "00000-4166380-9",
+    "name": "ALI HASSAN",
+    "relation_name": "HALIMA MAI",
+    "date_of_death": "2021-01-11",
+    "issued_at": "2021-01-11",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-HYD-2021-00274",
+    "Deceased": "ALI HASSAN",
+    "CNIC (mock)": "00000-4166380-9",
+    "Spouse": "HALIMA MAI",
+    "Date of death": "2021-01-11"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNDE2NjM4MC05IiwiZGF0ZV9vZl9kZWF0aCI6IjIwMjEtMDEtMTEiLCJkb2Nfbm8iOiJEQy1IWUQtMjAyMS0wMDI3NCIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDIxLTAxLTExIiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJBTEkgSEFTU0FOIiwicmVsYXRpb25fbmFtZSI6IkhBTElNQSBNQUkifQ.Y5yFLnTdA3truBQlxew7pAiRGUeWB84kbFGzoWXcFWHpAxcv1N8RoMJT_qicJYU0aARKzXLSBya2b3zI9c8dAg",
+   "expected": {
+    "stop": null
+   }
+  },
+  {
+   "id": "D6-19",
+   "kind": "cnic_front",
+   "variant": "clean",
+   "file": "documents/19-cnic_front-clean.png",
+   "case_ref": "D1-0035",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-4183419-0",
+    "cnic": "00000-4183419-0",
+    "name": "REHANA BEGUM",
+    "relation_name": "NOOR MUHAMMAD",
+    "dob": "1963-12-15",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "REHANA BEGUM",
+    "Husband": "NOOR MUHAMMAD",
+    "CNIC (mock)": "00000-4183419-0",
+    "Date of birth": "1963-12-15",
+    "District": "Hyderabad"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNDE4MzQxOS0wIiwiZG9iIjoiMTk2My0xMi0xNSIsImRvY19ubyI6IjAwMDAwLTQxODM0MTktMCIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IlJFSEFOQSBCRUdVTSIsInJlbGF0aW9uX25hbWUiOiJOT09SIE1VSEFNTUFEIn0.dh7xDgi36RBghtlA-QaPNT82RLWBQa_84Ckw2TrvqnX0P69ovxSlI9euZCc2mTyjubd2kw-F1RrCrXKoKSeJCw",
+   "expected": {
+    "stop": null
+   }
+  },
+  {
+   "id": "D6-20",
+   "kind": "death_certificate",
+   "variant": "clean",
+   "file": "documents/20-death_certificate-clean.png",
+   "case_ref": "D1-0037",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-TTA-2019-00169",
+    "cnic": "00000-7505807-7",
+    "name": "AHMAD KHAN",
+    "relation_name": "KULSOOM AKHTAR",
+    "date_of_death": "2019-06-22",
+    "issued_at": "2019-06-22",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-TTA-2019-00169",
+    "Deceased": "AHMAD KHAN",
+    "CNIC (mock)": "00000-7505807-7",
+    "Spouse": "KULSOOM AKHTAR",
+    "Date of death": "2019-06-22"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNzUwNTgwNy03IiwiZGF0ZV9vZl9kZWF0aCI6IjIwMTktMDYtMjIiLCJkb2Nfbm8iOiJEQy1UVEEtMjAxOS0wMDE2OSIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDE5LTA2LTIyIiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJBSE1BRCBLSEFOIiwicmVsYXRpb25fbmFtZSI6IktVTFNPT00gQUtIVEFSIn0.N7zTQMhKrBOn2t4l0ugrygErU4t9FDBRKDEcHBcfndkILKcRpSBgEFfUxFme4wYAyE7fHOa0KN4R4PIDzGUeAw",
+   "expected": {
+    "stop": null
+   }
+  },
+  {
+   "id": "D6-21",
+   "kind": "cnic_front",
+   "variant": "blurred",
+   "file": "documents/21-cnic_front-blurred.png",
+   "case_ref": "D1-0003",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-4769860-4",
+    "cnic": "00000-4769860-4",
+    "name": "TAHIRA BANO",
+    "relation_name": "MUHAMMAD YOUSAF",
+    "dob": "1957-05-23",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "TAHIRA BANO",
+    "Husband": "MUHAMMAD YOUSAF",
+    "CNIC (mock)": "00000-4769860-4",
+    "Date of birth": "1957-05-23",
+    "District": "Thatta"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNDc2OTg2MC00IiwiZG9iIjoiMTk1Ny0wNS0yMyIsImRvY19ubyI6IjAwMDAwLTQ3Njk4NjAtNCIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IlRBSElSQSBCQU5PIiwicmVsYXRpb25fbmFtZSI6Ik1VSEFNTUFEIFlPVVNBRiJ9.cLIp7Z2AO4vhsK09ut2d0I_lsrU5X_Twv_nLZ4IlxgsWNnI6Yzm7bTiQ-ewRNl-clqTfrXdWOIw-oKs4S_hRCA",
+   "expected": {
+    "proof": "retake"
+   }
+  },
+  {
+   "id": "D6-22",
+   "kind": "death_certificate",
+   "variant": "blurred",
+   "file": "documents/22-death_certificate-blurred.png",
+   "case_ref": "D1-0006",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-RJP-2019-00193",
+    "cnic": "00000-2003468-5",
+    "name": "GUL MUHAMMAD",
+    "relation_name": "REHANA AKHTAR",
+    "date_of_death": "2019-04-04",
+    "issued_at": "2019-04-04",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-RJP-2019-00193",
+    "Deceased": "GUL MUHAMMAD",
+    "CNIC (mock)": "00000-2003468-5",
+    "Spouse": "REHANA AKHTAR",
+    "Date of death": "2019-04-04"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtMjAwMzQ2OC01IiwiZGF0ZV9vZl9kZWF0aCI6IjIwMTktMDQtMDQiLCJkb2Nfbm8iOiJEQy1SSlAtMjAxOS0wMDE5MyIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDE5LTA0LTA0Iiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJHVUwgTVVIQU1NQUQiLCJyZWxhdGlvbl9uYW1lIjoiUkVIQU5BIEFLSFRBUiJ9.hNQdQM1H7QCcDtL1ktvfNq-qM-nAM3F_edLSPIJXTAqd5s7r0XSUQafAZ8EACYKczoh00LGsqs_uwzIo9J6XAg",
+   "expected": {
+    "proof": "retake"
+   }
+  },
+  {
+   "id": "D6-23",
+   "kind": "cnic_front",
+   "variant": "blurred",
+   "file": "documents/23-cnic_front-blurred.png",
+   "case_ref": "D1-0011",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-7680112-2",
+    "cnic": "00000-7680112-2",
+    "name": "BANO BEGUM",
+    "relation_name": "MUHAMMAD AKRAM",
+    "dob": "1967-12-17",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "BANO BEGUM",
+    "Husband": "MUHAMMAD AKRAM",
+    "CNIC (mock)": "00000-7680112-2",
+    "Date of birth": "1967-12-17",
+    "District": "Faisalabad"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNzY4MDExMi0yIiwiZG9iIjoiMTk2Ny0xMi0xNyIsImRvY19ubyI6IjAwMDAwLTc2ODAxMTItMiIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IkJBTk8gQkVHVU0iLCJyZWxhdGlvbl9uYW1lIjoiTVVIQU1NQUQgQUtSQU0ifQ.erlpmU19c_JOGuh0YM4_PeGtZe94JscSiQGVMGuFxokFc9pmeTOHRsTG8uBkIge0GLuvo2mB6a0VfkfDtHHgCA",
+   "expected": {
+    "proof": "retake"
+   }
+  },
+  {
+   "id": "D6-24",
+   "kind": "death_certificate",
+   "variant": "blurred",
+   "file": "documents/24-death_certificate-blurred.png",
+   "case_ref": "D1-0012",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-BWP-2021-00546",
+    "cnic": "00000-0878967-5",
+    "name": "HUSSAIN BUX",
+    "relation_name": "AMINA PARVEEN",
+    "date_of_death": "2021-12-14",
+    "issued_at": "2021-12-14",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-BWP-2021-00546",
+    "Deceased": "HUSSAIN BUX",
+    "CNIC (mock)": "00000-0878967-5",
+    "Spouse": "AMINA PARVEEN",
+    "Date of death": "2021-12-14"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtMDg3ODk2Ny01IiwiZGF0ZV9vZl9kZWF0aCI6IjIwMjEtMTItMTQiLCJkb2Nfbm8iOiJEQy1CV1AtMjAyMS0wMDU0NiIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDIxLTEyLTE0Iiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJIVVNTQUlOIEJVWCIsInJlbGF0aW9uX25hbWUiOiJBTUlOQSBQQVJWRUVOIn0.sT382hHnxmWwgeWgWiAEiB2SKHiRauH2WB1Hu8LZcHznSCawruISbnPuyn3dSdEA7cj4oR63ieV-gaIkYITNDQ",
+   "expected": {
+    "proof": "retake"
+   }
+  },
+  {
+   "id": "D6-25",
+   "kind": "cnic_front",
+   "variant": "blurred",
+   "file": "documents/25-cnic_front-blurred.png",
+   "case_ref": "D1-0013",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-5446443-2",
+    "cnic": "00000-5446443-2",
+    "name": "NARGIS BANO",
+    "relation_name": "MUHAMMAD YOUSAF",
+    "dob": "1967-08-21",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "NARGIS BANO",
+    "Husband": "MUHAMMAD YOUSAF",
+    "CNIC (mock)": "00000-5446443-2",
+    "Date of birth": "1967-08-21",
+    "District": "Faisalabad"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNTQ0NjQ0My0yIiwiZG9iIjoiMTk2Ny0wOC0yMSIsImRvY19ubyI6IjAwMDAwLTU0NDY0NDMtMiIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6Ik5BUkdJUyBCQU5PIiwicmVsYXRpb25fbmFtZSI6Ik1VSEFNTUFEIFlPVVNBRiJ9.UPsLRTCbIlGdXeRC1vP0qHTF4F0d05XR5kKGxa55LUq8WFz-GuiiymWBy__xHCjkBMKcKoTvH6bxexq4UGiGDg",
+   "expected": {
+    "proof": "retake"
+   }
+  },
+  {
+   "id": "D6-26",
+   "kind": "death_certificate",
+   "variant": "blurred",
+   "file": "documents/26-death_certificate-blurred.png",
+   "case_ref": "D1-0014",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-BDN-2025-00187",
+    "cnic": "00000-0654771-3",
+    "name": "NAZIR AHMAD",
+    "relation_name": "SAKINA BIBI",
+    "date_of_death": "2025-01-31",
+    "issued_at": "2025-01-31",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-BDN-2025-00187",
+    "Deceased": "NAZIR AHMAD",
+    "CNIC (mock)": "00000-0654771-3",
+    "Spouse": "SAKINA BIBI",
+    "Date of death": "2025-01-31"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtMDY1NDc3MS0zIiwiZGF0ZV9vZl9kZWF0aCI6IjIwMjUtMDEtMzEiLCJkb2Nfbm8iOiJEQy1CRE4tMjAyNS0wMDE4NyIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDI1LTAxLTMxIiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJOQVpJUiBBSE1BRCIsInJlbGF0aW9uX25hbWUiOiJTQUtJTkEgQklCSSJ9.4Hciwq6jd0iUW-hnW2-uoFMeadRM45n1Ai-LlSMDAQLGeS3UpOhGk-R9UG9ntEN9M5UyoHCbCKEsfPWOv0wnCw",
+   "expected": {
+    "proof": "retake"
+   }
+  },
+  {
+   "id": "D6-27",
+   "kind": "cnic_front",
+   "variant": "blurred",
+   "file": "documents/27-cnic_front-blurred.png",
+   "case_ref": "D1-0015",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-8006417-2",
+    "cnic": "00000-8006417-2",
+    "name": "SUGHRA BANO",
+    "relation_name": "KHADIM HUSSAIN",
+    "dob": "1983-07-28",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "SUGHRA BANO",
+    "Husband": "KHADIM HUSSAIN",
+    "CNIC (mock)": "00000-8006417-2",
+    "Date of birth": "1983-07-28",
+    "District": "Rajanpur"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtODAwNjQxNy0yIiwiZG9iIjoiMTk4My0wNy0yOCIsImRvY19ubyI6IjAwMDAwLTgwMDY0MTctMiIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IlNVR0hSQSBCQU5PIiwicmVsYXRpb25fbmFtZSI6IktIQURJTSBIVVNTQUlOIn0.62PSDL-GaiboAY_eliLBCI7GPKBfDT4QTbp5fcJ3RxJveu_UtwDD51tWGotjnQwriNdYhNbYYf3o3MdrvuENDg",
+   "expected": {
+    "proof": "retake"
+   }
+  },
+  {
+   "id": "D6-28",
+   "kind": "death_certificate",
+   "variant": "blurred",
+   "file": "documents/28-death_certificate-blurred.png",
+   "case_ref": "D1-0020",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-KHS-2025-00335",
+    "cnic": "00000-1183827-7",
+    "name": "ALI AHMAD",
+    "relation_name": "SHAZIA MAI",
+    "date_of_death": "2025-04-16",
+    "issued_at": "2025-04-16",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-KHS-2025-00335",
+    "Deceased": "ALI AHMAD",
+    "CNIC (mock)": "00000-1183827-7",
+    "Spouse": "SHAZIA MAI",
+    "Date of death": "2025-04-16"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtMTE4MzgyNy03IiwiZGF0ZV9vZl9kZWF0aCI6IjIwMjUtMDQtMTYiLCJkb2Nfbm8iOiJEQy1LSFMtMjAyNS0wMDMzNSIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDI1LTA0LTE2Iiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJBTEkgQUhNQUQiLCJyZWxhdGlvbl9uYW1lIjoiU0hBWklBIE1BSSJ9.VLOd7MD5i60VIKCMFTB1oi9vyIkWj6gofZpdMMOy-MhToAZjUFXcsM5TRPLTOsxNmctYWDDXIrm4_lOfZmpBBg",
+   "expected": {
+    "proof": "retake"
+   }
+  },
+  {
+   "id": "D6-29",
+   "kind": "cnic_front",
+   "variant": "edited_text",
+   "file": "documents/29-cnic_front-edited_text.png",
+   "case_ref": "D1-0023",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-9231197-4",
+    "cnic": "00000-9231197-4",
+    "name": "REHANA MAI",
+    "relation_name": "HUSSAIN BUX",
+    "dob": "1966-10-02",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "REHANA MAI",
+    "Husband": "HUSSAIN BUX",
+    "CNIC (mock)": "00000-9231197-4",
+    "Date of birth": "1964-10-02",
+    "District": "Hyderabad"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtOTIzMTE5Ny00IiwiZG9iIjoiMTk2Ni0xMC0wMiIsImRvY19ubyI6IjAwMDAwLTkyMzExOTctNCIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IlJFSEFOQSBNQUkiLCJyZWxhdGlvbl9uYW1lIjoiSFVTU0FJTiBCVVgifQ.X9BK_JK4uyPmIlq8z3oic4MS5L-Oko93yB1m_f1jwRvcqolotN1X56kHMjNStdV5XUpAeO8qgCeyxlbRGa9zAA",
+   "expected": {
+    "stop": "S6",
+    "why": "qr_text_mismatch"
+   }
+  },
+  {
+   "id": "D6-30",
+   "kind": "death_certificate",
+   "variant": "edited_text",
+   "file": "documents/30-death_certificate-edited_text.png",
+   "case_ref": "D1-0024",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-KHS-2020-00331",
+    "cnic": "00000-4051860-3",
+    "name": "ABDUL RASHID",
+    "relation_name": "NASREEN BIBI",
+    "date_of_death": "2020-10-26",
+    "issued_at": "2020-10-26",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-KHS-2020-00331",
+    "Deceased": "ABDUL RASHID",
+    "CNIC (mock)": "00000-4051860-3",
+    "Spouse": "NASREEN BIBI",
+    "Date of death": "2018-10-26"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNDA1MTg2MC0zIiwiZGF0ZV9vZl9kZWF0aCI6IjIwMjAtMTAtMjYiLCJkb2Nfbm8iOiJEQy1LSFMtMjAyMC0wMDMzMSIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDIwLTEwLTI2Iiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJBQkRVTCBSQVNISUQiLCJyZWxhdGlvbl9uYW1lIjoiTkFTUkVFTiBCSUJJIn0.YYI0vwBVUBx0UygbddjvCrbX5VLEY-1pv_UtQN0ZLtTGqv7UwsLqKVnOUwFJGIpJK05VwI66AEKwET3sC3NpDQ",
+   "expected": {
+    "stop": "S6",
+    "why": "qr_text_mismatch"
+   }
+  },
+  {
+   "id": "D6-31",
+   "kind": "cnic_front",
+   "variant": "edited_text",
+   "file": "documents/31-cnic_front-edited_text.png",
+   "case_ref": "D1-0025",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-0951179-0",
+    "cnic": "00000-0951179-0",
+    "name": "TAHIRA KHATOON",
+    "relation_name": "ABDUL RASHID",
+    "dob": "1964-06-13",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "TAHIRA KHATOON",
+    "Husband": "ABDUL RASHID",
+    "CNIC (mock)": "00000-0951179-0",
+    "Date of birth": "1962-06-13",
+    "District": "Karachi South"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtMDk1MTE3OS0wIiwiZG9iIjoiMTk2NC0wNi0xMyIsImRvY19ubyI6IjAwMDAwLTA5NTExNzktMCIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IlRBSElSQSBLSEFUT09OIiwicmVsYXRpb25fbmFtZSI6IkFCRFVMIFJBU0hJRCJ9.5Ufy6ELM-rW_mdSNRloNc8DVEmkiIOXgI61NNmh468Za9J5OvGmUu6d6f_TJtFQAREtO4_j3ei9T0GtDtp2LAQ",
+   "expected": {
+    "stop": "S6",
+    "why": "qr_text_mismatch"
+   }
+  },
+  {
+   "id": "D6-32",
+   "kind": "death_certificate",
+   "variant": "edited_text",
+   "file": "documents/32-death_certificate-edited_text.png",
+   "case_ref": "D1-0026",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-RJP-2025-00292",
+    "cnic": "00000-8803436-3",
+    "name": "ABDUL GHAFOOR",
+    "relation_name": "PARVEEN MAI",
+    "date_of_death": "2025-08-24",
+    "issued_at": "2025-08-24",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-RJP-2025-00292",
+    "Deceased": "ABDUL GHAFOOR",
+    "CNIC (mock)": "00000-8803436-3",
+    "Spouse": "PARVEEN MAI",
+    "Date of death": "2023-08-24"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtODgwMzQzNi0zIiwiZGF0ZV9vZl9kZWF0aCI6IjIwMjUtMDgtMjQiLCJkb2Nfbm8iOiJEQy1SSlAtMjAyNS0wMDI5MiIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDI1LTA4LTI0Iiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJBQkRVTCBHSEFGT09SIiwicmVsYXRpb25fbmFtZSI6IlBBUlZFRU4gTUFJIn0.gm3dDlfB-LnFfxydWOrQyR_OQBnju2TWfUGQOvu2AAO3c4dEJDWRYUZmL9wC-kw1uvDmlTuqiD5FYUmjYfmWBQ",
+   "expected": {
+    "stop": "S6",
+    "why": "qr_text_mismatch"
+   }
+  },
+  {
+   "id": "D6-33",
+   "kind": "cnic_front",
+   "variant": "edited_text",
+   "file": "documents/33-cnic_front-edited_text.png",
+   "case_ref": "D1-0028",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-4448020-0",
+    "cnic": "00000-4448020-0",
+    "name": "ZARINA BIBI",
+    "relation_name": "HUSSAIN BUX",
+    "dob": "1990-06-25",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "ZARINA BIBI",
+    "Husband": "HUSSAIN BUX",
+    "CNIC (mock)": "00000-4448020-0",
+    "Date of birth": "1988-06-25",
+    "District": "Hyderabad"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNDQ0ODAyMC0wIiwiZG9iIjoiMTk5MC0wNi0yNSIsImRvY19ubyI6IjAwMDAwLTQ0NDgwMjAtMCIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IlpBUklOQSBCSUJJIiwicmVsYXRpb25fbmFtZSI6IkhVU1NBSU4gQlVYIn0.x_CQg7s1lFYu25m6fF4VVkqqHmm37rpirkSUiQxT6pUyHn6jE0nZl4Uybuox2wzAlBJdSvRysINbdnY85wm8Ag",
+   "expected": {
+    "stop": "S6",
+    "why": "qr_text_mismatch"
+   }
+  },
+  {
+   "id": "D6-34",
+   "kind": "death_certificate",
+   "variant": "edited_text",
+   "file": "documents/34-death_certificate-edited_text.png",
+   "case_ref": "D1-0029",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-BDN-2022-00159",
+    "cnic": "00000-4153447-9",
+    "name": "MUHAMMAD IQBAL",
+    "relation_name": "BUSHRA BANO",
+    "date_of_death": "2022-01-16",
+    "issued_at": "2022-01-16",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-BDN-2022-00159",
+    "Deceased": "MUHAMMAD IQBAL",
+    "CNIC (mock)": "00000-4153447-9",
+    "Spouse": "BUSHRA BANO",
+    "Date of death": "2020-01-16"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNDE1MzQ0Ny05IiwiZGF0ZV9vZl9kZWF0aCI6IjIwMjItMDEtMTYiLCJkb2Nfbm8iOiJEQy1CRE4tMjAyMi0wMDE1OSIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDIyLTAxLTE2Iiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJNVUhBTU1BRCBJUUJBTCIsInJlbGF0aW9uX25hbWUiOiJCVVNIUkEgQkFOTyJ9.9ThMKQ317e7yid-OEhImSr4On9i6QNrV6HXYp-f0bbdTwAiB02KBCnqYb8E0PvRhkCgUqiIa7II73yZ_PS_eDw",
+   "expected": {
+    "stop": "S6",
+    "why": "qr_text_mismatch"
+   }
+  },
+  {
+   "id": "D6-35",
+   "kind": "cnic_front",
+   "variant": "edited_text",
+   "file": "documents/35-cnic_front-edited_text.png",
+   "case_ref": "D1-0030",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-3248340-6",
+    "cnic": "00000-3248340-6",
+    "name": "SHAZIA AKHTAR",
+    "relation_name": "GHULAM RASOOL",
+    "dob": "1998-08-16",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "SHAZIA AKHTAR",
+    "Husband": "GHULAM RASOOL",
+    "CNIC (mock)": "00000-3248340-6",
+    "Date of birth": "1996-08-16",
+    "District": "Tharparkar"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtMzI0ODM0MC02IiwiZG9iIjoiMTk5OC0wOC0xNiIsImRvY19ubyI6IjAwMDAwLTMyNDgzNDAtNiIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IlNIQVpJQSBBS0hUQVIiLCJyZWxhdGlvbl9uYW1lIjoiR0hVTEFNIFJBU09PTCJ9.AAG078c1_IclpYeO1fLhb3vRlkfuRqvY9_X-Ws3evUiiwy19u8y8gelaYoAnF2cLRCVWlQ6sWTHysTg3aR40Cg",
+   "expected": {
+    "stop": "S6",
+    "why": "qr_text_mismatch"
+   }
+  },
+  {
+   "id": "D6-36",
+   "kind": "death_certificate",
+   "variant": "edited_text",
+   "file": "documents/36-death_certificate-edited_text.png",
+   "case_ref": "D1-0031",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-SKR-2021-00116",
+    "cnic": "00000-6517883-7",
+    "name": "ABDUL GHAFOOR",
+    "relation_name": "SHAHNAZ BEGUM",
+    "date_of_death": "2021-08-17",
+    "issued_at": "2021-08-17",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-SKR-2021-00116",
+    "Deceased": "ABDUL GHAFOOR",
+    "CNIC (mock)": "00000-6517883-7",
+    "Spouse": "SHAHNAZ BEGUM",
+    "Date of death": "2019-08-17"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNjUxNzg4My03IiwiZGF0ZV9vZl9kZWF0aCI6IjIwMjEtMDgtMTciLCJkb2Nfbm8iOiJEQy1TS1ItMjAyMS0wMDExNiIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDIxLTA4LTE3Iiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJBQkRVTCBHSEFGT09SIiwicmVsYXRpb25fbmFtZSI6IlNIQUhOQVogQkVHVU0ifQ.3vo_SssFpQLluZh9v2kp2Fgj2mW_dvYD0lsrCkHJMwd6auWWdlqlyWIYcYNMJ-xlTPXmgZFpw4IGGRvS42nkDg",
+   "expected": {
+    "stop": "S6",
+    "why": "qr_text_mismatch"
+   }
+  },
+  {
+   "id": "D6-37",
+   "kind": "cnic_front",
+   "variant": "forged_qr",
+   "file": "documents/37-cnic_front-forged_qr.png",
+   "case_ref": "D1-0033",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-3369795-0",
+    "cnic": "00000-3369795-0",
+    "name": "SUGHRA MAI",
+    "relation_name": "GHULAM HUSSAIN",
+    "dob": "1989-06-18",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "SUGHRA MAI",
+    "Husband": "GHULAM HUSSAIN",
+    "CNIC (mock)": "00000-3369795-0",
+    "Date of birth": "1989-06-18",
+    "District": "Multan"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtMzM2OTc5NS0wIiwiZG9iIjoiMTk4OS0wNi0xOCIsImRvY19ubyI6IjAwMDAwLTMzNjk3OTUtMCIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IlNVR0hSQSBNQUkiLCJyZWxhdGlvbl9uYW1lIjoiR0hVTEFNIEhVU1NBSU4ifQ.sLy4-I5zlpwXrdxK-VMd772E_Fo2pfiK8Snqn0_DMimj0EJHus-IJtAIHjFdXgtpcz89IWIyaYqu-oek0p4NCg",
+   "expected": {
+    "stop": "S6",
+    "why": "signature_invalid"
+   }
+  },
+  {
+   "id": "D6-38",
+   "kind": "death_certificate",
+   "variant": "forged_qr",
+   "file": "documents/38-death_certificate-forged_qr.png",
+   "case_ref": "D1-0034",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-HYD-2021-00274",
+    "cnic": "00000-4166380-9",
+    "name": "ALI HASSAN",
+    "relation_name": "HALIMA MAI",
+    "date_of_death": "2021-01-11",
+    "issued_at": "2021-01-11",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-HYD-2021-00274",
+    "Deceased": "ALI HASSAN",
+    "CNIC (mock)": "00000-4166380-9",
+    "Spouse": "HALIMA MAI",
+    "Date of death": "2021-01-11"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNDE2NjM4MC05IiwiZGF0ZV9vZl9kZWF0aCI6IjIwMjEtMDEtMTEiLCJkb2Nfbm8iOiJEQy1IWUQtMjAyMS0wMDI3NCIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDIxLTAxLTExIiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJBTEkgSEFTU0FOIiwicmVsYXRpb25fbmFtZSI6IkhBTElNQSBNQUkifQ.yRcFbMab9b17WhoNLA2xUHCJ_l2aQInCFO0PO3hP_SZNMNa6Otjn0ATVvcHlniaGjXJru282z8WhoNo0iTYOAQ",
+   "expected": {
+    "stop": "S6",
+    "why": "signature_invalid"
+   }
+  },
+  {
+   "id": "D6-39",
+   "kind": "cnic_front",
+   "variant": "forged_qr",
+   "file": "documents/39-cnic_front-forged_qr.png",
+   "case_ref": "D1-0035",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-4183419-0",
+    "cnic": "00000-4183419-0",
+    "name": "REHANA BEGUM",
+    "relation_name": "NOOR MUHAMMAD",
+    "dob": "1963-12-15",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "REHANA BEGUM",
+    "Husband": "NOOR MUHAMMAD",
+    "CNIC (mock)": "00000-4183419-0",
+    "Date of birth": "1963-12-15",
+    "District": "Hyderabad"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNDE4MzQxOS0wIiwiZG9iIjoiMTk2My0xMi0xNSIsImRvY19ubyI6IjAwMDAwLTQxODM0MTktMCIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IlJFSEFOQSBCRUdVTSIsInJlbGF0aW9uX25hbWUiOiJOT09SIE1VSEFNTUFEIn0.E1YE1218kpbnwYHTtOnIEAH2cZXbv5duDNAVy82kH0vP3RkocbEqk7cRSbRlYmL1DG_pB_l5iIZx8qgbVcfbAg",
+   "expected": {
+    "stop": "S6",
+    "why": "signature_invalid"
+   }
+  },
+  {
+   "id": "D6-40",
+   "kind": "death_certificate",
+   "variant": "forged_qr",
+   "file": "documents/40-death_certificate-forged_qr.png",
+   "case_ref": "D1-0037",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-TTA-2019-00169",
+    "cnic": "00000-7505807-7",
+    "name": "AHMAD KHAN",
+    "relation_name": "KULSOOM AKHTAR",
+    "date_of_death": "2019-06-22",
+    "issued_at": "2019-06-22",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-TTA-2019-00169",
+    "Deceased": "AHMAD KHAN",
+    "CNIC (mock)": "00000-7505807-7",
+    "Spouse": "KULSOOM AKHTAR",
+    "Date of death": "2019-06-22"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNzUwNTgwNy03IiwiZGF0ZV9vZl9kZWF0aCI6IjIwMTktMDYtMjIiLCJkb2Nfbm8iOiJEQy1UVEEtMjAxOS0wMDE2OSIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDE5LTA2LTIyIiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJBSE1BRCBLSEFOIiwicmVsYXRpb25fbmFtZSI6IktVTFNPT00gQUtIVEFSIn0.igj1btL5E63xqw8CUpWtDo_DxXDSsmh3QWv7bGKzTIUeYd5TdlY3Ll_ViGqa_E_SRQDK0T-TcC-k7vKdpLGWBg",
+   "expected": {
+    "stop": "S6",
+    "why": "signature_invalid"
+   }
+  },
+  {
+   "id": "D6-41",
+   "kind": "cnic_front",
+   "variant": "forged_qr",
+   "file": "documents/41-cnic_front-forged_qr.png",
+   "case_ref": "D1-0003",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-4769860-4",
+    "cnic": "00000-4769860-4",
+    "name": "TAHIRA BANO",
+    "relation_name": "MUHAMMAD YOUSAF",
+    "dob": "1957-05-23",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "TAHIRA BANO",
+    "Husband": "MUHAMMAD YOUSAF",
+    "CNIC (mock)": "00000-4769860-4",
+    "Date of birth": "1957-05-23",
+    "District": "Thatta"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNDc2OTg2MC00IiwiZG9iIjoiMTk1Ny0wNS0yMyIsImRvY19ubyI6IjAwMDAwLTQ3Njk4NjAtNCIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IlRBSElSQSBCQU5PIiwicmVsYXRpb25fbmFtZSI6Ik1VSEFNTUFEIFlPVVNBRiJ9.6CQeDN0nmydWb2pZeh7OxmDPFswjnyazR1wU5Fi0st-aGLP1n8-ec_pTC1yncmWLpUKbcASeMwNLdbecS383Aw",
+   "expected": {
+    "stop": "S6",
+    "why": "signature_invalid"
+   }
+  },
+  {
+   "id": "D6-42",
+   "kind": "death_certificate",
+   "variant": "forged_qr",
+   "file": "documents/42-death_certificate-forged_qr.png",
+   "case_ref": "D1-0006",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-RJP-2019-00193",
+    "cnic": "00000-2003468-5",
+    "name": "GUL MUHAMMAD",
+    "relation_name": "REHANA AKHTAR",
+    "date_of_death": "2019-04-04",
+    "issued_at": "2019-04-04",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-RJP-2019-00193",
+    "Deceased": "GUL MUHAMMAD",
+    "CNIC (mock)": "00000-2003468-5",
+    "Spouse": "REHANA AKHTAR",
+    "Date of death": "2019-04-04"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtMjAwMzQ2OC01IiwiZGF0ZV9vZl9kZWF0aCI6IjIwMTktMDQtMDQiLCJkb2Nfbm8iOiJEQy1SSlAtMjAxOS0wMDE5MyIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDE5LTA0LTA0Iiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJHVUwgTVVIQU1NQUQiLCJyZWxhdGlvbl9uYW1lIjoiUkVIQU5BIEFLSFRBUiJ9.d5IyJLWR6uIwspFKaNBTUGw4Q3YwDMTxRvNB6emG6rp-6P42MSOtkfymEbFJWRR65lkhDiegsuE_yOvl-3FmCg",
+   "expected": {
+    "stop": "S6",
+    "why": "signature_invalid"
+   }
+  },
+  {
+   "id": "D6-43",
+   "kind": "cnic_front",
+   "variant": "forged_qr",
+   "file": "documents/43-cnic_front-forged_qr.png",
+   "case_ref": "D1-0011",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-7680112-2",
+    "cnic": "00000-7680112-2",
+    "name": "BANO BEGUM",
+    "relation_name": "MUHAMMAD AKRAM",
+    "dob": "1967-12-17",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "BANO BEGUM",
+    "Husband": "MUHAMMAD AKRAM",
+    "CNIC (mock)": "00000-7680112-2",
+    "Date of birth": "1967-12-17",
+    "District": "Faisalabad"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNzY4MDExMi0yIiwiZG9iIjoiMTk2Ny0xMi0xNyIsImRvY19ubyI6IjAwMDAwLTc2ODAxMTItMiIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IkJBTk8gQkVHVU0iLCJyZWxhdGlvbl9uYW1lIjoiTVVIQU1NQUQgQUtSQU0ifQ.fjh1ndDuLvt-deKeL42gpHvY50WkNSycJqHsIBrwsLfq3uNdMw76EpSftVzMnBn71mOXtXhvS2Ny2Gr666MtDA",
+   "expected": {
+    "stop": "S6",
+    "why": "signature_invalid"
+   }
+  },
+  {
+   "id": "D6-44",
+   "kind": "death_certificate",
+   "variant": "forged_qr",
+   "file": "documents/44-death_certificate-forged_qr.png",
+   "case_ref": "D1-0012",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-BWP-2021-00546",
+    "cnic": "00000-0878967-5",
+    "name": "HUSSAIN BUX",
+    "relation_name": "AMINA PARVEEN",
+    "date_of_death": "2021-12-14",
+    "issued_at": "2021-12-14",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-BWP-2021-00546",
+    "Deceased": "HUSSAIN BUX",
+    "CNIC (mock)": "00000-0878967-5",
+    "Spouse": "AMINA PARVEEN",
+    "Date of death": "2021-12-14"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtMDg3ODk2Ny01IiwiZGF0ZV9vZl9kZWF0aCI6IjIwMjEtMTItMTQiLCJkb2Nfbm8iOiJEQy1CV1AtMjAyMS0wMDU0NiIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDIxLTEyLTE0Iiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJIVVNTQUlOIEJVWCIsInJlbGF0aW9uX25hbWUiOiJBTUlOQSBQQVJWRUVOIn0.yOzqOn-R0opp0XkUnuQ88yunGP6-I47g9UJ6ujEk7RkfYxe9XYq4K7OVzcFDOm642WCXcdKe8cGvcVU23DGSDg",
+   "expected": {
+    "stop": "S6",
+    "why": "signature_invalid"
+   }
+  },
+  {
+   "id": "D6-45",
+   "kind": "cnic_front",
+   "variant": "reused_image",
+   "file": "documents/01-cnic_front-clean.png",
+   "reused_from": "D6-01",
+   "case_ref": "D1-0013",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-4769860-4",
+    "cnic": "00000-4769860-4",
+    "name": "TAHIRA BANO",
+    "relation_name": "MUHAMMAD YOUSAF",
+    "dob": "1957-05-23",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "expected": {
+    "stop": "S6",
+    "anomaly": "image_reuse"
+   }
+  },
+  {
+   "id": "D6-46",
+   "kind": "death_certificate",
+   "variant": "reused_image",
+   "file": "documents/02-death_certificate-clean.png",
+   "reused_from": "D6-02",
+   "case_ref": "D1-0014",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-RJP-2019-00193",
+    "cnic": "00000-2003468-5",
+    "name": "GUL MUHAMMAD",
+    "relation_name": "REHANA AKHTAR",
+    "date_of_death": "2019-04-04",
+    "issued_at": "2019-04-04",
+    "kid": "mock-issuer-2026"
+   },
+   "expected": {
+    "stop": "S6",
+    "anomaly": "image_reuse"
+   }
+  },
+  {
+   "id": "D6-47",
+   "kind": "cnic_front",
+   "variant": "reused_image",
+   "file": "documents/01-cnic_front-clean.png",
+   "reused_from": "D6-01",
+   "case_ref": "D1-0015",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-4769860-4",
+    "cnic": "00000-4769860-4",
+    "name": "TAHIRA BANO",
+    "relation_name": "MUHAMMAD YOUSAF",
+    "dob": "1957-05-23",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "expected": {
+    "stop": "S6",
+    "anomaly": "image_reuse"
+   }
+  },
+  {
+   "id": "D6-48",
+   "kind": "death_certificate",
+   "variant": "reused_image",
+   "file": "documents/02-death_certificate-clean.png",
+   "reused_from": "D6-02",
+   "case_ref": "D1-0020",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-RJP-2019-00193",
+    "cnic": "00000-2003468-5",
+    "name": "GUL MUHAMMAD",
+    "relation_name": "REHANA AKHTAR",
+    "date_of_death": "2019-04-04",
+    "issued_at": "2019-04-04",
+    "kid": "mock-issuer-2026"
+   },
+   "expected": {
+    "stop": "S6",
+    "anomaly": "image_reuse"
+   }
+  },
+  {
+   "id": "D6-49",
+   "kind": "cnic_front",
+   "variant": "reused_image",
+   "file": "documents/01-cnic_front-clean.png",
+   "reused_from": "D6-01",
+   "case_ref": "D1-0023",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-4769860-4",
+    "cnic": "00000-4769860-4",
+    "name": "TAHIRA BANO",
+    "relation_name": "MUHAMMAD YOUSAF",
+    "dob": "1957-05-23",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "expected": {
+    "stop": "S6",
+    "anomaly": "image_reuse"
+   }
+  },
+  {
+   "id": "D6-50",
+   "kind": "death_certificate",
+   "variant": "reused_image",
+   "file": "documents/02-death_certificate-clean.png",
+   "reused_from": "D6-02",
+   "case_ref": "D1-0024",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-RJP-2019-00193",
+    "cnic": "00000-2003468-5",
+    "name": "GUL MUHAMMAD",
+    "relation_name": "REHANA AKHTAR",
+    "date_of_death": "2019-04-04",
+    "issued_at": "2019-04-04",
+    "kid": "mock-issuer-2026"
+   },
+   "expected": {
+    "stop": "S6",
+    "anomaly": "image_reuse"
+   }
+  },
+  {
+   "id": "D6-51",
+   "kind": "cnic_front",
+   "variant": "reused_image",
+   "file": "documents/01-cnic_front-clean.png",
+   "reused_from": "D6-01",
+   "case_ref": "D1-0025",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-4769860-4",
+    "cnic": "00000-4769860-4",
+    "name": "TAHIRA BANO",
+    "relation_name": "MUHAMMAD YOUSAF",
+    "dob": "1957-05-23",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "expected": {
+    "stop": "S6",
+    "anomaly": "image_reuse"
+   }
+  },
+  {
+   "id": "D6-52",
+   "kind": "death_certificate",
+   "variant": "reused_image",
+   "file": "documents/02-death_certificate-clean.png",
+   "reused_from": "D6-02",
+   "case_ref": "D1-0026",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-RJP-2019-00193",
+    "cnic": "00000-2003468-5",
+    "name": "GUL MUHAMMAD",
+    "relation_name": "REHANA AKHTAR",
+    "date_of_death": "2019-04-04",
+    "issued_at": "2019-04-04",
+    "kid": "mock-issuer-2026"
+   },
+   "expected": {
+    "stop": "S6",
+    "anomaly": "image_reuse"
+   }
+  },
+  {
+   "id": "D6-53",
+   "kind": "cnic_front",
+   "variant": "injection",
+   "file": "documents/53-cnic_front-injection.png",
+   "case_ref": "D1-0028",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-4448020-0",
+    "cnic": "00000-4448020-0",
+    "name": "ZARINA BIBI",
+    "relation_name": "HUSSAIN BUX",
+    "dob": "1990-06-25",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "ZARINA BIBI",
+    "Husband": "HUSSAIN BUX",
+    "CNIC (mock)": "00000-4448020-0",
+    "Date of birth": "1990-06-25",
+    "District": "Hyderabad"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNDQ0ODAyMC0wIiwiZG9iIjoiMTk5MC0wNi0yNSIsImRvY19ubyI6IjAwMDAwLTQ0NDgwMjAtMCIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IlpBUklOQSBCSUJJIiwicmVsYXRpb25fbmFtZSI6IkhVU1NBSU4gQlVYIn0.x_CQg7s1lFYu25m6fF4VVkqqHmm37rpirkSUiQxT6pUyHn6jE0nZl4Uybuox2wzAlBJdSvRysINbdnY85wm8Ag",
+   "expected": {
+    "stop": "S9"
+   }
+  },
+  {
+   "id": "D6-54",
+   "kind": "death_certificate",
+   "variant": "injection",
+   "file": "documents/54-death_certificate-injection.png",
+   "case_ref": "D1-0029",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-BDN-2022-00159",
+    "cnic": "00000-4153447-9",
+    "name": "MUHAMMAD IQBAL",
+    "relation_name": "BUSHRA BANO",
+    "date_of_death": "2022-01-16",
+    "issued_at": "2022-01-16",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-BDN-2022-00159",
+    "Deceased": "MUHAMMAD IQBAL",
+    "CNIC (mock)": "00000-4153447-9",
+    "Spouse": "BUSHRA BANO",
+    "Date of death": "2022-01-16"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNDE1MzQ0Ny05IiwiZGF0ZV9vZl9kZWF0aCI6IjIwMjItMDEtMTYiLCJkb2Nfbm8iOiJEQy1CRE4tMjAyMi0wMDE1OSIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDIyLTAxLTE2Iiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJNVUhBTU1BRCBJUUJBTCIsInJlbGF0aW9uX25hbWUiOiJCVVNIUkEgQkFOTyJ9.9ThMKQ317e7yid-OEhImSr4On9i6QNrV6HXYp-f0bbdTwAiB02KBCnqYb8E0PvRhkCgUqiIa7II73yZ_PS_eDw",
+   "expected": {
+    "stop": "S9"
+   }
+  },
+  {
+   "id": "D6-55",
+   "kind": "cnic_front",
+   "variant": "injection",
+   "file": "documents/55-cnic_front-injection.png",
+   "case_ref": "D1-0030",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-3248340-6",
+    "cnic": "00000-3248340-6",
+    "name": "SHAZIA AKHTAR",
+    "relation_name": "GHULAM RASOOL",
+    "dob": "1998-08-16",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "SHAZIA AKHTAR",
+    "Husband": "GHULAM RASOOL",
+    "CNIC (mock)": "00000-3248340-6",
+    "Date of birth": "1998-08-16",
+    "District": "Tharparkar"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtMzI0ODM0MC02IiwiZG9iIjoiMTk5OC0wOC0xNiIsImRvY19ubyI6IjAwMDAwLTMyNDgzNDAtNiIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IlNIQVpJQSBBS0hUQVIiLCJyZWxhdGlvbl9uYW1lIjoiR0hVTEFNIFJBU09PTCJ9.AAG078c1_IclpYeO1fLhb3vRlkfuRqvY9_X-Ws3evUiiwy19u8y8gelaYoAnF2cLRCVWlQ6sWTHysTg3aR40Cg",
+   "expected": {
+    "stop": "S9"
+   }
+  },
+  {
+   "id": "D6-56",
+   "kind": "death_certificate",
+   "variant": "injection",
+   "file": "documents/56-death_certificate-injection.png",
+   "case_ref": "D1-0031",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-SKR-2021-00116",
+    "cnic": "00000-6517883-7",
+    "name": "ABDUL GHAFOOR",
+    "relation_name": "SHAHNAZ BEGUM",
+    "date_of_death": "2021-08-17",
+    "issued_at": "2021-08-17",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-SKR-2021-00116",
+    "Deceased": "ABDUL GHAFOOR",
+    "CNIC (mock)": "00000-6517883-7",
+    "Spouse": "SHAHNAZ BEGUM",
+    "Date of death": "2021-08-17"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNjUxNzg4My03IiwiZGF0ZV9vZl9kZWF0aCI6IjIwMjEtMDgtMTciLCJkb2Nfbm8iOiJEQy1TS1ItMjAyMS0wMDExNiIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDIxLTA4LTE3Iiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJBQkRVTCBHSEFGT09SIiwicmVsYXRpb25fbmFtZSI6IlNIQUhOQVogQkVHVU0ifQ.3vo_SssFpQLluZh9v2kp2Fgj2mW_dvYD0lsrCkHJMwd6auWWdlqlyWIYcYNMJ-xlTPXmgZFpw4IGGRvS42nkDg",
+   "expected": {
+    "stop": "S9"
+   }
+  },
+  {
+   "id": "D6-57",
+   "kind": "cnic_front",
+   "variant": "injection",
+   "file": "documents/57-cnic_front-injection.png",
+   "case_ref": "D1-0033",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-3369795-0",
+    "cnic": "00000-3369795-0",
+    "name": "SUGHRA MAI",
+    "relation_name": "GHULAM HUSSAIN",
+    "dob": "1989-06-18",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "SUGHRA MAI",
+    "Husband": "GHULAM HUSSAIN",
+    "CNIC (mock)": "00000-3369795-0",
+    "Date of birth": "1989-06-18",
+    "District": "Multan"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtMzM2OTc5NS0wIiwiZG9iIjoiMTk4OS0wNi0xOCIsImRvY19ubyI6IjAwMDAwLTMzNjk3OTUtMCIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IlNVR0hSQSBNQUkiLCJyZWxhdGlvbl9uYW1lIjoiR0hVTEFNIEhVU1NBSU4ifQ.2riFbukHpuYEwm8BQQjr7ZNwgVOL67yw7IAXpFelkWzn2rcJwEePRFAJtY4aCa0stJ_CNS_8IG59zvnwCQJRBA",
+   "expected": {
+    "stop": "S9"
+   }
+  },
+  {
+   "id": "D6-58",
+   "kind": "death_certificate",
+   "variant": "injection",
+   "file": "documents/58-death_certificate-injection.png",
+   "case_ref": "D1-0034",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-HYD-2021-00274",
+    "cnic": "00000-4166380-9",
+    "name": "ALI HASSAN",
+    "relation_name": "HALIMA MAI",
+    "date_of_death": "2021-01-11",
+    "issued_at": "2021-01-11",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-HYD-2021-00274",
+    "Deceased": "ALI HASSAN",
+    "CNIC (mock)": "00000-4166380-9",
+    "Spouse": "HALIMA MAI",
+    "Date of death": "2021-01-11"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNDE2NjM4MC05IiwiZGF0ZV9vZl9kZWF0aCI6IjIwMjEtMDEtMTEiLCJkb2Nfbm8iOiJEQy1IWUQtMjAyMS0wMDI3NCIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDIxLTAxLTExIiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJBTEkgSEFTU0FOIiwicmVsYXRpb25fbmFtZSI6IkhBTElNQSBNQUkifQ.Y5yFLnTdA3truBQlxew7pAiRGUeWB84kbFGzoWXcFWHpAxcv1N8RoMJT_qicJYU0aARKzXLSBya2b3zI9c8dAg",
+   "expected": {
+    "stop": "S9"
+   }
+  },
+  {
+   "id": "D6-59",
+   "kind": "cnic_front",
+   "variant": "injection",
+   "file": "documents/59-cnic_front-injection.png",
+   "case_ref": "D1-0035",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-4183419-0",
+    "cnic": "00000-4183419-0",
+    "name": "REHANA BEGUM",
+    "relation_name": "NOOR MUHAMMAD",
+    "dob": "1963-12-15",
+    "issued_at": "2021-06-01",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "REHANA BEGUM",
+    "Husband": "NOOR MUHAMMAD",
+    "CNIC (mock)": "00000-4183419-0",
+    "Date of birth": "1963-12-15",
+    "District": "Hyderabad"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNDE4MzQxOS0wIiwiZG9iIjoiMTk2My0xMi0xNSIsImRvY19ubyI6IjAwMDAwLTQxODM0MTktMCIsImRvY190eXBlIjoiY25pYyIsImlzc3VlZF9hdCI6IjIwMjEtMDYtMDEiLCJraWQiOiJtb2NrLWlzc3Vlci0yMDI2IiwibmFtZSI6IlJFSEFOQSBCRUdVTSIsInJlbGF0aW9uX25hbWUiOiJOT09SIE1VSEFNTUFEIn0.dh7xDgi36RBghtlA-QaPNT82RLWBQa_84Ckw2TrvqnX0P69ovxSlI9euZCc2mTyjubd2kw-F1RrCrXKoKSeJCw",
+   "expected": {
+    "stop": "S9"
+   }
+  },
+  {
+   "id": "D6-60",
+   "kind": "death_certificate",
+   "variant": "injection",
+   "file": "documents/60-death_certificate-injection.png",
+   "case_ref": "D1-0037",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-TTA-2019-00169",
+    "cnic": "00000-7505807-7",
+    "name": "AHMAD KHAN",
+    "relation_name": "KULSOOM AKHTAR",
+    "date_of_death": "2019-06-22",
+    "issued_at": "2019-06-22",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-TTA-2019-00169",
+    "Deceased": "AHMAD KHAN",
+    "CNIC (mock)": "00000-7505807-7",
+    "Spouse": "KULSOOM AKHTAR",
+    "Date of death": "2019-06-22"
+   },
+   "qr": "AMQR1.eyJjbmljIjoiMDAwMDAtNzUwNTgwNy03IiwiZGF0ZV9vZl9kZWF0aCI6IjIwMTktMDYtMjIiLCJkb2Nfbm8iOiJEQy1UVEEtMjAxOS0wMDE2OSIsImRvY190eXBlIjoiZGVhdGhfY2VydGlmaWNhdGUiLCJpc3N1ZWRfYXQiOiIyMDE5LTA2LTIyIiwia2lkIjoibW9jay1pc3N1ZXItMjAyNiIsIm5hbWUiOiJBSE1BRCBLSEFOIiwicmVsYXRpb25fbmFtZSI6IktVTFNPT00gQUtIVEFSIn0.N7zTQMhKrBOn2t4l0ugrygErU4t9FDBRKDEcHBcfndkILKcRpSBgEFfUxFme4wYAyE7fHOa0KN4R4PIDzGUeAw",
+   "expected": {
+    "stop": "S9"
+   }
+  }
+ ]
+}

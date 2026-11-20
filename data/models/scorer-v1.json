@@ -1,0 +1,302 @@
+{
+ "version": "scorer-v1",
+ "kind": "logistic+isotonic",
+ "features": [
+  "match_weight",
+  "qr_valid",
+  "qr_text_agree",
+  "death_record_found",
+  "marital_link",
+  "duplicate_score",
+  "image_reuse",
+  "sharpness",
+  "proof_attempts",
+  "helper_anomaly_score",
+  "days_since_payout_change",
+  "wallet_shared"
+ ],
+ "mean": [
+  23.62283,
+  0.973783,
+  0.966292,
+  1.0,
+  0.951311,
+  0.121287,
+  0.026217,
+  0.71569,
+  0.082397,
+  0.079265,
+  340.486891,
+  0.014981
+ ],
+ "scale": [
+  1.398019,
+  0.13431,
+  0.15837,
+  1.0,
+  0.215217,
+  0.187014,
+  0.159781,
+  0.208339,
+  0.274969,
+  0.156436,
+  71.844315,
+  0.121478
+ ],
+ "coef": [
+  -0.602628,
+  0.572724,
+  0.84265,
+  0.0,
+  0.084382,
+  -1.972828,
+  -1.303337,
+  -0.280944,
+  0.12185,
+  -1.95977,
+  -0.288705,
+  -0.239359
+ ],
+ "intercept": 3.821526,
+ "calibration": {
+  "x": [
+   3e-06,
+   0.51392,
+   0.572212,
+   0.809006,
+   0.97201,
+   0.999673
+  ],
+  "y": [
+   0.0,
+   0.0,
+   0.5,
+   0.5,
+   1.0,
+   1.0
+  ]
+ },
+ "clip": [
+  0.005,
+  0.995
+ ],
+ "trained_on": {
+  "dataset": "D1",
+  "seed": 2026,
+  "splits": "300/100/100 stratified by category, by person"
+ },
+ "metrics": {
+  "dataset": "D1",
+  "n_train": 267,
+  "n_calibration": 89,
+  "n_test": 100,
+  "excluded_from_fit": [
+   "ambiguous_identity",
+   "ineligible"
+  ],
+  "ece_calibration": 0.004663,
+  "ece_test_scored_categories": 0.045704,
+  "ece_test_all": 0.118234,
+  "threshold_p_legit": 0.980159,
+  "score_only": {
+   "wrong_approvals": 8,
+   "bad_cases": 23,
+   "wrong_approval_upper_95": null,
+   "clean_escalated": 2,
+   "clean_cases": 50,
+   "wrong_approvals_by_category": {
+    "ambiguous_identity": 1,
+    "clean_legit": 0,
+    "duplicate": 0,
+    "forged_document": 0,
+    "helper_fraud": 0,
+    "ineligible": 7,
+    "legit_curable_gap": 0,
+    "legit_name_variant": 0
+   },
+   "note": "score threshold only; hard stops and rules route most bad cases before the threshold"
+  }
+ },
+ "parity_samples": [
+  {
+   "case_ref": "D1-0009",
+   "features": {
+    "match_weight": 21.190479,
+    "qr_valid": 1.0,
+    "qr_text_agree": 1.0,
+    "death_record_found": 1.0,
+    "marital_link": 1.0,
+    "duplicate_score": 0.0585,
+    "image_reuse": 0.0,
+    "sharpness": 0.9762,
+    "proof_attempts": 0.0,
+    "helper_anomaly_score": 0.0844,
+    "days_since_payout_change": 365.0,
+    "wallet_shared": 0.0
+   },
+   "p_legit": 0.995
+  },
+  {
+   "case_ref": "D1-0053",
+   "features": {
+    "match_weight": 24.068013,
+    "qr_valid": 1.0,
+    "qr_text_agree": 1.0,
+    "death_record_found": 1.0,
+    "marital_link": 1.0,
+    "duplicate_score": 0.0855,
+    "image_reuse": 0.0,
+    "sharpness": 0.8033,
+    "proof_attempts": 0.0,
+    "helper_anomaly_score": 0.067,
+    "days_since_payout_change": 253.0,
+    "wallet_shared": 0.0
+   },
+   "p_legit": 0.995
+  },
+  {
+   "case_ref": "D1-0089",
+   "features": {
+    "match_weight": 24.068013,
+    "qr_valid": 1.0,
+    "qr_text_agree": 1.0,
+    "death_record_found": 1.0,
+    "marital_link": 1.0,
+    "duplicate_score": 0.0724,
+    "image_reuse": 0.0,
+    "sharpness": 0.8658,
+    "proof_attempts": 0.0,
+    "helper_anomaly_score": 0.0929,
+    "days_since_payout_change": 365.0,
+    "wallet_shared": 0.0
+   },
+   "p_legit": 0.995
+  },
+  {
+   "case_ref": "D1-0139",
+   "features": {
+    "match_weight": 24.068013,
+    "qr_valid": 1.0,
+    "qr_text_agree": 1.0,
+    "death_record_found": 1.0,
+    "marital_link": 1.0,
+    "duplicate_score": 0.1386,
+    "image_reuse": 0.0,
+    "sharpness": 0.6242,
+    "proof_attempts": 0.0,
+    "helper_anomaly_score": 0.0405,
+    "days_since_payout_change": 365.0,
+    "wallet_shared": 0.0
+   },
+   "p_legit": 0.995
+  },
+  {
+   "case_ref": "D1-0168",
+   "features": {
+    "match_weight": 19.137565,
+    "qr_valid": 0.5,
+    "qr_text_agree": 0.5,
+    "death_record_found": 1.0,
+    "marital_link": 1.0,
+    "duplicate_score": 0.1488,
+    "image_reuse": 0.0,
+    "sharpness": 0.6913,
+    "proof_attempts": 0.0,
+    "helper_anomaly_score": 0.0991,
+    "days_since_payout_change": 365.0,
+    "wallet_shared": 0.0
+   },
+   "p_legit": 0.5
+  },
+  {
+   "case_ref": "D1-0234",
+   "features": {
+    "match_weight": 24.068013,
+    "qr_valid": 0.0,
+    "qr_text_agree": 1.0,
+    "death_record_found": 1.0,
+    "marital_link": 1.0,
+    "duplicate_score": 0.0062,
+    "image_reuse": 0.0,
+    "sharpness": 0.6308,
+    "proof_attempts": 0.0,
+    "helper_anomaly_score": 0.0333,
+    "days_since_payout_change": 365.0,
+    "wallet_shared": 0.0
+   },
+   "p_legit": 0.607378
+  },
+  {
+   "case_ref": "D1-0293",
+   "features": {
+    "match_weight": 24.068013,
+    "qr_valid": 1.0,
+    "qr_text_agree": 1.0,
+    "death_record_found": 1.0,
+    "marital_link": 1.0,
+    "duplicate_score": 0.7747,
+    "image_reuse": 0.0,
+    "sharpness": 0.9449,
+    "proof_attempts": 0.0,
+    "helper_anomaly_score": 0.0068,
+    "days_since_payout_change": 365.0,
+    "wallet_shared": 0.0
+   },
+   "p_legit": 0.005
+  },
+  {
+   "case_ref": "D1-0346",
+   "features": {
+    "match_weight": 23.682726,
+    "qr_valid": 1.0,
+    "qr_text_agree": 1.0,
+    "death_record_found": 1.0,
+    "marital_link": 1.0,
+    "duplicate_score": 0.042,
+    "image_reuse": 0.0,
+    "sharpness": 0.8813,
+    "proof_attempts": 0.0,
+    "helper_anomaly_score": 0.012,
+    "days_since_payout_change": 226.0,
+    "wallet_shared": 0.0
+   },
+   "p_legit": 0.995
+  },
+  {
+   "case_ref": "D1-0391",
+   "features": {
+    "match_weight": 24.068013,
+    "qr_valid": 1.0,
+    "qr_text_agree": 1.0,
+    "death_record_found": 1.0,
+    "marital_link": 1.0,
+    "duplicate_score": 0.0844,
+    "image_reuse": 0.0,
+    "sharpness": 0.7462,
+    "proof_attempts": 0.0,
+    "helper_anomaly_score": 0.0282,
+    "days_since_payout_change": 365.0,
+    "wallet_shared": 0.0
+   },
+   "p_legit": 0.995
+  },
+  {
+   "case_ref": "D1-0455",
+   "features": {
+    "match_weight": 24.068013,
+    "qr_valid": 1.0,
+    "qr_text_agree": 1.0,
+    "death_record_found": 1.0,
+    "marital_link": 1.0,
+    "duplicate_score": 0.081,
+    "image_reuse": 0.0,
+    "sharpness": 0.8515,
+    "proof_attempts": 0.0,
+    "helper_anomaly_score": 0.0123,
+    "days_since_payout_change": 257.0,
+    "wallet_shared": 0.0
+   },
+   "p_legit": 0.995
+  }
+ ]
+}

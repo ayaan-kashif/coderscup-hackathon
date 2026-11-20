@@ -1,0 +1,168 @@
+{
+ "program": "SAAYA-WS",
+ "version": 2,
+ "status": "retired",
+ "rules": [
+  {
+   "id": "R-GENDER",
+   "clause": "SRP-POL-2.1",
+   "severity": "hard",
+   "when": {
+    "all": [
+     {
+      "fact": "applicant.gender",
+      "op": "eq",
+      "value": "F"
+     }
+    ]
+   },
+   "on_fail": "INELIGIBLE",
+   "text_en": "The applicant is a woman.",
+   "text_ur": "درخواست گزار خاتون ہیں۔",
+   "icon": "person",
+   "on_unknown": "NEEDS_PROOF:cnic_front"
+  },
+  {
+   "id": "R-AGE",
+   "clause": "SRP-POL-2.2",
+   "severity": "hard",
+   "when": {
+    "all": [
+     {
+      "fact": "applicant.dob",
+      "op": "age_between",
+      "value": [
+       18,
+       120
+      ]
+     }
+    ]
+   },
+   "on_fail": "INELIGIBLE",
+   "text_en": "The applicant is 18 or older.",
+   "text_ur": "درخواست گزار کی عمر 18 سال یا زیادہ ہے۔",
+   "icon": "calendar",
+   "on_unknown": "NEEDS_PROOF:cnic_front"
+  },
+  {
+   "id": "R-WIDOW",
+   "clause": "SRP-POL-2.3",
+   "severity": "hard",
+   "when": {
+    "all": [
+     {
+      "fact": "spouse.deceased",
+      "op": "eq",
+      "value": true
+     }
+    ]
+   },
+   "on_fail": "INELIGIBLE",
+   "text_en": "Her husband has died.",
+   "text_ur": "ان کے شوہر وفات پا چکے ہیں۔",
+   "icon": "certificate",
+   "on_unknown": "NEEDS_PROOF:death_certificate"
+  },
+  {
+   "id": "R-DEATH-WINDOW",
+   "clause": "SRP-POL-2.4",
+   "severity": "hard",
+   "when": {
+    "all": [
+     {
+      "fact": "spouse.date_of_death",
+      "op": "days_since_lte",
+      "value": 3650
+     }
+    ]
+   },
+   "on_fail": "INELIGIBLE",
+   "text_en": "Her husband died within the last 10 years.",
+   "text_ur": "شوہر کی وفات پچھلے 10 سال میں ہوئی۔",
+   "icon": "clock",
+   "on_unknown": "NEEDS_PROOF:death_certificate"
+  },
+  {
+   "id": "R-NOT-REMARRIED",
+   "clause": "SRP-POL-2.5",
+   "severity": "hard",
+   "when": {
+    "all": [
+     {
+      "fact": "applicant.remarried",
+      "op": "eq",
+      "value": false
+     }
+    ]
+   },
+   "on_fail": "INELIGIBLE",
+   "text_en": "She has not remarried.",
+   "text_ur": "انہوں نے دوسری شادی نہیں کی۔",
+   "icon": "rings"
+  },
+  {
+   "id": "R-INCOME",
+   "clause": "SRP-POL-3.1",
+   "severity": "hard",
+   "when": {
+    "all": [
+     {
+      "fact": "household.monthly_income",
+      "op": "lte",
+      "value": 35000
+     }
+    ]
+   },
+   "on_fail": "INELIGIBLE",
+   "text_en": "Household income is at most Rs 35,000 a month.",
+   "text_ur": "گھر کی ماہانہ آمدن 35,000 روپے سے زیادہ نہیں۔",
+   "icon": "coins",
+   "on_unknown": "NEEDS_PROOF:income_declaration"
+  },
+  {
+   "id": "R-RESIDENCE",
+   "clause": "SRP-POL-3.2",
+   "severity": "hard",
+   "when": {
+    "all": [
+     {
+      "fact": "applicant.district",
+      "op": "in",
+      "value": [
+       "BDN",
+       "TTA",
+       "HYD",
+       "KHS",
+       "SKR",
+       "THP",
+       "LHR",
+       "MUL",
+       "BWP",
+       "RJP",
+       "FSD"
+      ]
+     }
+    ]
+   },
+   "on_fail": "INELIGIBLE",
+   "text_en": "She lives in a district this office serves.",
+   "text_ur": "وہ اس دفتر کے ضلع میں رہتی ہیں۔",
+   "icon": "map"
+  }
+ ],
+ "thresholds": {
+  "floor": 0.9,
+  "autoCap": 50000,
+  "ambiguityBits": 2,
+  "sharpnessMin": 0.35,
+  "dhashMaxBits": 5,
+  "secondOpinionEscalate": 0.5,
+  "maxProofAttempts": 2
+ },
+ "costs": {
+  "wrongApproval": 25000,
+  "review": 300,
+  "delay": 200
+ },
+ "notes": "v2: adds the 10-year window (SRP-POL-2.4)"
+}

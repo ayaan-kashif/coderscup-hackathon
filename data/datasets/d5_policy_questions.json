@@ -1,0 +1,306 @@
+{
+ "dataset": "D5",
+ "count": 40,
+ "questions": [
+  {
+   "id": "D5-001",
+   "question": "Is there any fee to register for Saaya?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-1.2"
+   ]
+  },
+  {
+   "id": "D5-002",
+   "question": "Koi fees deni parti hai?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-1.2"
+   ]
+  },
+  {
+   "id": "D5-003",
+   "question": "How much money does the programme pay?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-1.1"
+   ]
+  },
+  {
+   "id": "D5-004",
+   "question": "Kitni raqam milti hai aur kab?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-1.1"
+   ]
+  },
+  {
+   "id": "D5-005",
+   "question": "Which numbers send official messages?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-1.3"
+   ]
+  },
+  {
+   "id": "D5-006",
+   "question": "Will Saaya ever ask for my PIN?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-1.3"
+   ]
+  },
+  {
+   "id": "D5-007",
+   "question": "Can a man apply?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-2.1"
+   ]
+  },
+  {
+   "id": "D5-008",
+   "question": "What is the minimum age?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-2.2"
+   ]
+  },
+  {
+   "id": "D5-009",
+   "question": "Mere shohar ka death certificate zaroori hai?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-2.3"
+   ]
+  },
+  {
+   "id": "D5-010",
+   "question": "My husband died twelve years ago, can I apply?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-2.4"
+   ]
+  },
+  {
+   "id": "D5-011",
+   "question": "I married again, am I eligible?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-2.5"
+   ]
+  },
+  {
+   "id": "D5-012",
+   "question": "What is the income limit?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-3.1"
+   ]
+  },
+  {
+   "id": "D5-013",
+   "question": "Ghar ki aamdani kitni honi chahiye?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-3.1"
+   ]
+  },
+  {
+   "id": "D5-014",
+   "question": "Can I apply in another province?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-3.2"
+   ]
+  },
+  {
+   "id": "D5-015",
+   "question": "My CNIC has expired, will I be rejected?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-4.1"
+   ]
+  },
+  {
+   "id": "D5-016",
+   "question": "What if my photo is blurry?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-4.2"
+   ]
+  },
+  {
+   "id": "D5-017",
+   "question": "How many times can I retake a photo?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-4.2"
+   ]
+  },
+  {
+   "id": "D5-018",
+   "question": "Who can reject my application?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-5.1"
+   ]
+  },
+  {
+   "id": "D5-019",
+   "question": "Can the computer reject me?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-5.1"
+   ]
+  },
+  {
+   "id": "D5-020",
+   "question": "Why is my payment on hold?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-5.2"
+   ]
+  },
+  {
+   "id": "D5-021",
+   "question": "How do I change my wallet number?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-5.3"
+   ]
+  },
+  {
+   "id": "D5-022",
+   "question": "Someone changed my payout number, what happens?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-5.3"
+   ]
+  },
+  {
+   "id": "D5-023",
+   "question": "Can my helper keep part of the money?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-6.1"
+   ]
+  },
+  {
+   "id": "D5-024",
+   "question": "Helper ne PIN manga, kya karun?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-6.1"
+   ]
+  },
+  {
+   "id": "D5-025",
+   "question": "I received less money, what can I do?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-6.2"
+   ]
+  },
+  {
+   "id": "D5-026",
+   "question": "Kam paise mile, shikayat kaise karun?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-6.2"
+   ]
+  },
+  {
+   "id": "D5-027",
+   "question": "Who has seen my data?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-7.1"
+   ]
+  },
+  {
+   "id": "D5-028",
+   "question": "Can I stop sharing my data?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-7.1"
+   ]
+  },
+  {
+   "id": "D5-029",
+   "question": "My date of birth is wrong in the record, how do I fix it?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-7.2"
+   ]
+  },
+  {
+   "id": "D5-030",
+   "question": "What happens if I withdraw consent?",
+   "answerable": true,
+   "expected_clauses": [
+    "SRP-POL-7.1"
+   ]
+  },
+  {
+   "id": "D5-031",
+   "question": "What is the weather in Badin tomorrow?",
+   "answerable": false,
+   "expected_clauses": []
+  },
+  {
+   "id": "D5-032",
+   "question": "Can Saaya give me a business loan?",
+   "answerable": false,
+   "expected_clauses": []
+  },
+  {
+   "id": "D5-033",
+   "question": "Who won the cricket match?",
+   "answerable": false,
+   "expected_clauses": []
+  },
+  {
+   "id": "D5-034",
+   "question": "How do I apply for a passport?",
+   "answerable": false,
+   "expected_clauses": []
+  },
+  {
+   "id": "D5-035",
+   "question": "Kya mujhe Hajj ke liye raqam mil sakti hai?",
+   "answerable": false,
+   "expected_clauses": []
+  },
+  {
+   "id": "D5-036",
+   "question": "What is the interest rate on savings?",
+   "answerable": false,
+   "expected_clauses": []
+  },
+  {
+   "id": "D5-037",
+   "question": "Can I get a job at the Saaya office?",
+   "answerable": false,
+   "expected_clauses": []
+  },
+  {
+   "id": "D5-038",
+   "question": "How do I register a new SIM?",
+   "answerable": false,
+   "expected_clauses": []
+  },
+  {
+   "id": "D5-039",
+   "question": "When is the next election?",
+   "answerable": false,
+   "expected_clauses": []
+  },
+  {
+   "id": "D5-040",
+   "question": "Is there a programme for students?",
+   "answerable": false,
+   "expected_clauses": []
+  }
+ ]
+}

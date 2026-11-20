@@ -1,0 +1,103 @@
+{
+ "code": "SRP-POL",
+ "title": "Saaya Relief Programme Policy (fictional)",
+ "version": "2026.1",
+ "language": "en",
+ "chunks": [
+  {
+   "clause_id": "SRP-POL-1.1",
+   "heading": "Purpose",
+   "text": "The Saaya Relief Programme (fictional) gives a quarterly cash transfer of Rs 12,000 to widows in financial need. This is a prototype policy written for a hackathon; it is not an official document."
+  },
+  {
+   "clause_id": "SRP-POL-1.2",
+   "heading": "No fees",
+   "text": "The programme never charges any fee for registration, processing or payment. Anyone asking for money to release a payment is committing fraud."
+  },
+  {
+   "clause_id": "SRP-POL-1.3",
+   "heading": "Official messages",
+   "text": "Official messages come only from the sender IDs SAAYA and 7240. Official messages never contain links and never ask for a PIN, a code or a photo of a CNIC."
+  },
+  {
+   "clause_id": "SRP-POL-2.1",
+   "heading": "Who may apply",
+   "text": "The applicant must be a woman whose identity is confirmed in the identity registry."
+  },
+  {
+   "clause_id": "SRP-POL-2.2",
+   "heading": "Age",
+   "text": "The applicant must be at least 18 years old on the date of the decision."
+  },
+  {
+   "clause_id": "SRP-POL-2.3",
+   "heading": "Widowhood",
+   "text": "The applicant's husband must be deceased, as shown by a death record in the civil registry or a signed death certificate."
+  },
+  {
+   "clause_id": "SRP-POL-2.4",
+   "heading": "Time since death",
+   "text": "The husband's death must have occurred within the ten years before the application."
+  },
+  {
+   "clause_id": "SRP-POL-2.5",
+   "heading": "Remarriage",
+   "text": "An applicant who has remarried after her husband's death is not eligible."
+  },
+  {
+   "clause_id": "SRP-POL-3.1",
+   "heading": "Household income",
+   "text": "The household income must not exceed Rs 40,000 per month."
+  },
+  {
+   "clause_id": "SRP-POL-3.2",
+   "heading": "Residence",
+   "text": "The applicant must live in a district served by the office where she applies."
+  },
+  {
+   "clause_id": "SRP-POL-4.1",
+   "heading": "Identity card validity",
+   "text": "An expired identity card is a warning for the officer and not a reason for rejection."
+  },
+  {
+   "clause_id": "SRP-POL-4.2",
+   "heading": "Documents",
+   "text": "A clear photo of the identity card and the death certificate is required. If a photo is unclear, the applicant is asked for one specific retake, at most twice."
+  },
+  {
+   "clause_id": "SRP-POL-5.1",
+   "heading": "Decisions",
+   "text": "Only an officer may reject an application. Every rejection states a reason code, and the applicant may complain."
+  },
+  {
+   "clause_id": "SRP-POL-5.2",
+   "heading": "Payment",
+   "text": "An approved payment is held for a short cooling-off period before it is sent, and the exact amount is confirmed to the applicant by voice."
+  },
+  {
+   "clause_id": "SRP-POL-5.3",
+   "heading": "Payout changes",
+   "text": "A change of payout wallet needs the applicant's PIN, an officer's approval, a cooling-off period and a notice to the old number."
+  },
+  {
+   "clause_id": "SRP-POL-6.1",
+   "heading": "Helpers",
+   "text": "A community helper may assist a family only while that family has unlocked its case. Helpers never collect money or PINs."
+  },
+  {
+   "clause_id": "SRP-POL-6.2",
+   "heading": "Complaints",
+   "text": "An applicant who received less than the full amount can file a complaint with one tap; the complaint is linked to the payment and to any helper."
+  },
+  {
+   "clause_id": "SRP-POL-7.1",
+   "heading": "Consent",
+   "text": "The applicant can see who holds her data, hear who opened it, and withdraw consent. Withdrawal pauses the case."
+  },
+  {
+   "clause_id": "SRP-POL-7.2",
+   "heading": "Corrections",
+   "text": "The applicant can ask for a wrong field to be corrected; an officer reviews the request and the old value is kept in history."
+  }
+ ]
+}

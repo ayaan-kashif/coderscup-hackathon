@@ -1,5 +1,6 @@
 import { sql } from 'drizzle-orm';
 import type { DbOrTx } from '@/db/client';
+import { rowsOf } from '@/db/rows';
 import { auditEvents } from '@/db/schema/all';
 
 export type AuditActorType = 'user' | 'system' | 'ai' | 'agent' | 'api_key';
@@ -44,8 +45,7 @@ export type VerifyResult = { chainId: string; intact: boolean; brokenAt: number 
 export async function verifyChain(db: DbOrTx, chainId: string): Promise<VerifyResult> {
   const res = await db.execute<{ broken: string | number | null; len: string | number | null }>(
     sql`select audit_verify(${chainId}) as broken, (select last_seq from audit_chain_heads where chain_id = ${chainId}) as len`);
-  const rows = (Array.isArray(res) ? res : (res as unknown as { rows: unknown[] }).rows) as { broken: string | number | null; len: string | number | null }[];
-  const r = rows[0];
+  const r = rowsOf<{ broken: string | number | null; len: string | number | null }>(res)[0];
   if (!r || r.len === null) throw new Error(`unknown chain ${chainId}`);
   const broken = r.broken === null ? null : Number(r.broken);
   return { chainId, intact: broken === null, brokenAt: broken !== null && broken > 0 ? broken : null, missingTail: broken === -1, length: Number(r.len) };

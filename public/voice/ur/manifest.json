@@ -1,5 +1,5 @@
 {
-    "version":  "prompts-v0-placeholder",
+    "version":  "prompts-v1-placeholder",
     "clips":  [
                   {
                       "key":  "welcome",
@@ -7,7 +7,26 @@
                       "text_ur":  "خوش آمدید۔ یہ امانت کا نمونہ ہے، سرکاری سروس نہیں۔",
                       "text_roman":  "Khush aamdeed. Yeh Amanat ka namoona hai, sarkari service nahin.",
                       "placeholder":  true,
-                      "bytes":  104046
+                      "precache":  true,
+                      "bytes":  52038
+                  },
+                  {
+                      "key":  "choose_language",
+                      "file":  "/voice/ur/choose_language.wav",
+                      "text_ur":  "اردو کے لیے ہاں کہیں یا تصویر دبائیں۔",
+                      "text_roman":  "Urdu ke liye haan kahein ya tasveer dabayein.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  33078
+                  },
+                  {
+                      "key":  "choose_trust",
+                      "file":  "/voice/ur/choose_trust.wav",
+                      "text_ur":  "اپنی پہچان کی ایک تصویر چنیں۔ ہر پیغام اسی تصویر کے نام سے شروع ہوگا۔",
+                      "text_roman":  "Apni pehchaan ki aik tasveer chunein. Har paigham isi tasveer ke naam se shuru hoga.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  65918
                   },
                   {
                       "key":  "ask_phone",
@@ -15,7 +34,8 @@
                       "text_ur":  "اپنا فون نمبر بتائیں۔",
                       "text_roman":  "Apna phone number batayein.",
                       "placeholder":  true,
-                      "bytes":  42286
+                      "precache":  true,
+                      "bytes":  21158
                   },
                   {
                       "key":  "ask_code",
@@ -23,7 +43,8 @@
                       "text_ur":  "فرضی فون پر آیا ہوا کوڈ درج کریں۔",
                       "text_roman":  "Farzi phone par aaya hua code darj karein.",
                       "placeholder":  true,
-                      "bytes":  70686
+                      "precache":  true,
+                      "bytes":  35358
                   },
                   {
                       "key":  "ask_pin",
@@ -31,7 +52,26 @@
                       "text_ur":  "اپنا چار ہندسوں کا پن درج کریں۔",
                       "text_roman":  "Apna chaar hindson ka pin darj karein.",
                       "placeholder":  true,
-                      "bytes":  58926
+                      "precache":  true,
+                      "bytes":  29478
+                  },
+                  {
+                      "key":  "set_pin",
+                      "file":  "/voice/ur/set_pin.wav",
+                      "text_ur":  "چار ہندسوں کا نیا پن بنائیں۔ یہ کسی کو نہ بتائیں۔",
+                      "text_roman":  "Chaar hindson ka naya pin banayein. Yeh kisi ko na batayein.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  50078
+                  },
+                  {
+                      "key":  "confirm_pin",
+                      "file":  "/voice/ur/confirm_pin.wav",
+                      "text_ur":  "وہی پن دوبارہ درج کریں۔",
+                      "text_roman":  "Wohi pin dobara darj karein.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  24598
                   },
                   {
                       "key":  "wrong_pin",
@@ -39,7 +79,8 @@
                       "text_ur":  "پن غلط ہے۔ دوبارہ کوشش کریں۔",
                       "text_roman":  "Pin ghalat hai. Dobara koshish karein.",
                       "placeholder":  true,
-                      "bytes":  71726
+                      "precache":  true,
+                      "bytes":  35878
                   },
                   {
                       "key":  "pin_locked",
@@ -47,7 +88,26 @@
                       "text_ur":  "بہت زیادہ غلط کوششیں۔ پندرہ منٹ بعد دوبارہ کوشش کریں۔",
                       "text_roman":  "Bohat zyada ghalat koshishein. Pandrah minute baad dobara koshish karein.",
                       "placeholder":  true,
-                      "bytes":  106766
+                      "precache":  true,
+                      "bytes":  53398
+                  },
+                  {
+                      "key":  "consent_notice",
+                      "file":  "/voice/ur/consent_notice.wav",
+                      "text_ur":  "آپ کی درخواست جانچنے کے لیے دفتر شناختی اور سول ریکارڈ دیکھے گا۔ کیا آپ اجازت دیتی ہیں؟",
+                      "text_roman":  "Aap ki darkhwast jaanchne ke liye daftar shanakhti aur civil record dekhe ga. Kya aap ijazat deti hain?",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  66398
+                  },
+                  {
+                      "key":  "consent_confirm",
+                      "file":  "/voice/ur/consent_confirm.wav",
+                      "text_ur":  "اجازت کے لیے اپنا پن درج کریں۔",
+                      "text_roman":  "Ijazat ke liye apna pin darj karein.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  29558
                   },
                   {
                       "key":  "home",
@@ -55,7 +115,62 @@
                       "text_ur":  "یہ آپ کی درخواست کا صفحہ ہے۔",
                       "text_roman":  "Yeh aap ki darkhwast ka safha hai.",
                       "placeholder":  true,
-                      "bytes":  59646
+                      "precache":  true,
+                      "bytes":  29838
+                  },
+                  {
+                      "key":  "home_tiles",
+                      "file":  "/voice/ur/home_tiles.wav",
+                      "text_ur":  "درخواست، میری صورتحال، کیا یہ سچ ہے، میری معلومات، یا مدد۔ ایک تصویر دبائیں۔",
+                      "text_roman":  "Darkhwast, meri soorat-e-haal, kya yeh sach hai, meri maloomat, ya madad. Aik tasveer dabayein.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  83518
+                  },
+                  {
+                      "key":  "tile_apply",
+                      "file":  "/voice/ur/tile_apply.wav",
+                      "text_ur":  "درخواست دیں",
+                      "text_roman":  "Darkhwast dein",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  16358
+                  },
+                  {
+                      "key":  "tile_status",
+                      "file":  "/voice/ur/tile_status.wav",
+                      "text_ur":  "میری درخواست کی صورتحال",
+                      "text_roman":  "Meri darkhwast ki soorat-e-haal",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  24918
+                  },
+                  {
+                      "key":  "tile_real",
+                      "file":  "/voice/ur/tile_real.wav",
+                      "text_ur":  "کیا یہ پیغام سچا ہے؟",
+                      "text_roman":  "Kya yeh paigham sacha hai?",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  21638
+                  },
+                  {
+                      "key":  "tile_data",
+                      "file":  "/voice/ur/tile_data.wav",
+                      "text_ur":  "میری معلومات کس کے پاس ہیں",
+                      "text_roman":  "Meri maloomat kis ke paas hain",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  25438
+                  },
+                  {
+                      "key":  "tile_help",
+                      "file":  "/voice/ur/tile_help.wav",
+                      "text_ur":  "مدد۔ اپنا سوال بولیں۔",
+                      "text_roman":  "Madad. Apna sawal bolein.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  32238
                   },
                   {
                       "key":  "saved_on_phone",
@@ -63,7 +178,8 @@
                       "text_ur":  "آپ کا جواب اس فون میں محفوظ ہے۔",
                       "text_roman":  "Aap ka jawab is phone mein mehfooz hai.",
                       "placeholder":  true,
-                      "bytes":  59166
+                      "precache":  true,
+                      "bytes":  29598
                   },
                   {
                       "key":  "reached_office",
@@ -71,7 +187,8 @@
                       "text_ur":  "آپ کی درخواست دفتر پہنچ گئی۔",
                       "text_roman":  "Aap ki darkhwast daftar pohanch gayi.",
                       "placeholder":  true,
-                      "bytes":  61646
+                      "precache":  true,
+                      "bytes":  30838
                   },
                   {
                       "key":  "officer_opened",
@@ -79,7 +196,8 @@
                       "text_ur":  "افسر نے آپ کی درخواست کھول لی ہے۔",
                       "text_roman":  "Afsar ne aap ki darkhwast khol li hai.",
                       "placeholder":  true,
-                      "bytes":  64926
+                      "precache":  true,
+                      "bytes":  32478
                   },
                   {
                       "key":  "offline",
@@ -87,7 +205,719 @@
                       "text_ur":  "انٹرنیٹ نہیں ہے۔ فکر نہ کریں، سب کچھ محفوظ ہے۔",
                       "text_roman":  "Internet nahin hai. Fikar na karein, sab kuch mehfooz hai.",
                       "placeholder":  true,
-                      "bytes":  102606
+                      "precache":  true,
+                      "bytes":  51318
+                  },
+                  {
+                      "key":  "upload_retrying",
+                      "file":  "/voice/ur/upload_retrying.wav",
+                      "text_ur":  "بھیجنے میں دیر ہو رہی ہے۔ ہم کوشش کرتے رہیں گے۔",
+                      "text_roman":  "Bhejne mein der ho rahi hai. Hum koshish karte rahein ge.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  45478
+                  },
+                  {
+                      "key":  "please_wait",
+                      "file":  "/voice/ur/please_wait.wav",
+                      "text_ur":  "براہ کرم انتظار کریں۔",
+                      "text_roman":  "Barah-e-karam intezar karein.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  22278
+                  },
+                  {
+                      "key":  "q_name",
+                      "file":  "/voice/ur/q_name.wav",
+                      "text_ur":  "اپنا پورا نام بولیں۔",
+                      "text_roman":  "Apna poora naam bolein.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  20318
+                  },
+                  {
+                      "key":  "q_husband_name",
+                      "file":  "/voice/ur/q_husband_name.wav",
+                      "text_ur":  "اپنے شوہر کا پورا نام بولیں۔",
+                      "text_roman":  "Apne shohar ka poora naam bolein.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  24958
+                  },
+                  {
+                      "key":  "q_cnic",
+                      "file":  "/voice/ur/q_cnic.wav",
+                      "text_ur":  "اپنے شناختی کارڈ کا نمبر درج کریں۔",
+                      "text_roman":  "Apne shanakhti card ka number darj karein.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  31598
+                  },
+                  {
+                      "key":  "q_district",
+                      "file":  "/voice/ur/q_district.wav",
+                      "text_ur":  "آپ کس ضلع میں رہتی ہیں؟ تصویر دبائیں۔",
+                      "text_roman":  "Aap kis zila mein rehti hain? Tasveer dabayein.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  45358
+                  },
+                  {
+                      "key":  "q_husband_died",
+                      "file":  "/voice/ur/q_husband_died.wav",
+                      "text_ur":  "کیا آپ کے شوہر وفات پا چکے ہیں؟ ہاں یا نہیں۔",
+                      "text_roman":  "Kya aap ke shohar wafat pa chuke hain? Haan ya nahin.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  45718
+                  },
+                  {
+                      "key":  "q_remarried",
+                      "file":  "/voice/ur/q_remarried.wav",
+                      "text_ur":  "کیا آپ نے دوبارہ شادی کی ہے؟ ہاں یا نہیں۔",
+                      "text_roman":  "Kya aap ne dobara shaadi ki hai? Haan ya nahin.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  43718
+                  },
+                  {
+                      "key":  "q_income",
+                      "file":  "/voice/ur/q_income.wav",
+                      "text_ur":  "گھر کی مہینے کی کل آمدنی کتنی ہے؟ نمبر دبائیں۔",
+                      "text_roman":  "Ghar ki mahine ki kul aamdani kitni hai? Number dabayein.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  46758
+                  },
+                  {
+                      "key":  "q_wallet",
+                      "file":  "/voice/ur/q_wallet.wav",
+                      "text_ur":  "رقم کس والیٹ میں آئے؟ والیٹ نمبر درج کریں۔",
+                      "text_roman":  "Raqam kis wallet mein aaye? Wallet number darj karein.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  43518
+                  },
+                  {
+                      "key":  "recording",
+                      "file":  "/voice/ur/recording.wav",
+                      "text_ur":  "بولیں۔ میں سن رہی ہوں۔",
+                      "text_roman":  "Bolein. Main sun rahi hoon.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  30678
+                  },
+                  {
+                      "key":  "i_heard",
+                      "file":  "/voice/ur/i_heard.wav",
+                      "text_ur":  "میں نے یہ سنا:",
+                      "text_roman":  "Main ne yeh suna:",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  18238
+                  },
+                  {
+                      "key":  "is_that_right",
+                      "file":  "/voice/ur/is_that_right.wav",
+                      "text_ur":  "کیا یہ ٹھیک ہے؟",
+                      "text_roman":  "Kya yeh theek hai?",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  16278
+                  },
+                  {
+                      "key":  "say_again",
+                      "file":  "/voice/ur/say_again.wav",
+                      "text_ur":  "دوبارہ بولیں۔",
+                      "text_roman":  "Dobara bolein.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  16358
+                  },
+                  {
+                      "key":  "didnt_hear",
+                      "file":  "/voice/ur/didnt_hear.wav",
+                      "text_ur":  "میں سن نہیں سکی۔ براہ کرم تصویر دبائیں۔",
+                      "text_roman":  "Main sun nahin saki. Barah-e-karam tasveer dabayein.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  46678
+                  },
+                  {
+                      "key":  "use_icons",
+                      "file":  "/voice/ur/use_icons.wav",
+                      "text_ur":  "تصویر یا نمبر سے جواب دیں۔",
+                      "text_roman":  "Tasveer ya number se jawab dein.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  27478
+                  },
+                  {
+                      "key":  "yes",
+                      "file":  "/voice/ur/yes.wav",
+                      "text_ur":  "ہاں",
+                      "text_roman":  "Haan",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  11638
+                  },
+                  {
+                      "key":  "no",
+                      "file":  "/voice/ur/no.wav",
+                      "text_ur":  "نہیں",
+                      "text_roman":  "Nahin",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  12118
+                  },
+                  {
+                      "key":  "photo_cnic_front",
+                      "file":  "/voice/ur/photo_cnic_front.wav",
+                      "text_ur":  "شناختی کارڈ کا اگلا حصہ فریم میں رکھیں اور تصویر لیں۔",
+                      "text_roman":  "Shanakhti card ka agla hissa frame mein rakhein aur tasveer lein.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  42118
+                  },
+                  {
+                      "key":  "photo_cnic_back",
+                      "file":  "/voice/ur/photo_cnic_back.wav",
+                      "text_ur":  "اب کارڈ کا پچھلا حصہ دکھائیں۔",
+                      "text_roman":  "Ab card ka pichla hissa dikhayein.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  25398
+                  },
+                  {
+                      "key":  "photo_death_certificate",
+                      "file":  "/voice/ur/photo_death_certificate.wav",
+                      "text_ur":  "وفات کے سرٹیفکیٹ کی تصویر لیں۔",
+                      "text_roman":  "Wafat ke certificate ki tasveer lein.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  28558
+                  },
+                  {
+                      "key":  "photo_blurry",
+                      "file":  "/voice/ur/photo_blurry.wav",
+                      "text_ur":  "تصویر صاف نہیں ہے۔ فون کو ساکن رکھیں اور دوبارہ کوشش کریں۔",
+                      "text_roman":  "Tasveer saaf nahin hai. Phone ko saakin rakhein aur dobara koshish karein.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  56878
+                  },
+                  {
+                      "key":  "photo_ok",
+                      "file":  "/voice/ur/photo_ok.wav",
+                      "text_ur":  "تصویر صاف ہے۔ شکریہ۔",
+                      "text_roman":  "Tasveer saaf hai. Shukriya.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  31558
+                  },
+                  {
+                      "key":  "hold_still",
+                      "file":  "/voice/ur/hold_still.wav",
+                      "text_ur":  "فون ساکن رکھیں، روشنی میں۔",
+                      "text_roman":  "Phone saakin rakhein, roshni mein.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  30838
+                  },
+                  {
+                      "key":  "review",
+                      "file":  "/voice/ur/review.wav",
+                      "text_ur":  "اپنے جواب اور تصویریں دیکھیں۔ سب ٹھیک ہے تو بھیجیں۔",
+                      "text_roman":  "Apne jawab aur tasveerein dekhein. Sab theek hai to bhejein.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  48238
+                  },
+                  {
+                      "key":  "submit_now",
+                      "file":  "/voice/ur/submit_now.wav",
+                      "text_ur":  "درخواست بھیجیں",
+                      "text_roman":  "Darkhwast bhejein",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  17758
+                  },
+                  {
+                      "key":  "submitted",
+                      "file":  "/voice/ur/submitted.wav",
+                      "text_ur":  "درخواست اس فون میں محفوظ ہو گئی۔ انٹرنیٹ ملتے ہی بھیج دی جائے گی۔",
+                      "text_roman":  "Darkhwast is phone mein mehfooz ho gayi. Internet milte hi bhej di jaye gi.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  52718
+                  },
+                  {
+                      "key":  "status_checking",
+                      "file":  "/voice/ur/status_checking.wav",
+                      "text_ur":  "ہم آپ کی معلومات جانچ رہے ہیں۔ آپ کو بتایا جائے گا۔",
+                      "text_roman":  "Hum aap ki maloomat jaanch rahe hain. Aap ko bataya jaye ga.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  52638
+                  },
+                  {
+                      "key":  "status_in_review",
+                      "file":  "/voice/ur/status_in_review.wav",
+                      "text_ur":  "ایک افسر آپ کی درخواست دیکھے گا۔ ہم آپ کو بتائیں گے۔",
+                      "text_roman":  "Aik afsar aap ki darkhwast dekhe ga. Hum aap ko batayein ge.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  46598
+                  },
+                  {
+                      "key":  "status_approved",
+                      "file":  "/voice/ur/status_approved.wav",
+                      "text_ur":  "آپ کی درخواست منظور ہو گئی۔ آپ کو رقم ملے گی:",
+                      "text_roman":  "Aap ki darkhwast manzoor ho gayi. Aap ko raqam mile gi:",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  53558
+                  },
+                  {
+                      "key":  "status_rejected",
+                      "file":  "/voice/ur/status_rejected.wav",
+                      "text_ur":  "آپ کی درخواست منظور نہیں ہوئی۔",
+                      "text_roman":  "Aap ki darkhwast manzoor nahin hui.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  30718
+                  },
+                  {
+                      "key":  "status_paused",
+                      "file":  "/voice/ur/status_paused.wav",
+                      "text_ur":  "آپ نے معلومات دینا بند کیا، اس لیے درخواست رکی ہوئی ہے۔",
+                      "text_roman":  "Aap ne maloomat dena band kiya, is liye darkhwast ruki hui hai.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  48038
+                  },
+                  {
+                      "key":  "status_frozen",
+                      "file":  "/voice/ur/status_frozen.wav",
+                      "text_ur":  "ایک افسر کچھ جانچ رہا ہے، اس لیے درخواست رکی ہوئی ہے۔",
+                      "text_roman":  "Aik afsar kuch jaanch raha hai, is liye darkhwast ruki hui hai.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  43318
+                  },
+                  {
+                      "key":  "status_proof",
+                      "file":  "/voice/ur/status_proof.wav",
+                      "text_ur":  "ایک چیز کی صاف تصویر چاہیے۔",
+                      "text_roman":  "Aik cheez ki saaf tasveer chahiye.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  25638
+                  },
+                  {
+                      "key":  "status_paid",
+                      "file":  "/voice/ur/status_paid.wav",
+                      "text_ur":  "رقم بھیج دی گئی ہے۔",
+                      "text_roman":  "Raqam bhej di gayi hai.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  20598
+                  },
+                  {
+                      "key":  "how_to_appeal",
+                      "file":  "/voice/ur/how_to_appeal.wav",
+                      "text_ur":  "آپ ایپ سے شکایت کر سکتی ہیں۔",
+                      "text_roman":  "Aap app se shikayat kar sakti hain.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  31238
+                  },
+                  {
+                      "key":  "no_money",
+                      "file":  "/voice/ur/no_money.wav",
+                      "text_ur":  "کوئی آپ سے پیسے نہیں مانگے گا۔",
+                      "text_roman":  "Koi aap se paise nahin maange ga.",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  30918
+                  },
+                  {
+                      "key":  "proof_cnic_front",
+                      "file":  "/voice/ur/proof_cnic_front.wav",
+                      "text_ur":  "براہ کرم شناختی کارڈ کے اگلے حصے کی ایک اور صاف تصویر لیں۔",
+                      "text_roman":  "Barah-e-karam shanakhti card ke aglay hissay ki aik aur saaf tasveer lein.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  47398
+                  },
+                  {
+                      "key":  "proof_cnic_back",
+                      "file":  "/voice/ur/proof_cnic_back.wav",
+                      "text_ur":  "براہ کرم شناختی کارڈ کے پچھلے حصے کی صاف تصویر لیں۔",
+                      "text_roman":  "Barah-e-karam shanakhti card ke pichle hissay ki saaf tasveer lein.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  43798
+                  },
+                  {
+                      "key":  "proof_death_certificate",
+                      "file":  "/voice/ur/proof_death_certificate.wav",
+                      "text_ur":  "براہ کرم اچھی روشنی میں سرٹیفکیٹ کی ایک اور تصویر لیں۔",
+                      "text_roman":  "Barah-e-karam achhi roshni mein certificate ki aik aur tasveer lein.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  43278
+                  },
+                  {
+                      "key":  "proof_income_declaration",
+                      "file":  "/voice/ur/proof_income_declaration.wav",
+                      "text_ur":  "براہ کرم گھر کی آمدنی دوبارہ بتائیں۔",
+                      "text_roman":  "Barah-e-karam ghar ki aamdani dobara batayein.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  31998
+                  },
+                  {
+                      "key":  "payment_sent",
+                      "file":  "/voice/ur/payment_sent.wav",
+                      "text_ur":  "آپ کے والیٹ میں رقم بھیج دی گئی:",
+                      "text_roman":  "Aap ke wallet mein raqam bhej di gayi:",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  30358
+                  },
+                  {
+                      "key":  "receipt_check",
+                      "file":  "/voice/ur/receipt_check.wav",
+                      "text_ur":  "دیکھیں کہ پوری رقم ملی۔",
+                      "text_roman":  "Dekhein ke poori raqam mili.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  23158
+                  },
+                  {
+                      "key":  "received_all",
+                      "file":  "/voice/ur/received_all.wav",
+                      "text_ur":  "پوری رقم ملی",
+                      "text_roman":  "Poori raqam mili",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  17838
+                  },
+                  {
+                      "key":  "received_less",
+                      "file":  "/voice/ur/received_less.wav",
+                      "text_ur":  "کم رقم ملی",
+                      "text_roman":  "Kam raqam mili",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  16638
+                  },
+                  {
+                      "key":  "how_much",
+                      "file":  "/voice/ur/how_much.wav",
+                      "text_ur":  "آپ کو کتنی رقم ملی؟ نمبر دبائیں۔",
+                      "text_roman":  "Aap ko kitni raqam mili? Number dabayein.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  41918
+                  },
+                  {
+                      "key":  "thanks_receipt",
+                      "file":  "/voice/ur/thanks_receipt.wav",
+                      "text_ur":  "شکریہ۔ ہم نے لکھ لیا ہے۔",
+                      "text_roman":  "Shukriya. Hum ne likh liya hai.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  32118
+                  },
+                  {
+                      "key":  "complaint_received",
+                      "file":  "/voice/ur/complaint_received.wav",
+                      "text_ur":  "آپ کی شکایت مل گئی۔ ایک افسر اسے دیکھے گا۔",
+                      "text_roman":  "Aap ki shikayat mil gayi. Aik afsar ise dekhe ga.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  46398
+                  },
+                  {
+                      "key":  "complaint_upheld",
+                      "file":  "/voice/ur/complaint_upheld.wav",
+                      "text_ur":  "آپ کی شکایت درست پائی گئی۔",
+                      "text_roman":  "Aap ki shikayat durust payi gayi.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  28438
+                  },
+                  {
+                      "key":  "complaint_not_upheld",
+                      "file":  "/voice/ur/complaint_not_upheld.wav",
+                      "text_ur":  "آپ کی شکایت درست نہیں پائی گئی۔",
+                      "text_roman":  "Aap ki shikayat durust nahin payi gayi.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  31998
+                  },
+                  {
+                      "key":  "complaint_referred",
+                      "file":  "/voice/ur/complaint_referred.wav",
+                      "text_ur":  "آپ کی شکایت آگے بھیج دی گئی ہے۔",
+                      "text_roman":  "Aap ki shikayat aagay bhej di gayi hai.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  30318
+                  },
+                  {
+                      "key":  "correction_approved",
+                      "file":  "/voice/ur/correction_approved.wav",
+                      "text_ur":  "آپ کی درستگی منظور ہو گئی۔",
+                      "text_roman":  "Aap ki durustgi manzoor ho gayi.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  29198
+                  },
+                  {
+                      "key":  "correction_rejected",
+                      "file":  "/voice/ur/correction_rejected.wav",
+                      "text_ur":  "آپ کی درستگی منظور نہیں ہوئی۔",
+                      "text_roman":  "Aap ki durustgi manzoor nahin hui.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  30718
+                  },
+                  {
+                      "key":  "real_paste",
+                      "file":  "/voice/ur/real_paste.wav",
+                      "text_ur":  "پیغام یہاں ڈالیں، اس کی تصویر دیں، یا بول کر سنائیں۔",
+                      "text_roman":  "Paigham yahan daalein, is ki tasveer dein, ya bol kar sunayein.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  52238
+                  },
+                  {
+                      "key":  "real_sent_to_you",
+                      "file":  "/voice/ur/real_sent_to_you.wav",
+                      "text_ur":  "کیا یہ پیغام آپ کو آیا تھا؟",
+                      "text_roman":  "Kya yeh paigham aap ko aaya tha?",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  29518
+                  },
+                  {
+                      "key":  "real_fake",
+                      "file":  "/voice/ur/real_fake.wav",
+                      "text_ur":  "یہ پیغام جعلی ہے۔ پیسے نہ بھیجیں۔",
+                      "text_roman":  "Yeh paigham jaali hai. Paise na bhejein.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  38198
+                  },
+                  {
+                      "key":  "real_genuine",
+                      "file":  "/voice/ur/real_genuine.wav",
+                      "text_ur":  "یہ پیغام آپ کے ریکارڈ سے ملتا ہے۔",
+                      "text_roman":  "Yeh paigham aap ke record se milta hai.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  31398
+                  },
+                  {
+                      "key":  "real_not_sure",
+                      "file":  "/voice/ur/real_not_sure.wav",
+                      "text_ur":  "ہمیں یقین نہیں۔ ایک اہلکار دیکھے گا۔ تب تک پیسے نہ بھیجیں۔",
+                      "text_roman":  "Humein yaqeen nahin. Aik ahalkar dekhe ga. Tab tak paise na bhejein.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  55278
+                  },
+                  {
+                      "key":  "real_no_fee",
+                      "file":  "/voice/ur/real_no_fee.wav",
+                      "text_ur":  "یہ پروگرام کبھی فیس نہیں لیتا۔",
+                      "text_roman":  "Yeh program kabhi fees nahin leta.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  27158
+                  },
+                  {
+                      "key":  "real_no_payment",
+                      "file":  "/voice/ur/real_no_payment.wav",
+                      "text_ur":  "آپ کے لیے ایسی کوئی ادائیگی نہیں ہے۔",
+                      "text_roman":  "Aap ke liye aisi koi adaigi nahin hai.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  31678
+                  },
+                  {
+                      "key":  "scam_alert",
+                      "file":  "/voice/ur/scam_alert.wav",
+                      "text_ur":  "سایہ کی تنبیہ: جعلی پیغامات فیس مانگ رہے ہیں۔ سایہ کبھی فیس نہیں لیتا۔",
+                      "text_roman":  "Saaya ki tanbeeh: jaali paighamat fees maang rahe hain. Saaya kabhi fees nahin leta.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  64638
+                  },
+                  {
+                      "key":  "data_who",
+                      "file":  "/voice/ur/data_who.wav",
+                      "text_ur":  "یہ لوگ آپ کی معلومات رکھتے ہیں۔",
+                      "text_roman":  "Yeh log aap ki maloomat rakhte hain.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  28798
+                  },
+                  {
+                      "key":  "data_log",
+                      "file":  "/voice/ur/data_log.wav",
+                      "text_ur":  "یہ وہ لوگ ہیں جنہوں نے آپ کی معلومات دیکھیں۔",
+                      "text_roman":  "Yeh woh log hain jinhon ne aap ki maloomat dekhein.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  37918
+                  },
+                  {
+                      "key":  "data_stop_warning",
+                      "file":  "/voice/ur/data_stop_warning.wav",
+                      "text_ur":  "اگر آپ معلومات دینا بند کریں گی تو درخواست رک جائے گی، جب تک آپ دوبارہ اجازت نہ دیں۔",
+                      "text_roman":  "Agar aap maloomat dena band karein gi to darkhwast ruk jaye gi, jab tak aap dobara ijazat na dein.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  73118
+                  },
+                  {
+                      "key":  "data_stopped",
+                      "file":  "/voice/ur/data_stopped.wav",
+                      "text_ur":  "معلومات دینا بند ہو گیا۔ آپ کی درخواست رک گئی ہے۔",
+                      "text_roman":  "Maloomat dena band ho gaya. Aap ki darkhwast ruk gayi hai.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  49278
+                  },
+                  {
+                      "key":  "data_correction",
+                      "file":  "/voice/ur/data_correction.wav",
+                      "text_ur":  "کون سی معلومات غلط ہے؟ تصویر دبائیں۔",
+                      "text_roman":  "Kaun si maloomat ghalat hai? Tasveer dabayein.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  42398
+                  },
+                  {
+                      "key":  "payout_request",
+                      "file":  "/voice/ur/payout_request.wav",
+                      "text_ur":  "نیا والیٹ نمبر درج کریں اور پن سے تصدیق کریں۔",
+                      "text_roman":  "Naya wallet number darj karein aur pin se tasdeeq karein.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  40198
+                  },
+                  {
+                      "key":  "payout_notice",
+                      "file":  "/voice/ur/payout_notice.wav",
+                      "text_ur":  "آپ کی رقم نئے نمبر پر جائے گی۔",
+                      "text_roman":  "Aap ki raqam naye number par jaye gi.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  33318
+                  },
+                  {
+                      "key":  "press_9",
+                      "file":  "/voice/ur/press_9.wav",
+                      "text_ur":  "اگر یہ آپ نہیں ہیں تو 9 دبائیں۔",
+                      "text_roman":  "Agar yeh aap nahin hain to nau dabayein.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  32198
+                  },
+                  {
+                      "key":  "payout_changed",
+                      "file":  "/voice/ur/payout_changed.wav",
+                      "text_ur":  "آپ کا ادائیگی نمبر بدل گیا ہے۔",
+                      "text_roman":  "Aap ka adaigi number badal gaya hai.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  28998
+                  },
+                  {
+                      "key":  "payout_blocked",
+                      "file":  "/voice/ur/payout_blocked.wav",
+                      "text_ur":  "ادائیگی نمبر کی تبدیلی روک دی گئی۔ ایک افسر آپ کو فون کرے گا۔",
+                      "text_roman":  "Adaigi number ki tabdeeli rok di gayi. Aik afsar aap ko phone kare ga.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  57198
+                  },
+                  {
+                      "key":  "helper_family_pin",
+                      "file":  "/voice/ur/helper_family_pin.wav",
+                      "text_ur":  "خاندان سے کہیں کہ اپنا پن درج کریں۔",
+                      "text_roman":  "Khandaan se kahein ke apna pin darj karein.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  33718
+                  },
+                  {
+                      "key":  "helper_locked",
+                      "file":  "/voice/ur/helper_locked.wav",
+                      "text_ur":  "اسکرین بند ہو گئی۔ خاندان دوبارہ پن درج کرے۔",
+                      "text_roman":  "Screen band ho gayi. Khandaan dobara pin darj kare.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  42958
+                  },
+                  {
+                      "key":  "helper_time_ending",
+                      "file":  "/voice/ur/helper_time_ending.wav",
+                      "text_ur":  "دو منٹ باقی ہیں۔",
+                      "text_roman":  "Do minute baqi hain.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  18358
+                  },
+                  {
+                      "key":  "help_ask",
+                      "file":  "/voice/ur/help_ask.wav",
+                      "text_ur":  "اپنا سوال بولیں یا لکھیں۔",
+                      "text_roman":  "Apna sawal bolein ya likhein.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  24558
+                  },
+                  {
+                      "key":  "help_not_sure",
+                      "file":  "/voice/ur/help_not_sure.wav",
+                      "text_ur":  "مجھے یقین نہیں ہے۔ ایک اہلکار آپ کو فون کرے گا۔",
+                      "text_roman":  "Mujhe yaqeen nahin hai. Aik ahalkar aap ko phone kare ga.",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  50998
+                  },
+                  {
+                      "key":  "rupees",
+                      "file":  "/voice/ur/rupees.wav",
+                      "text_ur":  "روپے",
+                      "text_roman":  "rupay",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  11358
+                  },
+                  {
+                      "key":  "thousand",
+                      "file":  "/voice/ur/thousand.wav",
+                      "text_ur":  "ہزار",
+                      "text_roman":  "hazaar",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  12558
+                  },
+                  {
+                      "key":  "hundred",
+                      "file":  "/voice/ur/hundred.wav",
+                      "text_ur":  "سو",
+                      "text_roman":  "sau",
+                      "placeholder":  true,
+                      "precache":  true,
+                      "bytes":  10438
                   },
                   {
                       "key":  "digit_0",
@@ -95,7 +925,8 @@
                       "text_ur":  "صفر",
                       "text_roman":  "sifar",
                       "placeholder":  true,
-                      "bytes":  25006
+                      "precache":  true,
+                      "bytes":  12518
                   },
                   {
                       "key":  "digit_1",
@@ -103,7 +934,8 @@
                       "text_ur":  "ایک",
                       "text_roman":  "aik",
                       "placeholder":  true,
-                      "bytes":  20526
+                      "precache":  true,
+                      "bytes":  10278
                   },
                   {
                       "key":  "digit_2",
@@ -111,7 +943,8 @@
                       "text_ur":  "دو",
                       "text_roman":  "do",
                       "placeholder":  true,
-                      "bytes":  20046
+                      "precache":  true,
+                      "bytes":  10038
                   },
                   {
                       "key":  "digit_3",
@@ -119,7 +952,8 @@
                       "text_ur":  "تین",
                       "text_roman":  "teen",
                       "placeholder":  true,
-                      "bytes":  22446
+                      "precache":  true,
+                      "bytes":  11238
                   },
                   {
                       "key":  "digit_4",
@@ -127,7 +961,8 @@
                       "text_ur":  "چار",
                       "text_roman":  "chaar",
                       "placeholder":  true,
-                      "bytes":  21886
+                      "precache":  true,
+                      "bytes":  10958
                   },
                   {
                       "key":  "digit_5",
@@ -135,15 +970,17 @@
                       "text_ur":  "پانچ",
                       "text_roman":  "paanch",
                       "placeholder":  true,
-                      "bytes":  24526
+                      "precache":  true,
+                      "bytes":  12278
                   },
                   {
                       "key":  "digit_6",
                       "file":  "/voice/ur/digit_6.wav",
                       "text_ur":  "چھ",
-                      "text_roman":  "chhe",
+                      "text_roman":  "chay",
                       "placeholder":  true,
-                      "bytes":  22926
+                      "precache":  true,
+                      "bytes":  10438
                   },
                   {
                       "key":  "digit_7",
@@ -151,7 +988,8 @@
                       "text_ur":  "سات",
                       "text_roman":  "saat",
                       "placeholder":  true,
-                      "bytes":  22606
+                      "precache":  true,
+                      "bytes":  11318
                   },
                   {
                       "key":  "digit_8",
@@ -159,7 +997,8 @@
                       "text_ur":  "آٹھ",
                       "text_roman":  "aath",
                       "placeholder":  true,
-                      "bytes":  21326
+                      "precache":  true,
+                      "bytes":  10678
                   },
                   {
                       "key":  "digit_9",
@@ -167,7 +1006,413 @@
                       "text_ur":  "نو",
                       "text_roman":  "nau",
                       "placeholder":  true,
-                      "bytes":  20046
+                      "precache":  true,
+                      "bytes":  10038
+                  },
+                  {
+                      "key":  "n_10",
+                      "file":  "/voice/ur/n_10.wav",
+                      "text_ur":  "دس",
+                      "text_roman":  "das",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  11758
+                  },
+                  {
+                      "key":  "n_11",
+                      "file":  "/voice/ur/n_11.wav",
+                      "text_ur":  "گیارہ",
+                      "text_roman":  "gyarah",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  11478
+                  },
+                  {
+                      "key":  "n_12",
+                      "file":  "/voice/ur/n_12.wav",
+                      "text_ur":  "بارہ",
+                      "text_roman":  "baarah",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  11078
+                  },
+                  {
+                      "key":  "n_13",
+                      "file":  "/voice/ur/n_13.wav",
+                      "text_ur":  "تیرہ",
+                      "text_roman":  "terah",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  11078
+                  },
+                  {
+                      "key":  "n_14",
+                      "file":  "/voice/ur/n_14.wav",
+                      "text_ur":  "چودہ",
+                      "text_roman":  "chaudah",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  10838
+                  },
+                  {
+                      "key":  "n_15",
+                      "file":  "/voice/ur/n_15.wav",
+                      "text_ur":  "پندرہ",
+                      "text_roman":  "pandrah",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  12798
+                  },
+                  {
+                      "key":  "n_16",
+                      "file":  "/voice/ur/n_16.wav",
+                      "text_ur":  "سولہ",
+                      "text_roman":  "solah",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  11798
+                  },
+                  {
+                      "key":  "n_17",
+                      "file":  "/voice/ur/n_17.wav",
+                      "text_ur":  "سترہ",
+                      "text_roman":  "satrah",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  12478
+                  },
+                  {
+                      "key":  "n_18",
+                      "file":  "/voice/ur/n_18.wav",
+                      "text_ur":  "اٹھارہ",
+                      "text_roman":  "atharah",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  12598
+                  },
+                  {
+                      "key":  "n_19",
+                      "file":  "/voice/ur/n_19.wav",
+                      "text_ur":  "انیس",
+                      "text_roman":  "unees",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  11318
+                  },
+                  {
+                      "key":  "n_20",
+                      "file":  "/voice/ur/n_20.wav",
+                      "text_ur":  "بیس",
+                      "text_roman":  "bees",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  11638
+                  },
+                  {
+                      "key":  "n_25",
+                      "file":  "/voice/ur/n_25.wav",
+                      "text_ur":  "پچیس",
+                      "text_roman":  "pachees",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  13798
+                  },
+                  {
+                      "key":  "n_30",
+                      "file":  "/voice/ur/n_30.wav",
+                      "text_ur":  "تیس",
+                      "text_roman":  "tees",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  11598
+                  },
+                  {
+                      "key":  "n_40",
+                      "file":  "/voice/ur/n_40.wav",
+                      "text_ur":  "چالیس",
+                      "text_roman":  "chaalees",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  11838
+                  },
+                  {
+                      "key":  "n_50",
+                      "file":  "/voice/ur/n_50.wav",
+                      "text_ur":  "پچاس",
+                      "text_roman":  "pachaas",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  12798
+                  },
+                  {
+                      "key":  "trust_1",
+                      "file":  "/voice/ur/trust_1.wav",
+                      "text_ur":  "چاند",
+                      "text_roman":  "Chaand",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  11558
+                  },
+                  {
+                      "key":  "trust_2",
+                      "file":  "/voice/ur/trust_2.wav",
+                      "text_ur":  "درخت",
+                      "text_roman":  "Darakht",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  12758
+                  },
+                  {
+                      "key":  "trust_3",
+                      "file":  "/voice/ur/trust_3.wav",
+                      "text_ur":  "بکری",
+                      "text_roman":  "Bakri",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  12758
+                  },
+                  {
+                      "key":  "trust_4",
+                      "file":  "/voice/ur/trust_4.wav",
+                      "text_ur":  "سورج مکھی",
+                      "text_roman":  "Sooraj mukhi",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  15198
+                  },
+                  {
+                      "key":  "trust_5",
+                      "file":  "/voice/ur/trust_5.wav",
+                      "text_ur":  "مچھلی",
+                      "text_roman":  "Machhli",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  12958
+                  },
+                  {
+                      "key":  "trust_6",
+                      "file":  "/voice/ur/trust_6.wav",
+                      "text_ur":  "مٹکا",
+                      "text_roman":  "Matka",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  12358
+                  },
+                  {
+                      "key":  "trust_7",
+                      "file":  "/voice/ur/trust_7.wav",
+                      "text_ur":  "مسجد",
+                      "text_roman":  "Masjid",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  12798
+                  },
+                  {
+                      "key":  "trust_8",
+                      "file":  "/voice/ur/trust_8.wav",
+                      "text_ur":  "گائے",
+                      "text_roman":  "Gaaye",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  10038
+                  },
+                  {
+                      "key":  "trust_9",
+                      "file":  "/voice/ur/trust_9.wav",
+                      "text_ur":  "گندم",
+                      "text_roman":  "Gandum",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  12078
+                  },
+                  {
+                      "key":  "trust_10",
+                      "file":  "/voice/ur/trust_10.wav",
+                      "text_ur":  "طوطا",
+                      "text_roman":  "Tota",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  11118
+                  },
+                  {
+                      "key":  "trust_11",
+                      "file":  "/voice/ur/trust_11.wav",
+                      "text_ur":  "لیموں",
+                      "text_roman":  "Leemoon",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  12718
+                  },
+                  {
+                      "key":  "trust_12",
+                      "file":  "/voice/ur/trust_12.wav",
+                      "text_ur":  "اونٹ",
+                      "text_roman":  "Oont",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  10798
+                  },
+                  {
+                      "key":  "trust_13",
+                      "file":  "/voice/ur/trust_13.wav",
+                      "text_ur":  "کشتی",
+                      "text_roman":  "Kashti",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  12878
+                  },
+                  {
+                      "key":  "trust_14",
+                      "file":  "/voice/ur/trust_14.wav",
+                      "text_ur":  "پھول",
+                      "text_roman":  "Phool",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  11678
+                  },
+                  {
+                      "key":  "trust_15",
+                      "file":  "/voice/ur/trust_15.wav",
+                      "text_ur":  "مرغا",
+                      "text_roman":  "Murgha",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  11758
+                  },
+                  {
+                      "key":  "trust_16",
+                      "file":  "/voice/ur/trust_16.wav",
+                      "text_ur":  "تربوز",
+                      "text_roman":  "Tarbooz",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  13358
+                  },
+                  {
+                      "key":  "trust_17",
+                      "file":  "/voice/ur/trust_17.wav",
+                      "text_ur":  "کھجور کا درخت",
+                      "text_roman":  "Khajoor ka darakht",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  19638
+                  },
+                  {
+                      "key":  "trust_18",
+                      "file":  "/voice/ur/trust_18.wav",
+                      "text_ur":  "گھنٹی",
+                      "text_roman":  "Ghanti",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  11838
+                  },
+                  {
+                      "key":  "trust_19",
+                      "file":  "/voice/ur/trust_19.wav",
+                      "text_ur":  "بھیڑ",
+                      "text_roman":  "Bhair",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  10758
+                  },
+                  {
+                      "key":  "trust_20",
+                      "file":  "/voice/ur/trust_20.wav",
+                      "text_ur":  "آم",
+                      "text_roman":  "Aam",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  13838
+                  },
+                  {
+                      "key":  "trust_21",
+                      "file":  "/voice/ur/trust_21.wav",
+                      "text_ur":  "دیا",
+                      "text_roman":  "Diya",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  10598
+                  },
+                  {
+                      "key":  "trust_22",
+                      "file":  "/voice/ur/trust_22.wav",
+                      "text_ur":  "مور",
+                      "text_roman":  "Mor",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  10758
+                  },
+                  {
+                      "key":  "trust_23",
+                      "file":  "/voice/ur/trust_23.wav",
+                      "text_ur":  "سیب",
+                      "text_roman":  "Saib",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  11998
+                  },
+                  {
+                      "key":  "trust_24",
+                      "file":  "/voice/ur/trust_24.wav",
+                      "text_ur":  "کچھوا",
+                      "text_roman":  "Kachhua",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  12518
+                  },
+                  {
+                      "key":  "trust_25",
+                      "file":  "/voice/ur/trust_25.wav",
+                      "text_ur":  "قوس قزح",
+                      "text_roman":  "Qaus-e-qazah",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  14358
+                  },
+                  {
+                      "key":  "trust_26",
+                      "file":  "/voice/ur/trust_26.wav",
+                      "text_ur":  "پہاڑ",
+                      "text_roman":  "Pahaar",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  12758
+                  },
+                  {
+                      "key":  "trust_27",
+                      "file":  "/voice/ur/trust_27.wav",
+                      "text_ur":  "ٹوکری",
+                      "text_roman":  "Tokri",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  11958
+                  },
+                  {
+                      "key":  "trust_28",
+                      "file":  "/voice/ur/trust_28.wav",
+                      "text_ur":  "شہد کی مکھی",
+                      "text_roman":  "Shehad ki makhi",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  17358
+                  },
+                  {
+                      "key":  "trust_29",
+                      "file":  "/voice/ur/trust_29.wav",
+                      "text_ur":  "گل لالہ",
+                      "text_roman":  "Gul-e-laala",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  14758
+                  },
+                  {
+                      "key":  "trust_30",
+                      "file":  "/voice/ur/trust_30.wav",
+                      "text_ur":  "ستارہ",
+                      "text_roman":  "Sitara",
+                      "placeholder":  true,
+                      "precache":  false,
+                      "bytes":  12758
                   }
               ]
 }

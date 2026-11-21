@@ -7,7 +7,13 @@ import { tenants, users } from '@/db/schema/all';
 import { Badge } from '@/components/ui/badge';
 import { SignOutButton } from './sign-out';
 
-export async function StaffShell({ actor, title, children }: { actor: Actor; title: string; children: React.ReactNode }) {
+export type NavItem = { href: string; label: string };
+
+export const OFFICER_NAV: NavItem[] = [
+  { href: '/o', label: 'Queue' }, { href: '/o/payouts', label: 'Payout changes' }, { href: '/o/scams', label: 'Scam desk' }, { href: '/o/complaints', label: 'Complaints & corrections' },
+];
+
+export async function StaffShell({ actor, title, children, nav }: { actor: Actor; title: string; children: React.ReactNode; nav?: NavItem[] }) {
   const t = await getTranslations('staff');
   const db = getDb();
   const [u] = await db.select({ name: users.displayName }).from(users).where(eq(users.id, actor.id));
@@ -27,7 +33,12 @@ export async function StaffShell({ actor, title, children }: { actor: Actor; tit
           <SignOutButton />
         </div>
       </header>
-      <main className="mx-auto max-w-5xl space-y-6 px-4 py-6">{children}</main>
+      {nav && (
+        <nav className="flex gap-1 overflow-x-auto border-b border-border bg-card px-4" aria-label="console">
+          {nav.map((n) => <Link key={n.href} href={n.href} className="whitespace-nowrap border-b-2 border-transparent px-3 py-2 text-sm hover:border-primary">{n.label}</Link>)}
+        </nav>
+      )}
+      <main className="mx-auto max-w-6xl space-y-6 px-4 py-6">{children}</main>
     </div>
   );
 }

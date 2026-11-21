@@ -25,7 +25,19 @@ export type SyncDeps = {
 
 const ROUTES: Record<OutboxEntry['type'], { method: string; path: string }> = {
   'case.create': { method: 'POST', path: '/api/v1/cases' },
+  'case.answers': { method: 'PATCH', path: '/api/v1/cases/{caseId}/answers' },
+  'case.document': { method: 'POST', path: '/api/v1/cases/{caseId}/documents' },
+  'case.submit': { method: 'POST', path: '/api/v1/cases/{caseId}/submit' },
+  'case.proof': { method: 'POST', path: '/api/v1/cases/{caseId}/proof' },
 };
+
+/** the server case id for an entry: its own caseId, or the server id of the create entry it points at */
+async function caseIdFor(db: OutboxDb, e: OutboxEntry) {
+  if (e.caseId) return e.caseId;
+  if (!e.caseRef) return null;
+  const parent = await db.outbox.get(e.caseRef);
+  return parent?.serverId || null;
+}
 
 let running = false;
 
@@ -38,15 +50,21 @@ export async function syncOnce(db: OutboxDb, deps: SyncDeps): Promise<{ sent: nu
     const due = (await db.outbox.where('status').anyOf('saved', 'sending').sortBy('createdAt')).filter((e) => e.nextAttemptAt <= deps.now());
     for (const e of due) {
       const route = ROUTES[e.type];
+      let path = route.path;
+      if (path.includes('{caseId}')) {
+        const caseId = await caseIdFor(db, e);
+        if (!caseId) { res.deferred++; break; } // the case itself has not reached the office yet: keep order
+        path = path.replace('{caseId}', caseId);
+      }
       await db.outbox.update(e.id, { status: 'sending', attempts: e.attempts + 1 });
       let status = 0;
       let body: Record<string, unknown> | null = null;
       try {
-        const r = await deps.fetch(route.path, {
+        const r = await deps.fetch(path, {
           method: route.method,
           credentials: 'same-origin',
           headers: { 'content-type': 'application/json', 'Idempotency-Key': e.id },
-          body: JSON.stringify({ ...e.payload, clientSubmissionId: e.payload.clientSubmissionId ?? e.id }),
+          body: JSON.stringify(e.type === 'case.create' ? { ...e.payload, clientSubmissionId: e.payload.clientSubmissionId ?? e.id } : e.payload),
         });
         status = r.status;
         body = await r.json().catch(() => null);
@@ -56,7 +74,7 @@ export async function syncOnce(db: OutboxDb, deps: SyncDeps): Promise<{ sent: nu
       }
       let patch: Partial<OutboxEntry>;
       if (status >= 200 && status < 300) {
-        patch = { status: 'sent', tick: 'grey2', serverId: String(body?.id ?? ''), serverStatus: status, lastError: undefined };
+        patch = { status: 'sent', tick: 'grey2', serverId: e.type === 'case.create' ? String(body?.id ?? '') : (await caseIdFor(db, e)) ?? '', serverStatus: status, lastError: undefined };
         res.sent++;
       } else if (status >= 400 && status < 500 && status !== 408 && status !== 429) {
         patch = { status: 'failed', tick: 'failed', serverStatus: status, lastError: String(body?.code ?? status) };
@@ -80,7 +98,7 @@ export async function syncOnce(db: OutboxDb, deps: SyncDeps): Promise<{ sent: nu
 
 /** Refresh ticks for acknowledged cases: two blue once an officer has opened the case (OQ-5). */
 export async function refreshTicks(db: OutboxDb, deps: SyncDeps) {
-  const sent = await db.outbox.where('status').equals('sent').toArray();
+  const sent = (await db.outbox.where('status').equals('sent').toArray()).filter((e) => e.type === 'case.create');
   for (const e of sent) {
     if (!e.serverId || e.tick === 'blue2') continue;
     try {

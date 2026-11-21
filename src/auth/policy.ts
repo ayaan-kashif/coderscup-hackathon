@@ -16,7 +16,7 @@ export type Action =
   | 'case.write' | 'case.status' | 'case.explain' | 'case.freeze' | 'queue.read'
   | 'decision.read' | 'decision.replay' | 'aidecision.read'
   | 'complaint.create' | 'correction.create' | 'correction.review' | 'receipt.confirm'
-  | 'helper.work' | 'scam.desk' | 'assist.policy' | 'notifications.read';
+  | 'helper.work' | 'scam.desk' | 'assist.policy' | 'notifications.read' | 'self.update';
 
 type Scope = 'own' | 'grant' | 'tenant' | 'any';
 export type ConsentNeed = { purpose: string; category: string };
@@ -97,6 +97,7 @@ export const MATRIX: Record<Action, Partial<Record<Role | 'api_key', Rule>>> = {
   'scam.desk': { officer: T() },
   'assist.policy': { citizen: { scope: 'any' }, helper: { scope: 'any' }, officer: { scope: 'any' } },
   'notifications.read': { citizen: { scope: 'any' }, helper: { scope: 'any' }, officer: { scope: 'any' }, admin: { scope: 'any' } },
+  'self.update': { citizen: { scope: 'any' }, helper: { scope: 'any' }, officer: { scope: 'any' }, admin: { scope: 'any' }, auditor: { scope: 'any' } },
   'self.read': { citizen: { scope: 'any' }, helper: { scope: 'any' }, officer: { scope: 'any' }, admin: { scope: 'any' }, auditor: { scope: 'any' } },
 };
 

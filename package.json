@@ -22,7 +22,9 @@
     "ml:generate": "python ml/generate.py --seed 2026",
     "ml:train": "python ml/train.py",
     "db:local": "tsx scripts/local-db.ts",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "stt:bakeoff": "tsx --conditions=react-server scripts/stt-bakeoff.ts",
+    "voice:generate": "tsx scripts/voice/generate-clips.ts"
   },
   "dependencies": {
     "@ai-sdk/elevenlabs": "^3.0.87",

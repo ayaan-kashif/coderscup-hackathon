@@ -16,7 +16,7 @@ export const POST = route({
   audit: { action: 'complaint.resolve', resourceType: 'complaint' },
   handler: async (c, db) => {
     const k = await resolveComplaint(db, c.params.id, c.actor!.id, c.body);
-    if (k.citizenId) c.afterCommit(async () => notifyCitizen(getDb(), { tenantId: k.tenantId, citizenId: k.citizenId!, key: 'complaint_resolved', vars: { outcome: c.body.resolution.replace('_', ' '), outcome_ur: OUTCOME_UR[c.body.resolution] } }));
+    if (k.citizenId) c.afterCommit(async () => notifyCitizen(getDb(), { tenantId: k.tenantId, citizenId: k.citizenId!, key: 'complaint_resolved', vars: { outcome: c.body.resolution.replace('_', ' '), outcome_code: c.body.resolution, outcome_ur: OUTCOME_UR[c.body.resolution] } }));
     return { body: { id: k.id, status: 'resolved', resolution: c.body.resolution }, audit: { details: { resolution: c.body.resolution, reasonCode: c.body.reasonCode, helperUserId: k.helperUserId } } };
   },
 });

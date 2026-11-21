@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm';
+import { z } from 'zod';
 import { citizens, tenants, users } from '@/db/schema/all';
 import { route } from '@/lib/api/route';
 
@@ -16,5 +17,21 @@ export const GET = route({
       ? await db.select({ trustPictureId: citizens.trustPictureId, name: citizens.nameDisplay }).from(citizens).where(eq(citizens.id, a.citizenId))
       : [];
     return { body: { kind: a.kind, id: a.id, role: a.role, stage: a.stage, isSenior: a.isSenior ?? false, displayName: cz?.name ?? u?.displayName, locale: u?.locale, tenant: t ?? null, trustPictureId: cz?.trustPictureId ?? null } };
+  },
+});
+
+const patchBody = z.object({ trustPictureId: z.number().int().min(1).max(30).optional(), locale: z.enum(['ur', 'en']).optional() });
+
+/** CIT-1 first-run choices: language and trust picture (the citizen's own record only) */
+export const PATCH = route({
+  operationId: 'updateMe', method: 'PATCH', path: '/api/v1/me', summary: 'Set my language and trust picture', tags: ['Auth'],
+  auth: 'required', body: patchBody, idempotency: 'optional',
+  authorize: { action: 'self.update' },
+  audit: { action: 'self.update', resourceType: 'user' },
+  handler: async (c, db) => {
+    const a = c.actor!;
+    if (c.body.locale) await db.update(users).set({ locale: c.body.locale }).where(eq(users.id, a.id));
+    if (c.body.trustPictureId && a.citizenId) await db.update(citizens).set({ trustPictureId: c.body.trustPictureId }).where(eq(citizens.id, a.citizenId));
+    return { body: { ok: true }, audit: { resourceId: a.id, subjectCitizenId: a.citizenId ?? null, details: { fields: Object.keys(c.body) } } };
   },
 });

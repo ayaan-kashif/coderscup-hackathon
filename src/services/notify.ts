@@ -41,8 +41,8 @@ export const TEMPLATES = {
   payout_change_done: { en: '{trust}. Your payout number has been changed to the number ending {last4}.', ur: '{trust}۔ آپ کا ادائیگی نمبر بدل گیا (آخری ہندسے {last4})۔', channels: ['in_app', 'sms'], voice: ['{trust}', 'payout_changed'] },
   payout_change_blocked: { en: '{trust}. The payout number change was stopped. An officer will call you.', ur: '{trust}۔ ادائیگی نمبر کی تبدیلی روک دی گئی۔ ایک افسر آپ کو فون کرے گا۔', channels: ['in_app', 'sms', 'voice'], voice: ['{trust}', 'payout_blocked'] },
   complaint_received: { en: '{trust}. We received your complaint. An officer will look at it.', ur: '{trust}۔ آپ کی شکایت مل گئی۔ ایک افسر اسے دیکھے گا۔', channels: ['in_app', 'voice'], voice: ['{trust}', 'complaint_received'] },
-  complaint_resolved: { en: '{trust}. Your complaint was looked at: {outcome}.', ur: '{trust}۔ آپ کی شکایت دیکھ لی گئی: {outcome_ur}۔', channels: ['in_app', 'sms', 'voice'], voice: ['{trust}', 'complaint_{outcome}'] },
-  correction_done: { en: '{trust}. Your correction request was {outcome}.', ur: '{trust}۔ آپ کی درستگی کی درخواست {outcome_ur}۔', channels: ['in_app', 'voice'], voice: ['{trust}', 'correction_{outcome}'] },
+  complaint_resolved: { en: '{trust}. Your complaint was looked at: {outcome}.', ur: '{trust}۔ آپ کی شکایت دیکھ لی گئی: {outcome_ur}۔', channels: ['in_app', 'sms', 'voice'], voice: ['{trust}', 'complaint_{outcome_code}'] },
+  correction_done: { en: '{trust}. Your correction request was {outcome}.', ur: '{trust}۔ آپ کی درستگی کی درخواست {outcome_ur}۔', channels: ['in_app', 'voice'], voice: ['{trust}', 'correction_{outcome_code}'] },
   officer_alert: { en: 'Alert: {text}', ur: 'انتباہ: {text}', channels: ['in_app'] },
   scam_alert: { en: 'Saaya warning for {district}: fake messages are asking for a fee. Saaya never charges fees. Do not send money.', ur: '{district} کے لیے سایہ کی تنبیہ: جعلی پیغامات فیس مانگ رہے ہیں۔ سایہ کبھی فیس نہیں لیتا۔ پیسے نہ بھیجیں۔', channels: ['in_app', 'sms', 'voice'], voice: ['scam_alert', 'no_money'] },
 } satisfies Record<string, Template>;

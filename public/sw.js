@@ -6,8 +6,8 @@
  * - navigations: network-first, falling back to the cached page, then to the cached citizen shell
  * - /api/*: never cached (personal data stays out of the cache; the outbox handles offline writes)
  */
-const VERSION = 'amanat-v1';
-const SHELL = ['/c', '/offline', '/manifest.webmanifest', '/icon.svg', '/voice/ur/manifest.json'];
+const VERSION = 'amanat-v2';
+const SHELL = ['/c', '/h', '/offline', '/manifest.webmanifest', '/icon.svg', '/voice/ur/manifest.json'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
@@ -15,7 +15,8 @@ self.addEventListener('install', (event) => {
     await cache.addAll(SHELL);
     try {
       const manifest = await (await fetch('/voice/ur/manifest.json')).json();
-      await cache.addAll(manifest.clips.map((c) => c.file));
+      // core prompts at install (shell, questions, digits); the rest are cached the first time they play
+      await cache.addAll(manifest.clips.filter((c) => c.precache).map((c) => c.file));
     } catch (e) { /* clips are also cached on first use */ }
     await self.skipWaiting();
   })());

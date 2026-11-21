@@ -20,7 +20,7 @@ export function correctionDecisionSpec(approve: boolean): RouteDef<z.infer<typeo
     handler: async (c, db) => {
       const r = await decideCorrection(db, c.params.id, c.actor!.id, approve, c.body);
       c.afterCommit(async () => {
-        await notifyCitizen(getDb(), { tenantId: r.request.tenantId, citizenId: r.request.citizenId, key: 'correction_done', vars: { outcome: approve ? 'approved' : 'not approved', outcome_ur: approve ? 'منظور ہو گئی' : 'منظور نہیں ہوئی' } });
+        await notifyCitizen(getDb(), { tenantId: r.request.tenantId, citizenId: r.request.citizenId, key: 'correction_done', vars: { outcome: approve ? 'approved' : 'not approved', outcome_code: approve ? 'approved' : 'rejected', outcome_ur: approve ? 'منظور ہو گئی' : 'منظور نہیں ہوئی' } });
         if (r.redecide && r.request.caseId) await dispatchCaseProcess(r.request.caseId, defer);
       });
       return { body: { id: c.params.id, status: approve ? 'approved' : 'rejected', redecide: r.redecide }, audit: { details: { field: r.request.fieldKey, reasonCode: c.body.reasonCode, caseId: r.request.caseId } } };

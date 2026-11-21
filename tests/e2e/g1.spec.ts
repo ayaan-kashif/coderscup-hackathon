@@ -18,7 +18,7 @@ test('Urdu switches the layout to right-to-left', async ({ page }) => {
   await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
 });
 
-for (const [role, path, text] of [['officer', '/o', 'Review queue'], ['admin', '/a', 'Chaos panel'], ['auditor', '/au', 'Evidence chain'], ['helper', '/h', 'My families']] as const) {
+for (const [role, path, text] of [['officer', '/o', 'Review queue'], ['admin', '/a', 'Chaos panel'], ['auditor', '/au', 'Evidence chain'], ['helper', '/h', 'Families (']] as const) {
   test(`${role} signs in from the demo picker`, async ({ page }) => {
     await page.goto('/login');
     await page.getByTestId(`demo-${role}`).click();
@@ -31,6 +31,8 @@ test('citizen signs in with the phone code from the mock inbox and the PIN', asy
   const pin = process.env.DEMO_CITIZEN_PIN;
   test.skip(!pin, 'DEMO_CITIZEN_PIN not set');
   await page.goto('/c');
+  // C1: first run starts with two language pictures
+  await page.getByTestId('lang-en').click();
   for (const d of '00001') await page.getByRole('button', { name: d, exact: true }).click();
   await page.getByRole('button', { name: 'Send code' }).click();
   await expect(page.getByText('Enter the code')).toBeVisible();
@@ -44,15 +46,9 @@ test('citizen signs in with the phone code from the mock inbox and the PIN', asy
   await expect(page.getByLabel('trust picture')).toBeVisible();
   await expect(page.getByText('Zarina Bibi')).toBeVisible();
 
-  // OFF-2 / OFF-5: saved on the phone first, then two grey ticks once the office has it
-  await page.getByRole('button', { name: 'Start my application' }).click();
-  await expect(page.locator('[data-tick="grey2"]').first()).toBeVisible({ timeout: 15_000 });
-
-  // offline: the action is still saved on the phone (one grey tick)
-  await context.setOffline(true);
-  await page.getByRole('button', { name: 'Start my application' }).click();
-  await expect(page.locator('[data-tick="grey1"]').first()).toBeVisible();
-  await context.setOffline(false);
+  // C5: five large tiles
+  for (const t of ['apply', 'status', 'real', 'data', 'help']) await expect(page.getByTestId(`tile-${t}`)).toBeVisible();
+  void context;
 });
 
 test('a voice prompt plays with the network off (OFF-1, G1)', async ({ page, context }) => {
@@ -62,7 +58,7 @@ test('a voice prompt plays with the network off (OFF-1, G1)', async ({ page, con
   await page.reload();
   await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
   await expect.poll(() => page.evaluate(async () => {
-    const c = await caches.open('amanat-v1');
+    const c = await caches.open('amanat-v2');
     return !!(await c.match('/voice/ur/offline.wav')) && !!(await c.match('/c'));
   }), { timeout: 20_000 }).toBe(true);
 

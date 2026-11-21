@@ -14,6 +14,10 @@ const schema = z.object({
   DEMO_CITIZEN_PIN: z.string().optional(),
   MOCK_BASE_URL: z.string().optional(),
   SENTRY_DSN: z.string().optional(),
+  SUPABASE_URL: z.string().optional(),
+  SUPABASE_PUBLISHABLE_KEY: z.string().optional(),
+  SUPABASE_SECRET_KEY: z.string().optional(),
+  SUPABASE_JWKS_URL: z.string().optional(),
   NODE_ENV: z.string().optional(),
   VERCEL_GIT_COMMIT_SHA: z.string().optional(),
 });

@@ -48,7 +48,7 @@ export async function authenticate(req: { headers: { get(name: string): string |
   const claims = await verifyAccessToken(token);
   if (!claims) throw new ApiError('UNAUTHENTICATED', 'The token is invalid or expired. Sign in again.');
 
-  const [u] = await db.select({ id: users.id, revokedAt: users.sessionsRevokedAt }).from(users).where(eq(users.id, claims.sub)).limit(1);
+  const [u] = await db.select({ id: users.id, revokedAt: users.sessionsRevokedAt, mfaEnabledAt: users.mfaEnabledAt }).from(users).where(eq(users.id, claims.sub)).limit(1);
   if (!u) throw new ApiError('UNAUTHENTICATED', 'Unknown user.');
   if (u.revokedAt && claims.iat * 1000 < u.revokedAt.getTime()) throw new ApiError('UNAUTHENTICATED', 'This session was revoked. Sign in again.');
 
@@ -63,7 +63,9 @@ export async function authenticate(req: { headers: { get(name: string): string |
     .from(memberships).innerJoin(tenants, eq(tenants.id, memberships.tenantId))
     .where(and(eq(memberships.userId, claims.sub), eq(memberships.tenantId, claims.tid))).limit(1);
   if (!m || m.role !== claims.app_role) throw new ApiError('UNAUTHENTICATED', 'Your role in this tenant changed. Sign in again.');
-  return { actor: { kind: 'user', id: claims.sub, role: m.role, tenantId: claims.tid, isSenior: m.isSenior, via }, tenantIsSandbox: m.sandbox };
+  // AUTH-1: once an admin or auditor has MFA on, a session without the TOTP step is not accepted (demo-picker tokens excepted)
+  if ((m.role === 'admin' || m.role === 'auditor') && u.mfaEnabledAt && !claims.mfa && !claims.demo) throw new ApiError('UNAUTHENTICATED', 'Sign in again with your MFA code.', { extra: { next: 'mfa' } });
+  return { actor: { kind: 'user', id: claims.sub, role: m.role, tenantId: claims.tid, isSenior: m.isSenior, mfa: !!claims.mfa, via }, tenantIsSandbox: m.sandbox };
 }
 
 async function authenticateApiKey(key: string, db: DbOrTx): Promise<AuthResult> {

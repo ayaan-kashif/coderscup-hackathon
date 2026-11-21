@@ -60,7 +60,7 @@ export async function officerCaseView(db: DbOrTx, caseId: string, mask: string[]
   const hide = new Set(mask);
   const [d] = c.currentDecisionId ? await db.select().from(decisions).where(eq(decisions.id, c.currentDecisionId)).limit(1) : [];
   const [sys] = await db.select().from(decisions).where(and(eq(decisions.caseId, caseId), eq(decisions.actorType, 'system'))).orderBy(desc(decisions.createdAt)).limit(1);
-  const docs = await db.select({ id: documents.id, docType: documents.docType, sharpness: documents.sharpness, qrSigValid: documents.qrSigValid, injectionFlag: documents.injectionFlag, bytes: documents.bytes, createdAt: documents.createdAt, extraction: documents.extraction })
+  const docs = await db.select({ id: documents.id, docType: documents.docType, sharpness: documents.sharpness, qrSigValid: documents.qrSigValid, injectionFlag: documents.injectionFlag, weakSignals: documents.weakSignals, bytes: documents.bytes, createdAt: documents.createdAt, extraction: documents.extraction })
     .from(documents).where(eq(documents.caseId, caseId)).orderBy(desc(documents.createdAt));
   const matches = await db.select().from(identityMatches).where(eq(identityMatches.caseId, caseId)).orderBy(asc(identityMatches.rank));
   const proofs = await db.select().from(proofRequests).where(eq(proofRequests.caseId, caseId)).orderBy(desc(proofRequests.createdAt));

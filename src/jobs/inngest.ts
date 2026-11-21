@@ -33,7 +33,25 @@ export const paymentRelease = inngest.createFunction(
   },
 );
 
-export const FUNCTIONS = [caseProcess, paymentRelease];
+/** NOT-3 / API-5: retry due outbox rows (notifications and webhooks) */
+export const outboxDispatch = inngest.createFunction(
+  { id: 'outbox-dispatch', name: 'outbox.dispatch', triggers: [{ cron: '* * * * *' }] },
+  async ({ step }) => step.run('dispatch', async () => { const { dispatchOutbox } = await import('@/services/jobs'); return dispatchOutbox(getDb()); }),
+);
+
+/** AUD-3: hourly anchor of every chain head (verified first) */
+export const auditAnchor = inngest.createFunction(
+  { id: 'audit-anchor', name: 'audit.anchor', triggers: [{ cron: '0 * * * *' }] },
+  async ({ step }) => step.run('anchor', async () => { const { anchorChains } = await import('@/services/jobs'); return anchorChains(getDb()); }),
+);
+
+/** §22.2: daily retention sweep at 02:00 PKT (21:00 UTC) */
+export const retention = inngest.createFunction(
+  { id: 'retention-sweep', name: 'retention.sweep', triggers: [{ cron: '0 21 * * *' }] },
+  async ({ step }) => step.run('sweep', async () => { const { retentionSweep } = await import('@/services/jobs'); return retentionSweep(getDb()); }),
+);
+
+export const FUNCTIONS = [caseProcess, paymentRelease, outboxDispatch, auditAnchor, retention];
 
 export const inngestConfigured = () => !!(process.env.INNGEST_EVENT_KEY || process.env.INNGEST_DEV);
 

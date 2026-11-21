@@ -16,6 +16,8 @@ export const modelIdsSchema = z.object({
   embeddings: z.string().min(3),
   /** speech-to-text order, best first, chosen by the bake-off (scripts/stt-bakeoff.ts) */
   stt: z.array(z.string().min(3)).min(1).max(4),
+  /** VOICE-2: runtime text-to-speech for dynamic phrases (cached by text hash) */
+  tts: z.string().min(3).default('google/gemini-3.8-flash-tts'),
 });
 export type ModelIds = z.infer<typeof modelIdsSchema>;
 
@@ -28,5 +30,6 @@ export const DEFAULT_MODEL_IDS: ModelIds = {
   classifier_fallback: 'google/gemini-3.5-flash-lite',
   embeddings: 'google/gemini-embedding-001',
   stt: ['elevenlabs/scribe-v2', 'upliftai/scribe', 'google/gemini-3.8-flash'],
+  tts: 'google/gemini-3.8-flash-tts',
 };
 

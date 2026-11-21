@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/nextjs';
+import { planFor } from '@/services/plans';
 import { NextResponse } from 'next/server';
 import { z, type ZodType } from 'zod';
 import type { Actor } from '@/auth/actor';
@@ -43,7 +44,7 @@ export type HandlerResult = {
   headers?: Record<string, string>;
   cookies?: Cookie[];
   /** a non-JSON response (e.g. the HTML API reference); headers from the guard chain are still added */
-  raw?: { body: string; contentType: string };
+  raw?: { body: string | Uint8Array; contentType: string };
   /** overrides for the automatic audit event */
   audit?: { resourceId?: string | null; subjectCitizenId?: string | null; tenantId?: string | null; details?: Record<string, unknown>; outcome?: 'allowed' | 'denied' };
 };
@@ -157,6 +158,8 @@ export function route<B = undefined, Q = undefined, P = undefined>(def: RouteDef
         { name: 'ip', key: ip, limit: 300, windowSec: 60 },
         ...(actor ? [{ name: actor.kind === 'api_key' ? 'api_key' : 'actor', key: actorKey(actor), limit: actor.kind === 'api_key' ? 60 : 120, windowSec: 60 }] : []),
         ...(def.rateLimit?.({ ip, actor, body: rawBody as B }) ?? []),
+        // ADM-4: the tenant's plan caps API-key calls per minute across all its keys
+        ...(actor?.kind === 'api_key' && actor.tenantId ? [{ name: 'plan.apiPerMinute', key: actor.tenantId, limit: (await planFor(db, actor.tenantId)).limits.apiPerMinute, windowSec: 60 }] : []),
       ];
       const rl = await checkLimits(rules, nowMs);
       headers = { ...headers, ...rateHeaders(rl.tightest, nowMs) };
@@ -234,7 +237,7 @@ export function route<B = undefined, Q = undefined, P = undefined>(def: RouteDef
       if (!replay) for (const fn of afterCommitFns) await fn();
 
       if (result.raw) {
-        return new NextResponse(result.raw.body, { status: result.status ?? 200, headers: { ...headers, ...(result.headers ?? {}), 'Content-Type': result.raw.contentType } });
+        return new NextResponse(result.raw.body as BodyInit, { status: result.status ?? 200, headers: { ...headers, ...(result.headers ?? {}), 'Content-Type': result.raw.contentType } });
       }
       const res = NextResponse.json(result.body, { status: result.status ?? 200, headers: { ...headers, ...(result.headers ?? {}), ...(replay ? { 'Idempotent-Replayed': 'true' } : {}) } });
       for (const c of result.cookies ?? []) res.cookies.set(c);

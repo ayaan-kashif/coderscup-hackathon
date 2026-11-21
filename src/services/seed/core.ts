@@ -71,6 +71,10 @@ export async function seedCore(db: DbOrTx, o: SeedCoreOpts) {
     staffIds[s.email] = u!.id;
     await db.insert(memberships).values({ userId: u!.id, tenantId: tenantIds[s.tenant], role: s.role, isSenior: s.isSenior ?? false })
       .onConflictDoUpdate({ target: [memberships.userId, memberships.tenantId], set: { role: s.role, isSenior: s.isSenior ?? false } });
+    for (const x of s.also ?? []) {
+      await db.insert(memberships).values({ userId: u!.id, tenantId: tenantIds[x.tenant], role: x.role })
+        .onConflictDoUpdate({ target: [memberships.userId, memberships.tenantId], set: { role: x.role } });
+    }
   }
 
   const pinHash = await hashSecret(o.citizenPin);

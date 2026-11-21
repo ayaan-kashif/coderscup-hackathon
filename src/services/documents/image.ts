@@ -89,3 +89,60 @@ export async function inspectImage(buf: Buffer) {
   const mime = meta.format === 'jpeg' ? 'image/jpeg' : meta.format === 'png' ? 'image/png' : meta.format === 'webp' ? 'image/webp' : null;
   return { mime, width: meta.width ?? 0, height: meta.height ?? 0 };
 }
+
+// ---------------------------------------------------------------- DOC-7 weak signals (never decide anything)
+export const EDITING_SOFTWARE = /photoshop|gimp|snapseed|picsart|canva|lightroom|pixlr|affinity|paint\.net|facetune|remini|meitu|polarr/i;
+
+/** editing-software names in EXIF / XMP / IPTC (phone-camera photos re-encoded by the app usually carry none) */
+export async function editingMetadata(buf: Buffer) {
+  const m = await sharp(buf).metadata();
+  const blob = [m.exif, m.xmp, m.iptc].filter((b): b is Buffer => !!b).map((b) => b.toString('latin1')).join(' ');
+  const hit = blob.match(EDITING_SOFTWARE);
+  return { software: hit ? hit[0] : null, hasMetadata: blob.length > 0 };
+}
+
+export const ELA_QUALITY = 90;
+export const ELA_BLOCK = 16;
+/** a block this many times brighter than the image average in the error-level map is "uneven" */
+export const ELA_RATIO_FLAG = 4;
+
+/**
+ * Error-level analysis: re-save a JPEG at quality 90 and measure how much each 16x16 block changes. A region pasted
+ * from another image often re-compresses differently from the rest. JPEG only; skipped above 6 megapixels.
+ */
+export async function errorLevel(buf: Buffer) {
+  const meta = await sharp(buf).metadata();
+  if (meta.format !== 'jpeg' || !meta.width || !meta.height || meta.width * meta.height > 6_000_000) return null;
+  const a = await sharp(buf).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+  const resaved = await sharp(a.data, { raw: a.info }).jpeg({ quality: ELA_QUALITY }).toBuffer();
+  const b = await sharp(resaved).removeAlpha().raw().toBuffer();
+  const { width: w, height: h, channels: ch } = a.info;
+  const bw = Math.floor(w / ELA_BLOCK), bh = Math.floor(h / ELA_BLOCK);
+  if (!bw || !bh) return null;
+  const blocks: number[] = [];
+  for (let by = 0; by < bh; by++) {
+    for (let bx = 0; bx < bw; bx++) {
+      let sum = 0;
+      for (let y = by * ELA_BLOCK; y < (by + 1) * ELA_BLOCK; y++) {
+        for (let x = bx * ELA_BLOCK; x < (bx + 1) * ELA_BLOCK; x++) {
+          const i = (y * w + x) * ch;
+          for (let c = 0; c < Math.min(3, ch); c++) sum += Math.abs(a.data[i + c]! - b[i + c]!);
+        }
+      }
+      blocks.push(sum / (ELA_BLOCK * ELA_BLOCK * Math.min(3, ch)));
+    }
+  }
+  const mean = blocks.reduce((s2, v) => s2 + v, 0) / blocks.length;
+  const sorted = [...blocks].sort((x, y) => x - y);
+  const p99 = sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.99))]!;
+  const ratio = p99 / Math.max(mean, 0.25);
+  return { mean: Math.round(mean * 100) / 100, p99: Math.round(p99 * 100) / 100, ratio: Math.round(ratio * 100) / 100, uneven: ratio >= ELA_RATIO_FLAG && p99 >= 3 };
+}
+
+export async function weakSignals(buf: Buffer) {
+  const [meta, ela] = await Promise.all([editingMetadata(buf).catch(() => null), errorLevel(buf).catch(() => null)]);
+  const notes: string[] = [];
+  if (meta?.software) notes.push(`edited with ${meta.software} (metadata)`);
+  if (ela?.uneven) notes.push('uneven compression in part of the image (error-level analysis)');
+  return { weakOnly: true, editingSoftware: meta?.software ?? null, ela, notes };
+}

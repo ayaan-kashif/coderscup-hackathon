@@ -10,7 +10,7 @@ import { rowsOf } from '@/db/rows';
 import { aiCall } from './calls';
 import { getModelIds } from './models';
 import { PROMPTS } from './prompts';
-import { generateStructured } from './runtime';
+import { aiAvailable, embedWith, generateStructured } from './runtime';
 
 export type Clause = { clauseId: string; text: string; score: number };
 
@@ -23,7 +23,7 @@ export function toOrQuery(q: string) {
   return [...new Set(words)].slice(0, 12).join(' | ');
 }
 
-export async function retrieveClauses(db: DbOrTx, question: string, k = 4): Promise<Clause[]> {
+async function keywordClauses(db: DbOrTx, question: string, k: number): Promise<Clause[]> {
   const orq = toOrQuery(question);
   const res = await db.execute(sql`
     select clause_id as "clauseId", heading || '. ' || text as text,
@@ -32,6 +32,64 @@ export async function retrieveClauses(db: DbOrTx, question: string, k = 4): Prom
     order by score desc, clause_id
     limit ${k}`);
   return rowsOf<Clause>(res).map((r) => ({ ...r, score: Number(r.score) }));
+}
+
+export const EMBED_DIMS = 768;
+/** cosine similarity at or above this counts as a confident semantic match (Urdu / Roman Urdu paraphrases) */
+export const VECTOR_MIN_SIM = 0.62;
+const RRF_K = 60;
+
+async function vectorClauses(db: DbOrTx, tenantId: string | null, question: string, k: number): Promise<(Clause & { sim: number })[]> {
+  if (!aiAvailable()) return [];
+  const [{ n } = { n: 0 }] = rowsOf<{ n: number }>(await db.execute(sql`select count(*)::int as n from policy_chunks where embedding is not null`));
+  if (!n) return [];
+  const ids = await getModelIds(db, tenantId);
+  try {
+    const e = await aiCall({ db, tenantId, purpose: 'policy.embed_query', model: ids.embeddings }, () => embedWith({ model: ids.embeddings, value: question, dimensions: EMBED_DIMS, timeoutMs: 4000 }));
+    const v = `[${e.embedding.join(',')}]`;
+    const res = await db.execute(sql`
+      select clause_id as "clauseId", heading || '. ' || text as text, 1 - (embedding <=> ${v}::vector) as sim
+      from policy_chunks where embedding is not null
+      order by embedding <=> ${v}::vector
+      limit ${k}`);
+    return rowsOf<{ clauseId: string; text: string; sim: number }>(res).map((r) => ({ ...r, sim: Number(r.sim), score: 0 }));
+  } catch {
+    return []; // embeddings down: keyword search alone
+  }
+}
+
+/**
+ * Hybrid retrieval (§12.2): keyword (full-text + trigram) and, when clause embeddings exist, pgvector cosine search,
+ * fused by reciprocal rank. `score` stays on the keyword scale for the refusal gate; a confident vector match lifts it
+ * to the gate so a paraphrase without shared words can still be answered.
+ */
+export async function retrieveClauses(db: DbOrTx, question: string, k = 4, tenantId: string | null = null): Promise<Clause[]> {
+  const kw = await keywordClauses(db, question, 10);
+  const vec = await vectorClauses(db, tenantId, question, 10);
+  if (!vec.length) return kw.slice(0, k);
+  const fused = new Map<string, { clauseId: string; text: string; score: number; rrf: number }>();
+  kw.forEach((c, i) => fused.set(c.clauseId, { ...c, rrf: 1 / (RRF_K + i + 1) }));
+  vec.forEach((c, i) => {
+    const f = fused.get(c.clauseId) ?? { clauseId: c.clauseId, text: c.text, score: 0, rrf: 0 };
+    f.rrf += 1 / (RRF_K + i + 1);
+    if (c.sim >= VECTOR_MIN_SIM) f.score = Math.max(f.score, RETRIEVAL_MIN_SCORE);
+    fused.set(c.clauseId, f);
+  });
+  return [...fused.values()].sort((x, y) => y.rrf - x.rrf || x.clauseId.localeCompare(y.clauseId)).slice(0, k).map((c) => ({ clauseId: c.clauseId, text: c.text, score: c.score }));
+}
+
+/** fills missing clause embeddings (policy text only, no personal data); run after seeding or a new policy version */
+export async function embedPolicyChunks(db: DbOrTx, tenantId: string | null = null) {
+  if (!aiAvailable()) return { embedded: 0, skipped: 'ai_unavailable' as const };
+  const ids = await getModelIds(db, tenantId);
+  const rows = rowsOf<{ id: string; text: string }>(await db.execute(sql`select id, heading || '. ' || text as text from policy_chunks where embedding is null order by clause_id limit 500`));
+  let embedded = 0;
+  for (const r of rows) {
+    const e = await aiCall({ db, tenantId, purpose: 'policy.embed_clause', model: ids.embeddings }, () => embedWith({ model: ids.embeddings, value: r.text, dimensions: EMBED_DIMS, timeoutMs: 8000 }));
+    await db.execute(sql`update policy_chunks set embedding = ${`[${e.embedding.join(',')}]`}::vector where id = ${r.id}`);
+    embedded++;
+  }
+  return { embedded, skipped: null };
 }
 
 const answerSchema = z.object({
@@ -66,7 +124,7 @@ export const RETRIEVAL_MIN_SCORE = 0.08;
 
 export async function answerPolicy(db: DbOrTx, tenantId: string | null, question: string) {
   const ids = await getModelIds(db, tenantId);
-  const retrieved = await retrieveClauses(db, question);
+  const retrieved = await retrieveClauses(db, question, 4, tenantId);
   const top = retrieved[0]?.score ?? 0;
   const base = { model: ids.policy, promptVersion: PROMPTS.policyAnswer.version, retrieved: retrieved.map((r) => ({ clauseId: r.clauseId, score: Math.round(r.score * 1000) / 1000 })) };
   if (top < RETRIEVAL_MIN_SCORE) return { ...base, answer: { ...NOT_SURE, citations: [], refused: true }, reason: 'low_retrieval_score' };

@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { ApplyFlow, OutboxList, syncNow } from '@/components/apply/apply-flow';
+import { LowBandwidthBadge } from '@/components/shell/low-bandwidth';
 import { SimulatedBadge } from '@/components/shell/simulated-badge';
 import { Button } from '@/components/ui/button';
 import { Keypad } from '@/components/voice/keypad';
@@ -259,7 +260,7 @@ function Home({ me, online }: { me: Me; online: boolean }) {
         <button type="button" className="text-5xl" aria-label="trust picture" onClick={() => me.trustPictureId && void playSequence([`trust_${me.trustPictureId}`])}>{trustPicture(me.trustPictureId)}</button>
         <div className="min-w-0 flex-1">
           <p className="truncate text-lg font-semibold">{me.displayName}</p>
-          <SimulatedBadge what="Saaya" />
+          <SimulatedBadge what="Saaya" /> <LowBandwidthBadge label={bi('Low data mode', 'کم ڈیٹا موڈ')} />
         </div>
         {view.name !== 'home' && <Button variant="ghost" onClick={back}>← {bi('Home', 'واپس')}</Button>}
       </header>

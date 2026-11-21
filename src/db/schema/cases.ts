@@ -77,6 +77,8 @@ export const documents = pgTable('documents', {
   qrSigValid: boolean('qr_sig_valid'),
   extraction: jsonb('extraction'),
   injectionFlag: boolean('injection_flag').notNull().default(false),
+  /** DOC-7: weak signals only (editing-software metadata, error-level analysis); shown to officers, never used to decide */
+  weakSignals: jsonb('weak_signals'),
   /** AES-256-GCM encrypted image bytes (prototype stand-in for object storage); nulled by the retention sweep */
   contentEnc: bytea('content_enc'),
   uploadedBy: text('uploaded_by'),

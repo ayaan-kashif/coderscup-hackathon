@@ -11,10 +11,12 @@ type Verify = { intact: boolean; length: number; brokenAt: number | null; missin
 export function AuditPanel() {
   const [events, setEvents] = useState<Ev[]>([]);
   const [verify, setVerify] = useState<Verify | null>(null);
+  const [anchors, setAnchors] = useState<{ chain_id: string; seq: number; head: string; verified_ok: string; created_at: string }[]>([]);
   const [version, setVersion] = useState(0);
   useEffect(() => {
     let alive = true;
     fetch('/api/v1/audit/events?limit=50').then((r) => (r.ok ? r.json() : null)).then((b) => { if (alive && b) setEvents(b.events); }, () => {});
+    fetch('/api/v1/audit/anchors').then((r) => (r.ok ? r.json() : null)).then((b) => { if (alive && b) setAnchors(b.items); }, () => {});
     return () => { alive = false; };
   }, [version]);
   const load = () => setVersion((v) => v + 1);
@@ -32,6 +34,24 @@ export function AuditPanel() {
               {verify.intact ? <ShieldCheck /> : <ShieldAlert />} {verify.intact ? `Intact: ${verify.length} events` : verify.meaning}
             </p>
           )}
+        </CardContent>
+      </Card>
+      <Card data-testid="anchors">
+        <CardHeader>
+          <CardTitle>Anchors (hourly)</CardTitle>
+          <CardDescription>Every hour each chain is verified and its head hash is recorded. A later rewrite of history would no longer match the anchored head.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-2 text-xs">
+          <Button size="sm" variant="outline" onClick={async () => { await fetch('/api/v1/audit/anchors', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }); load(); }}>Anchor now</Button>
+          {anchors.length === 0 && <p className="text-muted-foreground">No anchors yet.</p>}
+          {anchors.map((a) => (
+            <div key={a.chain_id} className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-1">
+              <span className="font-mono">{a.chain_id} · seq {a.seq}</span>
+              <span className="font-mono text-muted-foreground">{a.head.slice(0, 16)}…</span>
+              <Badge variant={a.verified_ok === 'true' ? 'outline' : 'destructive'}>{a.verified_ok === 'true' ? 'verified' : a.verified_ok}</Badge>
+              <span dir="ltr" className="text-muted-foreground">{new Date(a.created_at).toLocaleString()}</span>
+            </div>
+          ))}
         </CardContent>
       </Card>
       <Card>

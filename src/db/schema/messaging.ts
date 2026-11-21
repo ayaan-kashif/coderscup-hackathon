@@ -55,3 +55,16 @@ export const webhookDeliveries = pgTable('webhook_deliveries', {
   responseStatus: integer('response_status'),
   createdAt: createdAt(),
 });
+
+/** VOICE-2: runtime text-to-speech, cached by a hash of (model, language, text). Contains synthetic prompt text only. */
+export const ttsCache = pgTable('tts_cache', {
+  textHash: text('text_hash').primaryKey(),
+  lang: text('lang').notNull(),
+  model: text('model').notNull(),
+  mediaType: text('media_type').notNull(),
+  audio: bytea('audio').notNull(),
+  bytes: integer('bytes').notNull(),
+  hits: integer('hits').notNull().default(0),
+  lastUsedAt: ts('last_used_at').notNull().defaultNow(),
+  createdAt: createdAt(),
+});

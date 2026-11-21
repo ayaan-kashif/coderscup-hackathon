@@ -14,7 +14,14 @@ export const POST = route({
   audit: { action: 'case.decide', resourceType: 'case' },
   handler: async (c, db) => {
     const r = await officerDecision(db, c.actor!, c.params.id, c.body);
-    c.afterCommit(() => notifyOfficerDecision(getDb(), r));
+    c.afterCommit(async () => {
+      notifyOfficerDecision(getDb(), r);
+      const { emitEvent } = await import('@/services/jobs');
+      await emitEvent(getDb(), c.actor!.tenantId!, 'case.decided', { caseId: c.params.id, outcome: r.outcome, decisionId: r.decisionId }).catch(() => {});
+      if (c.body.action === 'escalate') {
+        await emitEvent(getDb(), c.actor!.tenantId!, 'case.escalated', { caseId: c.params.id, decisionId: r.decisionId }).catch(() => {});
+      }
+    });
     return {
       status: 201,
       body: { decisionId: r.decisionId, outcome: r.outcome, status: r.status, payment: r.payment },

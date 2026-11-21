@@ -15,6 +15,8 @@ export type TokenClaims = {
   stage?: 'otp' | 'full';
   senior?: boolean;
   demo?: boolean;
+  /** AUTH-1: this session passed a TOTP check (admins and auditors with MFA enrolled) */
+  mfa?: boolean;
   iat: number;
   exp: number;
   jti: string;
@@ -49,6 +51,30 @@ export async function verifyAccessToken(token: string): Promise<TokenClaims | nu
   try {
     const { payload } = await jwtVerify(token, secret(), { algorithms: ['HS256'], audience: 'authenticated', issuer: 'amanat' });
     return payload as unknown as TokenClaims;
+  } catch {
+    return null;
+  }
+}
+
+/** AUTH-1: the 5-minute ticket between password and TOTP; a different audience, so it is never a session */
+export const MFA_CHALLENGE_TTL_SEC = 5 * 60;
+export type MfaChallenge = { sub: string; tid: string };
+
+export async function signMfaChallenge(c: MfaChallenge, nowSec = Math.floor(Date.now() / 1000)) {
+  return new SignJWT({ tid: c.tid })
+    .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+    .setSubject(c.sub)
+    .setIssuedAt(nowSec)
+    .setExpirationTime(nowSec + MFA_CHALLENGE_TTL_SEC)
+    .setAudience('amanat-mfa')
+    .setIssuer('amanat')
+    .sign(secret());
+}
+
+export async function verifyMfaChallenge(token: string): Promise<MfaChallenge | null> {
+  try {
+    const { payload } = await jwtVerify(token, secret(), { algorithms: ['HS256'], audience: 'amanat-mfa', issuer: 'amanat' });
+    return { sub: String(payload.sub), tid: String(payload.tid) };
   } catch {
     return null;
   }

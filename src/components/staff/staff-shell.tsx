@@ -5,7 +5,9 @@ import type { Actor } from '@/auth/actor';
 import { getDb } from '@/db/client';
 import { tenants, users } from '@/db/schema/all';
 import { Badge } from '@/components/ui/badge';
+import { listMyTenants } from '@/services/auth';
 import { SignOutButton } from './sign-out';
+import { TenantSwitcher } from './tenant-switcher';
 
 export type NavItem = { href: string; label: string };
 
@@ -14,7 +16,7 @@ export const OFFICER_NAV: NavItem[] = [
 ];
 
 export const ADMIN_NAV: NavItem[] = [
-  { href: '/a', label: 'Rules & Twin' }, { href: '/a/evaluation', label: 'Cost & evaluation' }, { href: '/a/break-it', label: 'Break It' }, { href: '/a/chaos', label: 'Chaos & config' }, { href: '/a/org', label: 'Organisation' },
+  { href: '/a', label: 'Rules & Twin' }, { href: '/a/evaluation', label: 'Cost & evaluation' }, { href: '/a/break-it', label: 'Break It' }, { href: '/a/chaos', label: 'Chaos & config' }, { href: '/a/analytics', label: 'Analytics' }, { href: '/a/org', label: 'Organisation' },
 ];
 
 export const AUDITOR_NAV: NavItem[] = [
@@ -25,7 +27,8 @@ export async function StaffShell({ actor, title, children, nav }: { actor: Actor
   const t = await getTranslations('staff');
   const db = getDb();
   const [u] = await db.select({ name: users.displayName }).from(users).where(eq(users.id, actor.id));
-  const [tenant] = actor.tenantId ? await db.select({ name: tenants.name, sandbox: tenants.isSandbox }).from(tenants).where(eq(tenants.id, actor.tenantId)) : [];
+  const [tenant] = actor.tenantId ? await db.select({ name: tenants.name, code: tenants.code, sandbox: tenants.isSandbox }).from(tenants).where(eq(tenants.id, actor.tenantId)) : [];
+  const mine = actor.role && actor.role !== 'citizen' ? await listMyTenants(db, actor.id) : [];
   return (
     <div className="min-h-dvh">
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-card px-4 py-3">
@@ -38,6 +41,7 @@ export async function StaffShell({ actor, title, children, nav }: { actor: Actor
           <span>{u?.name}</span>
           <Badge variant="secondary">{t('role')}: {actor.role}{actor.isSenior ? ' (senior)' : ''}</Badge>
           {tenant && <Badge variant={tenant.sandbox ? 'warning' : 'outline'}>{t('tenant')}: {tenant.name}</Badge>}
+          <TenantSwitcher current={tenant?.code ?? null} tenants={mine} />
           <SignOutButton />
         </div>
       </header>

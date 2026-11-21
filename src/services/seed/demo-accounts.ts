@@ -12,12 +12,12 @@ export const DEMO_TENANTS: { code: TenantCode; name: string; nameUr: string; isS
   { code: 'sandbox', name: 'Break It sandbox (fictional)', nameUr: 'آزمائشی دفتر (فرضی)', isSandbox: true, province: 'Sindh' },
 ];
 
-export type DemoStaff = { email: string; name: string; tenant: TenantCode; role: Exclude<Role, 'citizen'>; isSenior?: boolean };
+export type DemoStaff = { email: string; name: string; tenant: TenantCode; role: Exclude<Role, 'citizen'>; isSenior?: boolean; /** AUTH-5 / TEN-4: roles in further tenants */ also?: { tenant: TenantCode; role: Exclude<Role, 'citizen'> }[] };
 
 export const DEMO_STAFF: DemoStaff[] = [
   { email: 'officer.imran@sindh.amanat.test', name: 'Officer Imran (fictional)', tenant: 'sindh', role: 'officer' },
   { email: 'senior.officer.hina@sindh.amanat.test', name: 'Senior Officer Hina (fictional)', tenant: 'sindh', role: 'officer', isSenior: true },
-  { email: 'admin.sana@sindh.amanat.test', name: 'Admin Sana (fictional)', tenant: 'sindh', role: 'admin' },
+  { email: 'admin.sana@sindh.amanat.test', name: 'Admin Sana (fictional)', tenant: 'sindh', role: 'admin', also: [{ tenant: 'sandbox', role: 'admin' }] },
   { email: 'admin.second.omar@sindh.amanat.test', name: 'Second Admin Omar (fictional)', tenant: 'sindh', role: 'admin' },
   { email: 'auditor.raza@sindh.amanat.test', name: 'Auditor Raza (fictional)', tenant: 'sindh', role: 'auditor' },
   { email: 'helper.shabana@sindh.amanat.test', name: 'Helper Shabana (fictional)', tenant: 'sindh', role: 'helper' },

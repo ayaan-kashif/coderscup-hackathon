@@ -6,7 +6,7 @@
  * Tests swap the resolvers for the AI SDK's own mock models, so the real SDK code path runs offline.
  * No key configured → `available()` is false and every caller takes its documented fallback.
  */
-import { embed, experimental_decide, experimental_transcribe, generateText, Output, type ModelMessage } from 'ai';
+import { embed, experimental_decide, experimental_generateSpeech, experimental_transcribe, generateText, Output, stepCountIs, type ModelMessage } from 'ai';
 import type { ZodType } from 'zod';
 
 type LanguageModel = Parameters<typeof generateText>[0]['model'];
@@ -19,6 +19,8 @@ export type Resolvers = {
   decision: (id: string) => DecisionModel;
   transcription: (id: string) => TranscriptionModel;
   embedding: (id: string) => EmbeddingModel;
+  /** VOICE-2: text-to-speech through the gateway; returns audio bytes */
+  speech: (o: { model: string; text: string; lang: string; signal: AbortSignal }) => Promise<{ audio: Uint8Array; mediaType: string }>;
   /** Uplift AI (direct HTTP); returns the transcript */
   uplift: (audio: Uint8Array, mediaType: string, signal: AbortSignal) => Promise<string>;
   available: () => boolean;
@@ -31,6 +33,11 @@ const defaultResolvers: Resolvers = {
   decision: (id) => id,
   transcription: (id) => id,
   embedding: (id) => id,
+  async speech(o) {
+    const r = await experimental_generateSpeech({ model: o.model, text: o.text, language: o.lang, outputFormat: 'wav', abortSignal: o.signal, maxRetries: 0 } as never);
+    const a = (r as unknown as { audio: { uint8Array: Uint8Array; mediaType?: string } }).audio;
+    return { audio: a.uint8Array, mediaType: a.mediaType ?? 'audio/wav' };
+  },
   async uplift(audio, mediaType, signal) {
     const key = process.env.UPLIFT_API_KEY;
     // Endpoint not verified against official docs at build time; configurable so it can be corrected without code.
@@ -133,4 +140,22 @@ export async function embedWith(o: { model: string; value: string; dimensions: n
     providerOptions: { google: { outputDimensionality: o.dimensions } },
   });
   return { embedding: r.embedding, usage: { inputTokens: r.usage?.tokens } as Usage };
+}
+
+export async function speakWith(o: { model: string; text: string; lang: string; timeoutMs: number }) {
+  guard();
+  const r = await resolvers.speech({ model: o.model, text: o.text, lang: o.lang, signal: AbortSignal.timeout(o.timeoutMs) });
+  return { ...r, modelId: o.model, usage: {} as Usage };
+}
+
+/** bounded tool-calling agent (verification agent): stops after maxSteps; the final answer is a Zod-validated object */
+export async function runAgent<T>(o: { model: string; system: string; prompt: string; tools: Parameters<typeof generateText>[0]['tools']; schema: ZodType<T>; maxSteps: number; timeoutMs: number }) {
+  guard();
+  const r = await generateText({
+    model: resolvers.language(o.model), system: o.system, prompt: o.prompt, tools: o.tools,
+    stopWhen: stepCountIs(o.maxSteps), output: Output.object({ schema: o.schema }), temperature: 0,
+    abortSignal: AbortSignal.timeout(o.timeoutMs), maxRetries: 0, providerOptions: { gateway: { zeroDataRetention: true } },
+  });
+  const toolCalls = r.steps.reduce((n, s) => n + (s.toolCalls?.length ?? 0), 0);
+  return { object: r.output as T, steps: r.steps.length, toolCalls, usage: { inputTokens: r.usage.inputTokens, outputTokens: r.usage.outputTokens } as Usage, modelId: r.response?.modelId ?? o.model };
 }

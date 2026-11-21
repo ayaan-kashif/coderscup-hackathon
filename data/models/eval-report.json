@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-21T07:04:40.641Z",
+ "generatedAt": "2026-11-21T16:55:06.490Z",
  "versions": {
   "scorer": "scorer-v1",
   "matcher": "matcher-v1",
@@ -175,8 +175,10 @@
   "note": "needs synthesised audio and a speech key: pnpm voice:generate --d4 && pnpm stt:bakeoff"
  },
  "jevLabelSwap": {
-  "dataset": "D2 test",
+  "dataset": "D2 test (first 40)",
   "changed": null,
+  "compared": 0,
+  "target": 0.05,
   "note": "needs the gateway key"
  }
 }

@@ -29,6 +29,8 @@ export function RulesEditor({ meId }: { meId: string }) {
   const [previewCase, setPreviewCase] = useState('');
   const [preview, setPreview] = useState<unknown>(null);
   const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState('');
+  const [suggestion, setSuggestion] = useState<{ summary: string; diff: { added: string[]; changed: string[]; removed: string[] }; quotes: string[]; proposed: unknown } | null>(null);
 
   const load = useCallback(async (select?: string) => {
     const r = await api('/api/v1/rules');
@@ -122,6 +124,29 @@ export function RulesEditor({ meId }: { meId: string }) {
           {preview !== null && <pre className="w-full overflow-x-auto rounded bg-muted p-2 text-xs">{JSON.stringify(preview, null, 1)}</pre>}
         </CardContent>
       </Card>
+
+      {editable && (
+        <Card data-testid="rule-suggest">
+          <CardHeader><CardTitle>Suggest from a policy notice (AI, review only)</CardTitle><CardDescription>Paste a notice. The model proposes rule changes; nothing is saved until you load them, check them and press Save. The Twin and publishing rules still apply.</CardDescription></CardHeader>
+          <CardContent className="space-y-2">
+            <textarea className="h-28 w-full rounded border border-border bg-card p-2 text-sm" placeholder="e.g. From 1 January the age limit for widows rises to 65 (SRP-POL-2.1)…" value={notice} onChange={(e) => setNotice(e.target.value)} />
+            <Button variant="outline" disabled={busy || notice.length < 20} onClick={async () => {
+              setBusy(true);
+              const r = await api(`/api/v1/rules/drafts/${draft.id}/suggest`, { body: { notice } });
+              setBusy(false);
+              if (r.status === 200) { setSuggestion(r.body); setMsg({ ok: true, text: 'Suggestion ready. Review it below.' }); } else { setSuggestion(null); setMsg({ ok: false, text: `${r.body.code}: ${r.body.detail}` }); }
+            }}>Suggest changes</Button>
+            {suggestion && (
+              <div className="space-y-1 rounded border border-border p-2 text-sm">
+                <p>{suggestion.summary}</p>
+                <p className="text-xs">Added: {suggestion.diff.added.join(', ') || '—'} · Changed: {suggestion.diff.changed.join(', ') || '—'} · Removed: {suggestion.diff.removed.join(', ') || '—'}</p>
+                {suggestion.quotes.map((q) => <p key={q} className="text-xs text-muted-foreground">“{q}”</p>)}
+                <Button size="sm" onClick={() => { setJson(JSON.stringify(suggestion.proposed, null, 2)); setMsg({ ok: true, text: 'Loaded into the JSON view. Check it, then press Save.' }); }}>Load into editor (not saved)</Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {editable && (
         <Card data-testid="twin">

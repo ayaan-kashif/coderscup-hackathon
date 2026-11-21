@@ -3,20 +3,14 @@ import { Mic, Square } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { playSequence } from '@/components/voice/voice-prompt';
-import { useBi } from '@/components/voice/voice-lib';
+import { speakText, useBi } from '@/components/voice/voice-lib';
 
 export type Heard = { voiceInputId: string; transcript: string };
 
 const MAX_MS = 15_000; // VOICE-1
 
-function speak(text: string) {
-  // read-back of a dynamic phrase: the device's own speech engine (no network); the clips cover the fixed words
-  try {
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'ur-PK';
-    window.speechSynthesis.speak(u);
-  } catch { /* no device TTS: the transcript is on screen */ }
-}
+/** read-back of her own words: server TTS without storing (VOICE-2), device voice as fallback */
+const speak = (text: string) => { void speakText(text, { kind: 'readback' }); };
 
 /**
  * CIT-4 / VOICE-5: record up to 15 s → the server transcribes → "I heard … is that right?" with yes/no.

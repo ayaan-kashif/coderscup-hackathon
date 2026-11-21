@@ -152,6 +152,17 @@ export const MOCK_ROUTES: MockRoute[] = [
     },
   },
   {
+    service: 'sms', method: 'POST', pattern: 'sms/inbound', summary: 'SMS gateway: the mock phone texts the 8171 short code (OFF-8: "STATUS" returns the case state)',
+    body: z.object({ from: phone, to: z.literal('8171').default('8171'), body: z.string().min(1).max(160) }),
+    run: async (db, { body }) => {
+      const b = body as { from: string; to: string; body: string };
+      await db.insert(mockSmsMessages).values({ toPhone: b.from, fromSender: `me \u2192 ${b.to}`, body: b.body, kind: 'other' });
+      const { handleInboundSms } = await import('@/services/sms-commands');
+      const r = await handleInboundSms(db, b.from, b.body);
+      return { status: 201, body: { received: true, ...r } };
+    },
+  },
+  {
     service: 'sms', method: 'POST', pattern: 'ivr/call', summary: 'IVR gateway: place a simulated voice call (shows on the mock phone)',
     body: z.object({ to: phone, script: z.string().min(1).max(1000), objectionDigit: z.string().regex(/^\d$/).optional() }),
     run: async (db, { body }) => {

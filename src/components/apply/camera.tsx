@@ -1,5 +1,6 @@
 'use client';
 import { Camera, CheckCircle2, RotateCcw } from 'lucide-react';
+import { useLowBandwidth } from '@/components/shell/low-bandwidth';
 import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { VoicePrompt, playSequence } from '@/components/voice/voice-prompt';
@@ -61,6 +62,7 @@ export function CameraCapture({ prompt, title, onAccept }: { prompt: string; tit
   const input = useRef<HTMLInputElement>(null);
   const [shot, setShot] = useState<Captured | null>(null);
   const [busy, setBusy] = useState(false);
+  const low = useLowBandwidth();
   const onFile = async (f: File | undefined) => {
     if (!f) return;
     setBusy(true);
@@ -81,8 +83,9 @@ export function CameraCapture({ prompt, title, onAccept }: { prompt: string; tit
       <h2 className="text-xl font-bold">{title}</h2>
       <VoicePrompt clip={prompt} label={bi('Play again', 'دوبارہ سنیں')} />
       <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl border-4 border-dashed border-primary/60 bg-muted">
+        {/* OFF-7: no preview in low-bandwidth mode, only the clarity check */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        {shot ? <img src={shot.preview} alt="" className="h-full w-full object-contain" /> : <Camera className="size-16 text-muted-foreground" aria-hidden />}
+        {shot && !low ? <img src={shot.preview} alt="" className="h-full w-full object-contain" /> : shot ? <span className="text-sm text-muted-foreground" data-testid="no-preview">{bi('Photo taken', 'تصویر لے لی')} · {Math.round(shot.bytes / 1024)} KB</span> : <Camera className="size-16 text-muted-foreground" aria-hidden />}
         {shot && (
           <div className={`absolute bottom-2 left-2 rounded-full px-3 py-1 text-sm font-semibold ${blurry ? 'bg-destructive text-white' : 'bg-success text-white'}`} data-testid="blur-meter">
             {blurry ? bi('Not clear', 'صاف نہیں') : bi('Clear', 'صاف')} · {Math.round(shot.sharpness * 100)}

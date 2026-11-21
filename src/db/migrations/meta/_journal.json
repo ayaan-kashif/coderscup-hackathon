@@ -43,6 +43,20 @@
       "when": 1795243239378,
       "tag": "0005_fine_hash",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795277661000,
+      "tag": "0006_prompt4_mfa_tts",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1795279022422,
+      "tag": "0007_doc7_weak_signals",
+      "breakpoints": true
     }
   ]
 }

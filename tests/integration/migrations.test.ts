@@ -12,13 +12,13 @@ const PLATFORM_TABLES = [
   'consents', 'correction_requests', 'scam_reports', 'scam_alerts', 'districts', 'notifications', 'outbox',
   'webhook_endpoints', 'webhook_deliveries', 'audit_events', 'audit_chain_heads', 'audit_anchors', 'idempotency_keys',
   'ai_calls', 'ai_decisions', 'model_versions', 'twin_runs', 'twin_case_results', 'eval_runs', 'eval_case_results',
-  'system_config', 'chaos_settings',
+  'system_config', 'chaos_settings', 'tts_cache',
 ];
 const MOCK_TABLES = ['identity_records', 'civil_events', 'wallets', 'ledger_transactions', 'sms_messages', 'complaints', 'issuer_keys'];
 
 describe('migrations (PRD §20.2)', () => {
-  it('creates exactly the 45 platform tables and the 7 mock tables', async () => {
-    expect(PLATFORM_TABLES).toHaveLength(45);
+  it('creates exactly the 46 platform tables (45 from §20.2 + the VOICE-2 TTS cache) and the 7 mock tables', async () => {
+    expect(PLATFORM_TABLES).toHaveLength(46);
     const res = await t.pg.query<{ schemaname: string; tablename: string }>(
       `select schemaname, tablename from pg_tables where schemaname in ('public','mock') order by 1, 2`);
     const pub = res.rows.filter((r) => r.schemaname === 'public').map((r) => r.tablename).sort();

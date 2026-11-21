@@ -1,4 +1,5 @@
 import { and, eq } from 'drizzle-orm';
+import { assertCaseQuota } from './plans';
 import type { Actor } from '@/auth/actor';
 import { maskCnic } from '@/auth/crypto';
 import type { DbOrTx } from '@/db/client';
@@ -29,6 +30,9 @@ export async function tenantForNewCase(db: DbOrTx, actor: Actor, citizenId: stri
 export async function createDraftCase(db: DbOrTx, p: { actor: Actor; tenantId: string; citizenId: string | null; programCode: string; channel: 'citizen' | 'helper' | 'api' | 'officer'; clientSubmissionId: string }) {
   const [prog] = await db.select({ id: programs.id }).from(programs).where(and(eq(programs.tenantId, p.tenantId), eq(programs.code, p.programCode), eq(programs.active, true))).limit(1);
   if (!prog) throw new ApiError('VALIDATION_FAILED', `Unknown programme ${p.programCode}.`);
+  // ADM-4: a repeat of the same submission is not a new case, so it never counts against the plan
+  const [dup] = await db.select({ id: cases.id }).from(cases).where(and(eq(cases.tenantId, p.tenantId), eq(cases.clientSubmissionId, p.clientSubmissionId))).limit(1);
+  if (!dup) await assertCaseQuota(db, p.tenantId);
   const inserted = await db.insert(cases).values({
     tenantId: p.tenantId, programId: prog.id, citizenId: p.citizenId, status: 'draft', channel: p.channel,
     clientSubmissionId: p.clientSubmissionId, createdByType: p.actor.kind, createdById: p.actor.id,

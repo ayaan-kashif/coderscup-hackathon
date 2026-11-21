@@ -1,5 +1,6 @@
 'use client';
 import { AlertTriangle, Check, Mic, RefreshCw, ShieldOff, Volume2, X } from 'lucide-react';
+import { isLowBandwidth } from '@/components/shell/low-bandwidth';
 import { useCallback, useEffect, useState } from 'react';
 import { CameraCapture } from '@/components/apply/camera';
 import { DISTRICT_ICONS } from '@/components/apply/question';
@@ -8,7 +9,7 @@ import { SimulatedBadge } from '@/components/shell/simulated-badge';
 import { Button } from '@/components/ui/button';
 import { Keypad } from '@/components/voice/keypad';
 import { VoicePrompt, playSequence } from '@/components/voice/voice-prompt';
-import { amountClips, useBi } from '@/components/voice/voice-lib';
+import { amountClips, speakText, useBi } from '@/components/voice/voice-lib';
 import { enqueue, outboxDb } from '@/offline/outbox';
 import { Ticks } from './ticks';
 
@@ -49,7 +50,9 @@ export function CaseStatusScreen({ caseId, trustPictureId, onProof, onReceipt }:
   const load = useCallback(() => api(`/api/v1/cases/${caseId}/status`).then((r) => { if (r.status === 200) { setS(r.body); setErr(null); } else setErr(r.body.detail ?? String(r.status)); }, () => setErr('offline')), [caseId]);
   useEffect(() => {
     let alive = true;
-    const tick = () => { if (alive) void load(); };
+    let n = 0;
+    // OFF-7: in low-bandwidth mode the status is polled every 32 s instead of every 8 s (there are no websockets)
+    const tick = () => { if (!alive) return; if (n++ % (isLowBandwidth() ? 4 : 1) === 0) void load(); };
     tick();
     const t = setInterval(tick, 8000);
     return () => { alive = false; clearInterval(t); };
@@ -251,7 +254,7 @@ export function DataScreen({ caseId }: { caseId: string | null }) {
     void Promise.all([api('/api/v1/me/consents'), api('/api/v1/me/access-log')]).then(([a, b]) => { if (!alive) return; if (a.status === 200) setC(a.body); if (b.status === 200) setLog(b.body.items); });
     return () => { alive = false; };
   }, [version]);
-  const say = (t: string) => { try { const u = new SpeechSynthesisUtterance(t); u.lang = 'ur-PK'; speechSynthesis.speak(u); } catch { /* no device voice */ } };
+  const say = (t: string) => { void speakText(t, { lang: 'en' }); };
   return (
     <section className="space-y-5" data-testid="data-screen">
       <div>
@@ -294,6 +297,10 @@ export function DataScreen({ caseId }: { caseId: string | null }) {
         </ul>
       </div>
       {caseId && <Correction caseId={caseId} />}
+      {/* CONS-8: her own data as a JSON file */}
+      <Button asChild size="lg" variant="outline" className="w-full" data-testid="export-data">
+        <a href="/api/v1/me/export" download>{bi('Download my data', 'اپنی معلومات ڈاؤن لوڈ کریں')}</a>
+      </Button>
     </section>
   );
 }
@@ -349,11 +356,14 @@ export function HelpScreen() {
       <textarea className="min-h-24 w-full rounded-xl border border-border bg-card p-3 text-lg" value={q} onChange={(e) => setQ(e.target.value)} placeholder={bi('Am I eligible if my husband died abroad?', 'اگر شوہر بیرون ملک فوت ہوئے تو کیا میں اہل ہوں؟')} />
       <Button size="xl" className="w-full" disabled={q.length < 5} onClick={async () => {
         const r = await api('/api/v1/assist/policy', { body: { question: q } });
-        if (r.status === 200) { setA(r.body); if (r.body.refused) void playSequence(['help_not_sure']); }
+        if (r.status === 200) { setA(r.body); if (r.body.refused) void playSequence(['help_not_sure']); else void speakText(r.body.answer_ur); }
       }}><Mic className="!size-6" /> {bi('Ask', 'پوچھیں')}</Button>
       {a && (
         <div className="space-y-2 rounded-xl border border-border p-4" data-testid="policy-answer">
-          <p className="text-lg font-semibold">{bi(a.answer_en, a.answer_ur)}</p>
+          <div className="flex items-start gap-2">
+            <p className="flex-1 text-lg font-semibold">{bi(a.answer_en, a.answer_ur)}</p>
+            {!a.refused && <Button size="icon" variant="ghost" aria-label={bi('Play again', 'دوبارہ سنیں')} onClick={() => void speakText(a.answer_ur)}><Volume2 /></Button>}
+          </div>
           {a.citations.map((c) => <p key={c.clause_id} className="text-sm text-muted-foreground">§ {c.clause_id}: “{c.quote}”</p>)}
         </div>
       )}

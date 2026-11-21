@@ -21,7 +21,11 @@ export const POST = route({
     const pin = await checkPin(db, c.actor!.id, c.body.pin);
     if (!pin.ok) return problemResult(c, pin.locked ? 'PIN_LOCKED' : 'PIN_INVALID', pin.locked ? 'PIN locked for 15 minutes.' : `Wrong PIN. ${pin.left} tries left.`, { triesLeft: pin.left });
     const r = await withdrawConsent(db, c.actor!.citizenId!, c.params.id);
-    c.afterCommit(async () => notifyCitizen(getDb(), { tenantId: r.consent.tenantId, citizenId: r.consent.citizenId, key: 'paused_consent' }));
+    c.afterCommit(async () => {
+      notifyCitizen(getDb(), { tenantId: r.consent.tenantId, citizenId: r.consent.citizenId, key: 'paused_consent' });
+      const { emitEvent } = await import('@/services/jobs');
+      await emitEvent(getDb(), r.consent.tenantId, 'consent.withdrawn', { consentId: c.params.id, citizenId: r.consent.citizenId }).catch(() => {});
+    });
     return { body: { id: c.params.id, status: 'withdrawn', pausedCases: r.pausedCases, revokedGrants: r.revokedGrants, heldPayments: r.heldPayments }, audit: { tenantId: r.consent.tenantId, subjectCitizenId: r.consent.citizenId, details: { pausedCases: r.pausedCases.length, revokedGrants: r.revokedGrants, heldPayments: r.heldPayments } } };
   },
 });

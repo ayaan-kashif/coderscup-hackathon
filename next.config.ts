@@ -1,6 +1,8 @@
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
+const isDev = process.env.NODE_ENV !== 'production';
+
 const securityHeaders = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
@@ -8,13 +10,22 @@ const securityHeaders = [
   { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains' },
   // camera and microphone only on capture screens (enabled per route later)
   { key: 'Permissions-Policy', value: 'camera=(self), microphone=(self), geolocation=()' },
-  // scripts and styles only from us (Next.js needs inline bootstraps) and the pinned CDN of the API reference page
+  // scripts and styles only from us (Next.js needs inline bootstraps and eval in dev for callstacks)
   {
     key: 'Content-Security-Policy',
     value: [
-      "default-src 'self'", "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net", "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com",
-      "img-src 'self' data: blob:", "media-src 'self' blob: data:", "font-src 'self' data: https://cdn.jsdelivr.net https://fonts.gstatic.com https://fonts.scalar.com", "connect-src 'self'",
-      "worker-src 'self'", "frame-ancestors 'none'", "base-uri 'self'", "form-action 'self'", "object-src 'none'",
+      "default-src 'self'",
+      `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval'" : ''} https://cdn.jsdelivr.net`.trim(),
+      "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com",
+      "img-src 'self' data: blob:",
+      "media-src 'self' blob: data:",
+      "font-src 'self' data: https://cdn.jsdelivr.net https://fonts.gstatic.com https://fonts.scalar.com",
+      `connect-src 'self' ${isDev ? 'ws: http:' : ''}`.trim(),
+      "worker-src 'self'",
+      "frame-ancestors 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "object-src 'none'",
     ].join('; '),
   },
 ];

@@ -56,15 +56,27 @@ function choice(a: Answer | undefined, meaning: Record<string, string>) {
   return { choice: meaning[a.choice] ?? a.choice, probabilities: probs };
 }
 
+/**
+ * EVAL-4: the same options with the neutral keys rotated (opt_a gets opt_b's description, and so on). If Jev reads the
+ * descriptions and not the key names, the meaning it picks does not change.
+ */
+export function rotateOptions(o: { criteria: Options; meaning: Record<keyof Options, string> }, by = 1) {
+  const keys = Object.keys(o.criteria) as (keyof Options)[];
+  const criteria = {} as Options;
+  const meaning = {} as Record<keyof Options, string>;
+  keys.forEach((k, i) => { const src = keys[(i + by) % keys.length]!; criteria[k] = o.criteria[src]; meaning[k] = o.meaning[src]; });
+  return { criteria, meaning };
+}
+
 /** SCAM-3 */
-export async function classifyScam(db: DbOrTx, tenantId: string | null, message: string, claims: unknown) {
+export async function classifyScam(db: DbOrTx, tenantId: string | null, message: string, claims: unknown, options = SCAM_OPTIONS, purpose = 'jev.scam') {
   const ids = await getModelIds(db, tenantId);
   try {
-    const r = await run(db, tenantId, null, 'jev.scam', PROMPTS.jevScam.version, ids.router, { message, claims }, {
-      requestType: { type: 'choice', instructions: 'Which description best matches what this message asks the reader to do?', criteria: SCAM_OPTIONS.criteria },
+    const r = await run(db, tenantId, null, purpose, PROMPTS.jevScam.version, ids.router, { message, claims }, {
+      requestType: { type: 'choice', instructions: 'Which description best matches what this message asks the reader to do?', criteria: options.criteria },
       needsPerson: { type: 'boolean', instructions: 'Would a careful reviewer need more information before deciding whether this message is genuine?' },
     });
-    const c = choice(r.answers.requestType, SCAM_OPTIONS.meaning);
+    const c = choice(r.answers.requestType, options.meaning);
     const np = r.answers.needsPerson;
     return { ok: true as const, model: r.modelId, value: { requestType: c?.choice ?? 'other', pNeedsPerson: np?.type === 'boolean' ? np.probability : 1 }, probabilities: { requestType: c?.probabilities ?? null, needsPerson: np?.type === 'boolean' ? np.probability : null } };
   } catch (e) { return fail(e, ids.router); }

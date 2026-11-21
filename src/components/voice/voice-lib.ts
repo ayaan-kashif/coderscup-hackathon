@@ -37,3 +37,33 @@ export function resolveVoice(keys: string[], vars: Record<string, unknown>, trus
   }
   return out.filter(Boolean);
 }
+
+let speaking: HTMLAudioElement | null = null;
+/**
+ * VOICE-2: speak a dynamic phrase with the server's text-to-speech (cached by text hash; 'readback' of her own words
+ * is never stored). Falls back to the device voice when TTS is down, offline, or in low-bandwidth mode (OFF-7).
+ */
+export async function speakText(text: string, o: { kind?: 'phrase' | 'readback'; lang?: 'ur' | 'en' } = {}): Promise<'server' | 'device' | 'none'> {
+  const lang = o.lang ?? 'ur';
+  const low = typeof document !== 'undefined' && document.documentElement.dataset.lowBandwidth === 'true';
+  if (!low && typeof navigator !== 'undefined' && navigator.onLine !== false) {
+    try {
+      const r = await fetch('/api/v1/voice/tts', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text, lang, kind: o.kind ?? 'phrase' }) });
+      if (r.ok) {
+        const url = URL.createObjectURL(await r.blob());
+        speaking?.pause();
+        const a = new Audio(url);
+        speaking = a;
+        a.onended = () => URL.revokeObjectURL(url);
+        await a.play();
+        return 'server';
+      }
+    } catch { /* fall through to the device voice */ }
+  }
+  try {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = lang === 'ur' ? 'ur-PK' : 'en-US';
+    window.speechSynthesis.speak(u);
+    return 'device';
+  } catch { return 'none'; }
+}

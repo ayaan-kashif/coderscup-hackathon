@@ -12,7 +12,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { z, type ZodType } from 'zod';
 import { MATRIX, type Action } from '@/auth/policy';
 import { signAccessToken } from '@/auth/tokens';
-import { apiKeys, citizens, complaints, consents, correctionRequests, decisions, documents, evalRuns, helperAssignments, helperGrants, payments, payoutChanges, ruleSets, scamAlerts, scamReports, twinRuns, users, aiDecisions } from '@/db/schema/all';
+import { apiKeys, citizens, complaints, consents, correctionRequests, decisions, documents, evalRuns, helperAssignments, helperGrants, payments, payoutChanges, ruleSets, scamAlerts, scamReports, twinRuns, users, aiDecisions, webhookEndpoints, webhookDeliveries } from '@/db/schema/all';
 import { apiKeyHash } from '@/auth/crypto';
 import { ROUTE_MODULES } from '@/lib/api/openapi';
 import type { RouteSpec } from '@/lib/api/route';
@@ -68,6 +68,7 @@ const BODY_OVERRIDES: Record<string, unknown> = {
   uploadVoice: { questionKey: 'name', mediaType: 'audio/webm', dataBase64: 'x'.repeat(60), durationMs: 1000 },
   createComplaint: { type: 'other' },
   requestCorrection: { caseId: '00000000-0000-4000-8000-000000000000', fieldKey: 'household.monthly_income', claimedValue: 1 },
+  createWebhookEndpoint: { url: 'https://example.test/webhook', events: ['case.decided'] },
   updateRuleDraft: { rules: [], thresholds: {}, costs: {} },
   createUser: { email: 'probe.user@sindh.amanat.test', displayName: 'Probe User', role: 'officer' },
   createApiKey: { name: 'probe key', scopes: ['scam:check'] },
@@ -129,6 +130,10 @@ beforeAll(async () => {
   F.apiKey = ak!.id;
   const [aid] = await t.db.insert(aiDecisions).values({ tenantId: s, kind: 'policy_answer', inputHash: 'x', model: 'm', result: {}, userReason: 'x' }).returning({ id: aiDecisions.id });
   F.aiDecision = aid!.id;
+  const [wh] = await t.db.insert(webhookEndpoints).values({ tenantId: s, url: 'https://matrix.test/webhook', secretEnc: Buffer.from('x'), events: ['case.decided'] }).returning({ id: webhookEndpoints.id });
+  F.webhook = wh!.id;
+  const [whd] = await t.db.insert(webhookDeliveries).values({ endpointId: wh!.id, tenantId: s, event: 'case.decided', payload: {} }).returning({ id: webhookDeliveries.id });
+  F.webhookDelivery = whd!.id;
   // Fatima withdraws consent: officer and API-key reads of her case are CONSENT_WITHDRAWN
   await t.db.update(consents).set({ status: 'withdrawn', withdrawnAt: new Date() }).where(eq(consents.citizenId, fatima));
 
@@ -159,6 +164,7 @@ function fixtureFor(path: string, axis: 'normal' | 'consent'): { params: Record<
     [/^payout-changes\/\{id\}/, 'payoutChange', 'zarina'], [/^payments\/\{id\}/, 'payment', 'zarina'], [/^me\/consents\/\{id\}/, 'consent', 'zarina'], [/^helper\/grants\/\{id\}/, 'grant', 'zarina'],
     [/^scam\/alerts\/\{id\}/, 'alert', null], [/^scam\/reports\/\{id\}/, 'report', null], [/^decisions\/\{id\}/, 'decision', null], [/^ai-decisions\/\{id\}/, 'aiDecision', null],
     [/^rules\/drafts\/\{id\}/, 'ruleSet', null], [/^twin-runs\/\{id\}/, 'twin', null], [/^eval\/runs\/\{id\}/, 'evalRun', null], [/^admin\/users\/\{id\}/, 'user', null], [/^admin\/api-keys\/\{id\}/, 'apiKey', null],
+    [/^admin\/webhooks\/deliveries\/\{id\}/, 'webhookDelivery', null], [/^admin\/webhooks\/\{id\}/, 'webhook', null],
   ];
   for (const [re, f, o] of pick) if (re.test(seg)) { p.id = F[f]!; owner = o; }
   if (seg.startsWith('decisions/{id}')) owner = 'fatima';

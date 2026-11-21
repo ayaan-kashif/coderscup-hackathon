@@ -24,7 +24,7 @@ export const aiCalls = pgTable('ai_calls', {
 export const aiDecisions = pgTable('ai_decisions', {
   id: id(),
   tenantId: uuid('tenant_id').references(() => tenants.id),
-  kind: text('kind', { enum: ['scam_verdict', 'intent_routing', 'complaint_triage', 'policy_answer', 'second_opinion'] }).notNull(),
+  kind: text('kind', { enum: ['scam_verdict', 'intent_routing', 'complaint_triage', 'policy_answer', 'second_opinion', 'rule_draft'] }).notNull(),
   inputHash: text('input_hash').notNull(),
   model: text('model').notNull(),
   promptVersion: text('prompt_version'),

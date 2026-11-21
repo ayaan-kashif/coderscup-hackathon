@@ -25,7 +25,7 @@ import { civilRegistry, documentIssuer, identityRegistry, paymentLedger } from '
 import { auditorTrace, citizenExplanation, officerContributions, officerEvidence } from '../explain';
 import { alertOfficers, notifyCitizen } from '../notify';
 import { effectiveConfig } from '../config';
-import { decodeQr, dhash, fineHash, sharpness } from '../documents/image';
+import { decodeQr, dhash, fineHash, sharpness, weakSignals } from '../documents/image';
 import { parseQr, verifyQrSignature } from '../documents/qr';
 import { activeDestination, buildSnapshot, citizenCnic, currentDocuments, latestArtifact, loadCase, loadVersions, putFact, type LoadedCase, type Transient } from './data';
 
@@ -118,7 +118,9 @@ export async function stepVerifyDocuments(db: DbOrTx, caseId: string) {
         qrSigValid = keys.length ? verifyQrSignature(parsed, keys) : null;
       }
     }
-    await db.update(documents).set({ sharpness: sh, dhash: dh, fineHash: d.fineHash ?? (await fineHash(buf)), qrPayload: qrPayload as object | null, qrSigValid }).where(eq(documents.id, d.id));
+    // DOC-7: weak signals for the officer only; they never change a decision
+    const weak = d.weakSignals ?? (await weakSignals(buf));
+    await db.update(documents).set({ sharpness: sh, dhash: dh, fineHash: d.fineHash ?? (await fineHash(buf)), qrPayload: qrPayload as object | null, qrSigValid, weakSignals: weak }).where(eq(documents.id, d.id));
     // facts from a VALID signed QR only (source qr_signed)
     if (qrSigValid && qrPayload) {
       const ref = `doc:${d.storageKey.slice(0, 16)}`;
@@ -508,6 +510,8 @@ export async function payIfDue(db: DbOrTx, paymentId: string, now = new Date()) 
       await writeAudit(tx, { ...SYSTEM, tenantId: c.tenantId, subjectCitizenId: c.citizenId, action: 'payment.sent', resourceType: 'payment', resourceId: p.id, outcome: 'allowed', details: { ledgerRef, amount: p.amount, walletLast4: dest.walletLast4, simulated: true } });
     });
     if (c.citizenId) await notifyCitizen(db, { tenantId: c.tenantId, citizenId: c.citizenId, key: 'payment_sent', vars: { amount: p.amount.toLocaleString('en-US'), last4: dest.walletLast4 } });
+    const { emitEvent } = await import('@/services/jobs');
+    await emitEvent(db, c.tenantId, 'payment.sent', { paymentId: p.id, caseId: c.id, amount: p.amount, ledgerRef, walletLast4: dest.walletLast4 }).catch(() => {});
     return { paid: true, ledgerRef };
   } catch (e) {
     // ledger down: the payment stays on hold and an officer is alerted (§27.3)

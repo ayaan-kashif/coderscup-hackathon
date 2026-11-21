@@ -13,6 +13,8 @@ export type Actor = {
   isSenior?: boolean;
   /** citizens: 'otp' after the phone code, 'full' after the PIN */
   stage?: 'otp' | 'full';
+  /** AUTH-1: staff session passed TOTP */
+  mfa?: boolean;
   via?: 'bearer' | 'cookie' | 'api_key';
 };
 

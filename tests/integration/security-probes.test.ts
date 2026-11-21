@@ -114,7 +114,9 @@ describe('repository and configuration', () => {
     if (fs.existsSync('.env.local')) {
       for (const line of fs.readFileSync('.env.local', 'utf8').split(/\r?\n/)) {
         const m = line.match(/^([A-Z_]+)=(.{12,})$/);
-        if (m && !['DEMO_MODE'].includes(m[1]!)) secrets.push(m[2]!.trim());
+        // a plain public endpoint (e.g. UPLIFT_STT_URL) is configuration, not a secret; URLs with credentials still count
+        const publicUrl = m && m[1]!.endsWith('_URL') && !/@|password|token|key=/i.test(m[2]!);
+        if (m && !publicUrl && !['DEMO_MODE'].includes(m[1]!)) secrets.push(m[2]!.trim());
       }
     }
     const leaks: string[] = [];

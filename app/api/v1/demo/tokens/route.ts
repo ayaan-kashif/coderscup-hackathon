@@ -38,7 +38,7 @@ export const POST = route({
     if (!known) throw new ApiError('VALIDATION_FAILED', `Not a seeded demo ${role}. Known: ${DEMO_STAFF.filter((s) => s.role === role).map((s) => s.email).join(', ')}`);
     const [m] = await db.select({ userId: users.id, tenantId: memberships.tenantId, role: memberships.role, senior: memberships.isSenior, code: tenants.code })
       .from(users).innerJoin(memberships, eq(memberships.userId, users.id)).innerJoin(tenants, eq(tenants.id, memberships.tenantId))
-      .where(and(eq(users.email, email), eq(memberships.role, role))).limit(1);
+      .where(and(eq(users.email, email), eq(memberships.role, role), eq(tenants.code, known.tenant))).limit(1);
     if (!m) throw new ApiError('NOT_FOUND', 'Demo data is not seeded. Run pnpm db:seed.');
     const token = await signAccessToken({ sub: m.userId, kind: 'staff', app_role: m.role, tid: m.tenantId, senior: m.senior, demo: true });
     return { status: 201, cookies: [sessionCookie(token)], body: { token, tokenType: 'Bearer', expiresIn: ACCESS_TOKEN_TTL_SEC, role, account: email, tenant: m.code, curl: curlHint(token) }, audit: { resourceId: m.userId, tenantId: m.tenantId, details: { role } } };

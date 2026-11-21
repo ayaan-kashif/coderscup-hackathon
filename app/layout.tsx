@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { LowBandwidthProbe } from '@/components/shell/low-bandwidth';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale } from 'next-intl/server';
 import { PrototypeBanner } from '@/components/shell/prototype-banner';
@@ -24,6 +25,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <PrototypeBanner />
           {children}
           <ServiceWorkerRegister />
+          <LowBandwidthProbe />
         </NextIntlClientProvider>
       </body>
     </html>

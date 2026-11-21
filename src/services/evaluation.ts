@@ -1,4 +1,6 @@
 import 'server-only';
+import { rotateOptions, SCAM_OPTIONS, classifyScam } from '@/ai/jev';
+import { aiAvailable } from '@/ai/runtime';
 /**
  * F14 / §25 evaluation: the cost slider (pure, D1 test set), the offline report (D1–D6, every figure with its
  * denominator and dataset version), and live operations numbers from ai_calls, cases and decisions.
@@ -42,7 +44,7 @@ function reliability(cases: EvalCase[]) {
   });
 }
 
-type D2 = { messages: { text: string; sender: string; label: string; split: string; recipient_cnic: string | null }[]; official_senders: string[] };
+type D2 = { messages: { id: string; text: string; sender: string; label: string; split: string; recipient_cnic: string | null }[]; official_senders: string[] };
 
 /** D2 test: the claim checks alone (Jev adds escalations only) */
 function scamMetrics() {
@@ -117,6 +119,32 @@ async function ragMetrics(db: DbOrTx) {
   return { dataset: `D5 (n=${d.questions.length}; ${answerable} answerable)`, retrievalHitAt4: ratio(hit, answerable), citationAccuracy: null, correctRefusals: null, note: 'citation accuracy and refusals need the answering model (gateway key); refusal is the safe default without it' };
 }
 
+/**
+ * EVAL-4: label-swap test on D2 test messages. Each message is classified twice by Jev — with the normal option keys and
+ * with the keys rotated over the same descriptions — and we count how often the chosen meaning changes (target <= 5%).
+ */
+export const LABEL_SWAP_TARGET = 0.05;
+export async function labelSwapEval(db: DbOrTx, limit = 40) {
+  const dataset = `D2 test (first ${limit})`;
+  if (!aiAvailable()) return { dataset, changed: null, compared: 0, target: LABEL_SWAP_TARGET, note: 'needs the gateway key' };
+  const d = read<D2>('datasets/d2_messages.json');
+  const msgs = d.messages.filter((m) => m.split === 'test').slice(0, limit);
+  const swapped = rotateOptions(SCAM_OPTIONS, 2);
+  let compared = 0, changed = 0, failed = 0;
+  const examples: { id: string; normal: string; swapped: string }[] = [];
+  for (const m of msgs) {
+    const claims = extractClaims(m.text, m.sender);
+    const [a, b] = await Promise.all([
+      classifyScam(db, null, m.text, claims, SCAM_OPTIONS, 'eval.label_swap'),
+      classifyScam(db, null, m.text, claims, swapped, 'eval.label_swap'),
+    ]);
+    if (!a.ok || !b.ok) { failed++; continue; }
+    compared++;
+    if (a.value.requestType !== b.value.requestType) { changed++; if (examples.length < 5) examples.push({ id: m.id, normal: a.value.requestType, swapped: b.value.requestType }); }
+  }
+  return { dataset, changed: compared ? ratio(changed, compared) : null, compared, failed, target: LABEL_SWAP_TARGET, examples, note: 'keys rotated by 2 over the same descriptions' };
+}
+
 export async function runOfflineEval(db: DbOrTx) {
   const set = testSet();
   const s = read<{ version: string; metrics: Record<string, unknown> }>('models/scorer-v1.json');
@@ -136,7 +164,7 @@ export async function runOfflineEval(db: DbOrTx) {
     documents: await documentMetrics(),
     rag: await ragMetrics(db),
     voice: { dataset: 'D4 (30 texts)', wer: null, digitAccuracy: null, note: 'needs synthesised audio and a speech key: pnpm voice:generate --d4 && pnpm stt:bakeoff' },
-    jevLabelSwap: { dataset: 'D2 test', changed: null, note: 'needs the gateway key' },
+    jevLabelSwap: await labelSwapEval(db),
   };
   fs.writeFileSync(path.join(DATA, 'models/eval-report.json'), JSON.stringify(report, null, 1) + '\n');
   await db.insert(evalRuns).values({ kind: 'offline', status: 'done', params: { seed: 2026 }, metrics: report, finishedAt: new Date() });

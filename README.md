@@ -10,23 +10,70 @@
 
 ## Quick start
 
-No Docker, no cloud account and no API keys are needed: every model step has a documented fallback.
+### Prerequisites
+- Node.js >= 22
+- pnpm >= 10.x (`npm install -g pnpm`)
 
-```bash
-pnpm install
-cp .env.example .env.local           # fill the secrets (see the comments); never commit .env.local
-pnpm db:local                        # terminal 1: local Postgres 17 (PGlite) on :54329
-export DATABASE_URL=postgres://postgres:postgres@127.0.0.1:54329/postgres DB_POOL_MAX=1 DB_FETCH_TYPES=false
-pnpm db:migrate && pnpm demo:reset   # 52 tables; tenants, accounts, mock registries, rules v3, models, demo fixtures (~3 s)
-pnpm build && PORT=3100 pnpm start
-pnpm warmup http://localhost:3100    # demo-day warm-up: every page, role and mock, with timings
-```
+### Option A: Cloud Supabase Setup (Recommended)
+1. Copy the environment template:
+   ```bash
+   cp .env.example .env.local
+   ```
+2. In `.env.local`, set your Supabase database URLs (`DATABASE_URL` transaction pooler on port 6543, and `DATABASE_URL_DIRECT` session mode on port 5432).
+3. Apply migrations and seed sample demo fixtures:
+   ```bash
+   pnpm db:migrate
+   pnpm demo:reset
+   ```
+4. Start the development server:
+   ```bash
+   pnpm dev
+   ```
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-Open `/` and pick a role. Citizen app `/c` · Helper `/h` · Officer `/o` · Admin `/a` · Auditor `/au` · Mock phone `/mock/phone` · Scam Map `/map` · Status `/status` · API reference `/api/docs`.
+---
 
-Optional keys (`.env.example`): `AI_GATEWAY_API_KEY` (Gemini 3.8 Flash, Jev and ElevenLabs Scribe through Vercel AI Gateway), `INNGEST_EVENT_KEY` + `INNGEST_SIGNING_KEY` (durable pipeline), `SENTRY_DSN`, `UPSTASH_REDIS_REST_URL/TOKEN`. `/status` shows which are configured.
+### Option B: 100% Offline Local Setup (No Cloud / No Docker)
+No external database or API keys required: every service falls back gracefully.
 
-Data: `python ml/generate.py --seed 2026`, then `python ml/train.py` (requirements in [ml/requirements.txt](ml/requirements.txt)); both have a `--check` mode that CI uses to prove the committed files reproduce. `pnpm eval` writes the evaluation report.
+1. **Terminal 1 — Start the local PGlite PostgreSQL database (port 54329):**
+   ```powershell
+   pnpm db:local
+   ```
+2. **Terminal 2 — Migrate & Start Next.js:**
+   ```powershell
+   pnpm db:migrate
+   pnpm demo:reset
+   pnpm dev
+   ```
+3. Open [http://localhost:3000](http://localhost:3000).
+
+> [!TIP]
+> **Windows Tip:** If port 54329 or 3000 is stuck (`EADDRINUSE`), free them with:
+> ```powershell
+> Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force
+> ```
+
+---
+
+## Environment Configuration (.env.local)
+
+| Variable | Required? | Purpose & Fallback Behavior |
+| :--- | :---: | :--- |
+| `DATABASE_URL` | **Yes** | Primary PostgreSQL connection string (Supabase transaction pooler on port 6543 or local PGlite on port 54329). |
+| `DATABASE_URL_DIRECT` | Optional | Direct PostgreSQL connection string (port 5432) used for `pnpm db:migrate`. Falls back to `DATABASE_URL`. |
+| `AUTH_JWT_SECRET` | **Yes** | HS256 secret (min 32 chars) for signing 15-minute access tokens. Compatible with Supabase JWT. |
+| `PII_ENC_KEY` | **Yes** | 32-byte AES-256-GCM base64 key for encrypting CNIC numbers & wallet details. |
+| `PII_HMAC_PEPPER` | **Yes** | Cryptographic pepper for blind index lookups. |
+| `API_KEY_PEPPER` | **Yes** | Pepper string for hashing staff & agency API keys. |
+| `AI_GATEWAY_API_KEY` | Optional | Powers Gemini 3.8 Flash, Jev, and ElevenLabs Scribe. *Fallback: deterministic rules & person-in-the-loop.* |
+| `UPLIFT_API_KEY` | Optional | Uplift AI Speech-to-Text API for Urdu voice transcription. *Fallback: icon selection / manual text.* |
+| `INNGEST_EVENT_KEY` / `SIGNING_KEY` | Optional | Durable asynchronous background event queues. *Fallback: synchronous inline execution.* |
+| `UPSTASH_REDIS_REST_URL` / `TOKEN` | Optional | Global distributed rate limiter. *Fallback: in-memory rate limiting.* |
+| `SENTRY_DSN` | Optional | Zero-PII error tracking and performance monitoring. *Fallback: standard structured console logs.* |
+| `DEMO_MODE` | Optional | Enables `/api/v1/demo/tokens` and instant role-picker on `/`. Set to `false` for live deployments. |
+| `DEMO_STAFF_PASSWORD` | Optional | Password for demo staff accounts (`<set DEMO_STAFF_PASSWORD in .env.local>`). |
+| `DEMO_CITIZEN_PIN` | Optional | PIN for demo citizen accounts (`4525`). |
 
 ## Demo accounts and curl per role
 

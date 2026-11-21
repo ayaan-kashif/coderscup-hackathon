@@ -20,8 +20,10 @@ export const POST = route({
   audit: { action: 'auth.login', resourceType: 'session' },
   handler: async (c, db) => {
     const r = await staffLogin(db, c.body.email, c.body.password, c.body.tenantCode);
+    // AUTH-1: admins and auditors with MFA on get a 5-minute challenge; POST it with the code to /auth/mfa/verify
+    if (r.mfaRequired) return { body: { mfaRequired: true, challenge: r.challenge, next: '/api/v1/auth/mfa/verify' }, audit: { resourceId: r.user.id, tenantId: r.user.tenant.id, details: { role: r.user.role, step: 'password_ok_mfa_pending' } } };
     return {
-      body: { token: r.token, tokenType: 'Bearer', expiresIn: 900, user: r.user, tenants: r.tenants },
+      body: { token: r.token, tokenType: 'Bearer', expiresIn: 900, user: r.user, tenants: r.tenants, mfa: r.mfa },
       cookies: [sessionCookie(r.token)],
       audit: { resourceId: r.user.id, tenantId: r.user.tenant.id, details: { role: r.user.role } },
     };

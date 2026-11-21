@@ -72,6 +72,24 @@ import * as rAdminApiKeys from '../../../app/api/v1/admin/api-keys/route';
 import * as rAdminApiKeysByIdRevoke from '../../../app/api/v1/admin/api-keys/[id]/revoke/route';
 import * as rAdminUsers from '../../../app/api/v1/admin/users/route';
 import * as rAdminUsersByIdRevokeSessions from '../../../app/api/v1/admin/users/[id]/revoke-sessions/route';
+import * as rAdminWebhooks from '../../../app/api/v1/admin/webhooks/route';
+import * as rAdminWebhooksById from '../../../app/api/v1/admin/webhooks/[id]/route';
+import * as rAdminWebhooksDeliveries from '../../../app/api/v1/admin/webhooks/deliveries/route';
+import * as rAdminWebhooksDeliveriesByIdReplay from '../../../app/api/v1/admin/webhooks/deliveries/[id]/replay/route';
+import * as rAuditAnchors from '../../../app/api/v1/audit/anchors/route';
+import * as rAdminRetention from '../../../app/api/v1/admin/retention/route';
+import * as rAdminOutbox from '../../../app/api/v1/admin/outbox/route';
+import * as rAdminPlan from '../../../app/api/v1/admin/plan/route';
+import * as rAdminAnalytics from '../../../app/api/v1/admin/analytics/route';
+import * as rAdminPolicyEmbed from '../../../app/api/v1/admin/policy/embed/route';
+import * as rVoiceTts from '../../../app/api/v1/voice/tts/route';
+import * as rAuthMfaVerify from '../../../app/api/v1/auth/mfa/verify/route';
+import * as rMeMfaSetup from '../../../app/api/v1/me/mfa/setup/route';
+import * as rMeMfaConfirm from '../../../app/api/v1/me/mfa/confirm/route';
+import * as rAuthSwitchTenant from '../../../app/api/v1/auth/switch-tenant/route';
+import * as rMeTenants from '../../../app/api/v1/me/tenants/route';
+import * as rMeExport from '../../../app/api/v1/me/export/route';
+import * as rRulesDraftsByIdSuggest from '../../../app/api/v1/rules/drafts/[id]/suggest/route';
 import * as rAuditAccess from '../../../app/api/v1/audit/access/route';
 import * as rAuditBreakGlass from '../../../app/api/v1/audit/break-glass/route';
 import * as rDecisions from '../../../app/api/v1/decisions/route';
@@ -99,7 +117,8 @@ export const ROUTE_MODULES: Record<string, Mod> = {
   health, status, me, login, logout, otpRequest, otpVerify, pinSet, pinVerify, demoTokens, cases, caseById, caseStatus,
   adminConfig, adminChaos, auditEvents, auditVerify,
   rAiDecisions, rAiDecisionsById, rAssistIntent, rAssistPolicy, rCasesByIdAnswers, rCasesByIdAssign, rCasesByIdClose, rCasesByIdDecisions, rCasesByIdDocuments, rCasesByIdDocumentsDoc, rCasesByIdExplanation, rCasesByIdFreeze, rCasesByIdProof, rCasesByIdSubmit, rCasesByIdTimeline, rCasesByIdUnfreeze, rCasesByIdVoice, rComplaints, rComplaintsById, rComplaintsByIdResolve, rCorrections, rCorrectionsByIdApprove, rCorrectionsByIdReject, rDecisionsById, rDecisionsByIdReplay, rHelperActivity, rHelperFamilies, rHelperGrants, rHelperGrantsById, rMeAccessLog, rMeCases, rMeConsents, rMeConsentsByIdWithdraw, rMeCorrections, rMeNotifications, rPaymentsByIdReceipt, rPayoutChanges, rPayoutChangesByIdApprove, rPayoutChangesByIdBlock, rPayoutChangesByIdObject, rQueue, rScamAlerts, rScamAlertsByIdApprove, rScamAlertsByIdDismiss, rScamCheck, rScamDesk, rScamMap, rScamReportsByIdLabel,
-  rAdminApiKeys, rAdminApiKeysByIdRevoke, rAdminUsers, rAdminUsersByIdRevokeSessions, rAuditAccess, rAuditBreakGlass, rDecisions, rEvalBreakIt, rEvalCostPreview, rEvalMetrics, rEvalRuns, rEvalRunsById, rRules, rRulesDrafts, rRulesDraftsById, rRulesDraftsByIdApprove, rRulesDraftsByIdPreview, rRulesDraftsByIdPublish, rRulesDraftsByIdTwin, rTwinRunsById,
+  rAdminApiKeys, rAdminApiKeysByIdRevoke, rAdminUsers, rAdminUsersByIdRevokeSessions, rAdminWebhooks, rAdminWebhooksById, rAdminWebhooksDeliveries, rAdminWebhooksDeliveriesByIdReplay, rAuditAccess, rAuditBreakGlass, rDecisions, rEvalBreakIt, rEvalCostPreview, rEvalMetrics, rEvalRuns, rEvalRunsById, rRules, rRulesDrafts, rRulesDraftsById, rRulesDraftsByIdApprove, rRulesDraftsByIdPreview, rRulesDraftsByIdPublish, rRulesDraftsByIdTwin, rTwinRunsById,
+  rAuditAnchors, rAdminRetention, rAdminOutbox, rAdminPlan, rAdminAnalytics, rAdminPolicyEmbed, rVoiceTts, rAuthMfaVerify, rMeMfaSetup, rMeMfaConfirm, rAuthSwitchTenant, rMeTenants, rMeExport, rRulesDraftsByIdSuggest,
 };
 
 export function allSpecs(): AnySpec[] {

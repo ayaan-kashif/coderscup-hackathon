@@ -21,7 +21,7 @@ type View = {
     stops: { code: string; name: string; reason: string }[]; ruleTrace: { ruleId: string; clause: string; fact: string; op: string; expected: unknown; actual: unknown; result: string }[];
     facts: { key: string; value: unknown; source: string; ref?: string }[]; proofItem: string | null; modelVersions: Record<string, string>;
   };
-  documents: { id: string; docType: string; sharpness: number | null; qrSigValid: boolean | null; injectionFlag: boolean; createdAt: string }[];
+  documents: { id: string; docType: string; sharpness: number | null; qrSigValid: boolean | null; injectionFlag: boolean; weakSignals?: { notes: string[] } | null; createdAt: string }[];
   matches: { rank: number; registryRecordId: string; scoreBits: number; zone: string; fields: Record<string, { level: string; weight: number }>; record: Record<string, string> }[];
   payments: { id: string; amount: number; status: string; holdUntil: string | null; ledgerRef: string | null }[];
   history: { id: string; outcome: string; actorType: string; reasonCode: string | null; note: string | null; createdAt: string }[];
@@ -155,7 +155,7 @@ export function OfficerCaseView({ caseId, meId }: { caseId: string; meId: string
           <CardContent className="space-y-2">
             {v.documents.map((d) => (
               <div key={d.id} className="flex flex-wrap items-center justify-between gap-2 rounded border border-border p-2 text-sm">
-                <span>{d.docType} · sharpness {d.sharpness?.toFixed(2) ?? '—'} · QR {d.qrSigValid === null ? 'none' : d.qrSigValid ? '✓ signed' : '✗ invalid'} {d.injectionFlag && <Badge variant="destructive">instruction text</Badge>}</span>
+                <span>{d.docType} · sharpness {d.sharpness?.toFixed(2) ?? '—'} · QR {d.qrSigValid === null ? 'none' : d.qrSigValid ? '✓ signed' : '✗ invalid'} {d.injectionFlag && <Badge variant="destructive">instruction text</Badge>}{d.weakSignals?.notes?.map((n) => <Badge key={n} variant="outline" className="ms-1" title="Weak signal only: never used to decide">weak: {n}</Badge>)}</span>
                 <Button size="sm" variant="outline" onClick={async () => { const r = await api(`/api/v1/cases/${caseId}/documents/${d.id}`); setImg(r.status === 200 ? r.body.dataUrl : null); }}>View</Button>
               </div>
             ))}

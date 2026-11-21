@@ -122,7 +122,7 @@ export function EvalDashboard() {
               {row('RAG', 'Expected clause in the top 4 retrieved', <R r={rep.rag.retrievalHitAt4} />, '—', null, rep.rag.dataset)}
               {row('RAG', 'Citation accuracy / correct refusals', <span className="text-muted-foreground">needs the answering model</span>, '≥ 95% / ≥ 90%', null, rep.rag.dataset)}
               {row('Voice', 'WER on names; digit accuracy', <span className="text-muted-foreground">needs audio + a speech key</span>, 'report; ≥ 95%', null, rep.voice.dataset)}
-              {row('Jev', 'Label-swap changes', <span className="text-muted-foreground">needs the gateway key</span>, '≤ 5%', null, rep.jevLabelSwap.dataset)}
+              {row('Jev', 'Label-swap changes', rep.jevLabelSwap.changed ? <R r={rep.jevLabelSwap.changed} /> : <span className="text-muted-foreground">{rep.jevLabelSwap.note ?? 'needs the gateway key'}</span>, '≤ 5%', rep.jevLabelSwap.changed ? (rep.jevLabelSwap.changed.value ?? 1) <= 0.05 : null, rep.jevLabelSwap.dataset)}
             </tbody></table></div>
         )}
         {rep && (

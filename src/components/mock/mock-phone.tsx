@@ -21,6 +21,7 @@ export function MockPhone({ initialPhone }: { initialPhone: string }) {
   const [error, setError] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
   const [version, setVersion] = useState(0);
+  const [outText, setOutText] = useState('STATUS');
   useEffect(() => {
     let alive = true;
     const poll = () => fetch(`/api/mock/sms/inbox?phone=${encodeURIComponent(phone)}`).then(async (r) => {
@@ -53,6 +54,16 @@ export function MockPhone({ initialPhone }: { initialPhone: string }) {
           await fetch('/api/mock/sms/send', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ to: phone, from: DEMO_SCAM.from, body: DEMO_SCAM.body, kind: 'other' }) });
           setVersion((v) => v + 1);
         }}>Receive the demo scam SMS (simulated)</Button>
+        <form className="flex gap-2" onSubmit={async (e) => {
+          e.preventDefault();
+          // OFF-8: text the short code with no data plan; "STATUS" returns the case state
+          const r = await fetch('/api/mock/sms/inbound', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ from: phone, to: '8171', body: outText }) });
+          if (!r.ok) setError('Could not send the text (simulated).');
+          setVersion((v) => v + 1);
+        }}>
+          <Input dir="ltr" value={outText} onChange={(e) => setOutText(e.target.value)} aria-label="text to 8171" data-testid="sms-out" />
+          <Button type="submit" size="sm" variant="secondary" data-testid="sms-send-8171">Text 8171</Button>
+        </form>
         {note && <p role="status" className="rounded-lg bg-warning p-2 text-sm text-warning-foreground">{note}</p>}
         {error && <p className="text-sm text-destructive">{error}</p>}
         <ul className="max-h-[60vh] space-y-2 overflow-y-auto" dir="ltr">
@@ -65,7 +76,7 @@ export function MockPhone({ initialPhone }: { initialPhone: string }) {
                 <p>{m.body.replace(/\s*\(ref PC-[^)]+\)/, '')}</p>
                 {code && <Button size="sm" variant="outline" className="mt-2" onClick={() => playSequence(code.split('').map((d) => `digit_${d}`))}><Volume2 /> Read code aloud</Button>}
                 {objection && <Button size="sm" variant="destructive" className="mt-2" data-testid="press-9" onClick={() => void press9(m)}>9 — this isn&apos;t me</Button>}
-                {m.kind !== 'otp' && m.kind !== 'ivr' && (
+                {m.kind !== 'otp' && m.kind !== 'ivr' && !m.fromSender.startsWith('me ') && !m.fromSender.startsWith('SAAYA') && (
                   <a className="mt-2 inline-flex items-center gap-1 text-xs underline" href={`/c?check=${encodeURIComponent(m.body)}&from=${encodeURIComponent(m.fromSender)}`}>
                     <ShieldQuestion className="size-3" /> Is this real?
                   </a>

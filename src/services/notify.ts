@@ -5,10 +5,10 @@
  */
 import { and, eq } from 'drizzle-orm';
 import { bannedInCitizenMessage } from '@/ai/guard';
+import { encryptPii } from '@/auth/crypto';
 import type { DbOrTx } from '@/db/client';
 import { citizens, memberships, notifications, users } from '@/db/schema/all';
 import { log } from '@/lib/log';
-import { smsGateway } from './adapters';
 
 /** the 30 trust pictures, named (CIT-8); index = trustPictureId - 1 */
 export const TRUST_PICTURE_NAMES: { en: string; ur: string }[] = [
@@ -72,10 +72,14 @@ export async function notifyCitizen(db: DbOrTx, p: { tenantId: string | null; ci
     if (channel !== 'in_app' && !phone) continue;
     const [row] = await db.insert(notifications).values({ tenantId: p.tenantId, citizenId: p.citizenId, channel, templateKey: p.key, variables: { ...vars, voice: t.voice ?? [] } }).returning({ id: notifications.id });
     if (channel === 'in_app') { await db.update(notifications).set({ status: 'sent', sentAt: new Date(), attempts: 1 }).where(eq(notifications.id, row!.id)); continue; }
+    // NOT-3: SMS and voice go through the transactional outbox (tracked status, retries with backoff).
+    // The first attempt is made right away so the mock phone shows it at once; failures are retried by the dispatcher.
+    const text = channel === 'sms' ? (c.locale === 'en' ? en : `${ur}\n${en}`) : `${ur} / ${en}`;
     try {
-      if (channel === 'sms') await smsGateway.send(phone!, c.locale === 'en' ? en : `${ur}\n${en}`, 'notification', 'SAAYA');
-      else await smsGateway.ivrCall(phone!, `${ur} / ${en}`);
-      await db.update(notifications).set({ status: 'sent', sentAt: new Date(), attempts: 1 }).where(eq(notifications.id, row!.id));
+      const { enqueue, processRow } = await import('./jobs');
+      const ob = await enqueue(db, p.tenantId, channel === 'sms' ? 'notify.sms' : 'notify.voice', { notificationId: row!.id, toEnc: encryptPii(phone!).toString('base64'), text });
+      const r = await processRow(db, ob);
+      if (r === 'failed') log('warn', 'notification channel failed; will retry', { channel, key: p.key });
     } catch (e) {
       await db.update(notifications).set({ status: 'failed', attempts: 1 }).where(eq(notifications.id, row!.id));
       log('warn', 'notification channel failed', { channel, key: p.key, error: String(e) });

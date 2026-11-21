@@ -9,5 +9,15 @@
     "app/api/**/route.ts": {
       "maxDuration": 60
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/retention",
+      "schedule": "0 21 * * *"
+    },
+    {
+      "path": "/api/cron/anchor",
+      "schedule": "0 22 * * *"
+    }
+  ]
 }

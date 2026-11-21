@@ -28,14 +28,21 @@ const statusOf = (e: unknown): 'error' | 'timeout' | 'invalid_output' => {
  * OBS-3: every model call is logged in ai_calls with model, prompt version, tokens, latency and cost —
  * including failures and "not configured" (so the dashboard shows how often the fallback ran).
  */
+/** providers sometimes omit usage; never write NaN into ai_calls */
+const tokens = (n: number | undefined) => (typeof n === 'number' && Number.isFinite(n) ? Math.round(n) : null);
+const cost = (n: number | null | undefined) => (typeof n === 'number' && Number.isFinite(n) ? n.toFixed(6) : null);
+
 export async function aiCall<T extends { usage?: Usage; modelId?: string }>(m: AiCallMeta, fn: () => Promise<T>): Promise<T> {
   const t0 = Date.now();
   try {
+    // ADM-4: over the plan's daily AI calls the model is not called; the caller takes its fallback as if AI were down
+    const { aiQuotaLeft } = await import('@/services/plans');
+    if (!(await aiQuotaLeft(m.db, m.tenantId))) throw new AiUnavailable('PlanLimit: daily AI calls used up for this office');
     const out = await fn();
     await m.db.insert(aiCalls).values({
       tenantId: m.tenantId, caseId: m.caseId ?? null, purpose: m.purpose, model: out.modelId ?? m.model, promptVersion: m.promptVersion ?? null,
-      inputTokens: out.usage?.inputTokens ?? null, outputTokens: out.usage?.outputTokens ?? null, latencyMs: Date.now() - t0,
-      costUsd: estimateCostUsd(m.model, out.usage?.inputTokens, out.usage?.outputTokens)?.toFixed(6) ?? null, status: 'ok', requestId: m.requestId ?? null,
+      inputTokens: tokens(out.usage?.inputTokens), outputTokens: tokens(out.usage?.outputTokens), latencyMs: Date.now() - t0,
+      costUsd: cost(estimateCostUsd(m.model, tokens(out.usage?.inputTokens) ?? undefined, tokens(out.usage?.outputTokens) ?? undefined)), status: 'ok', requestId: m.requestId ?? null,
     });
     return out;
   } catch (e) {
@@ -50,7 +57,7 @@ export async function aiCall<T extends { usage?: Usage; modelId?: string }>(m: A
 
 /** EXP-5: AI decisions outside the case decision, searchable by auditors. Input is hashed, never stored raw. */
 export async function recordAiDecision(db: DbOrTx, d: {
-  tenantId: string | null; kind: 'scam_verdict' | 'intent_routing' | 'complaint_triage' | 'policy_answer' | 'second_opinion';
+  tenantId: string | null; kind: 'scam_verdict' | 'intent_routing' | 'complaint_triage' | 'policy_answer' | 'second_opinion' | 'rule_draft';
   input: unknown; model: string; promptVersion?: string; probabilities?: unknown; result: unknown; userReason: string; trace?: unknown;
 }) {
   const [row] = await db.insert(aiDecisions).values({

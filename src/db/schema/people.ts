@@ -18,6 +18,10 @@ export const users = pgTable('users', {
   otpAttempts: integer('otp_attempts').notNull().default(0),
   locale: text('locale').notNull().default('ur'),
   sessionsRevokedAt: ts('sessions_revoked_at'),
+  /** AUTH-1 (P1): TOTP secret for admins and auditors, encrypted with the PII key; enabled once a code is confirmed */
+  mfaSecretEnc: bytea('mfa_secret_enc'),
+  mfaEnabledAt: ts('mfa_enabled_at'),
+  mfaLastStep: integer('mfa_last_step'),
   lastLoginAt: ts('last_login_at'),
   createdAt: createdAt(),
 }, (t) => [

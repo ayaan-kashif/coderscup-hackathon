@@ -113,15 +113,31 @@ export async function runCaseProcess(db: DbOrTx, caseId: string, step: Stepper, 
     if (pre === STOP) return { runId, stopped: 'consent' };
     await mark('score');
     // 12. Jev second opinion (skipped if unavailable; it can only escalate)
-    const so = await gated('second_opinion', () => stepSecondOpinion(db, caseId, pre.features as unknown as Record<string, number>));
+    const so = await gated('second_opinion', async () => {
+      const jev = await stepSecondOpinion(db, caseId, pre.features as unknown as Record<string, number>);
+      // bounded verification agent (P1 stretch, off unless VERIFICATION_AGENT=on): it can only add a reason to escalate
+      const { agentEnabled, runVerificationAgent } = await import('@/ai/verification-agent');
+      if (!agentEnabled()) return { jev, agent: null };
+      const ag = await runVerificationAgent(db, { id: caseId, tenantId: c.tenantId, citizenId: c.citizenId });
+      return { jev, agent: ag.ok ? { needsPerson: ag.bundle.needsPerson && ag.bundle.concerns.length > 0, concerns: ag.bundle.concerns.map((x) => x.code), completeness: ag.completeness, model: ag.model } : null };
+    });
     if (so === STOP) return { runId, stopped: 'consent' };
-    state.secondOpinion = so;
+    state.secondOpinion = so.jev;
+    if (so.agent?.needsPerson) {
+      state.secondOpinion = { pNeedsPerson: 1, model: so.jev ? `${so.jev.model}+verification-agent` : `verification-agent:${so.agent.model}` };
+      state.notes.push(`verification agent concerns: ${so.agent.concerns.join(', ')}`);
+    }
     // 13. decide (pure)
     const decided = await gated('decide', () => stepDecide(db, caseId, state, true));
     if (decided === STOP) return { runId, stopped: 'consent' };
     // 14. explain + persist the immutable decision row
     const persisted = await gated('explain', () => stepExplainAndPersist(db, caseId, state, decided));
     if (persisted === STOP) return { runId, stopped: 'consent' };
+    const { emitEvent } = await import('@/services/jobs');
+    await emitEvent(db, c.tenantId, 'case.decided', { caseId, outcome: persisted.outcome, decisionId: persisted.decisionId }).catch(() => {});
+    if (persisted.outcome === 'OFFICER_REVIEW') {
+      await emitEvent(db, c.tenantId, 'case.escalated', { caseId, stops: decided.decision.stops, decisionId: persisted.decisionId }).catch(() => {});
+    }
     // 15. notify (in-app always succeeds)
     if ((await gated('notify', () => stepNotify(db, caseId, persisted))) === STOP) return { runId, stopped: 'consent' };
 

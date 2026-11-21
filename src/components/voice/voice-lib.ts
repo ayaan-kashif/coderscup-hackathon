@@ -1,6 +1,7 @@
 'use client';
 import { useLocale } from 'next-intl';
 import { useCallback } from 'react';
+import { claimVoice, isCurrent, playOnChannel } from './voice-prompt';
 
 /** bilingual inline text: t('Apply', 'درخواست') — Urdu first for citizens, English for staff and tests */
 export function useBi() {
@@ -38,32 +39,45 @@ export function resolveVoice(keys: string[], vars: Record<string, unknown>, trus
   return out.filter(Boolean);
 }
 
-let speaking: HTMLAudioElement | null = null;
+/** a device voice that can actually read this language (an English voice reads Urdu script as silence or noise) */
+function deviceVoice(lang: 'ur' | 'en'): SpeechSynthesisVoice | null {
+  try {
+    const voices = window.speechSynthesis?.getVoices() ?? [];
+    return voices.find((v) => v.lang.toLowerCase().startsWith(lang)) ?? null;
+  } catch { return null; }
+}
+
 /**
  * VOICE-2: speak a dynamic phrase with the server's text-to-speech (cached by text hash; 'readback' of her own words
- * is never stored). Falls back to the device voice when TTS is down, offline, or in low-bandwidth mode (OFF-7).
+ * is never stored). Falls back to a matching device voice when TTS is down, offline, or in low-bandwidth mode (OFF-7).
+ * Goes through the shared audio channel and resolves when speech has finished, so callers can chain clips after it.
  */
 export async function speakText(text: string, o: { kind?: 'phrase' | 'readback'; lang?: 'ur' | 'en' } = {}): Promise<'server' | 'device' | 'none'> {
   const lang = o.lang ?? 'ur';
+  const my = claimVoice();
   const low = typeof document !== 'undefined' && document.documentElement.dataset.lowBandwidth === 'true';
   if (!low && typeof navigator !== 'undefined' && navigator.onLine !== false) {
     try {
       const r = await fetch('/api/v1/voice/tts', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text, lang, kind: o.kind ?? 'phrase' }) });
-      if (r.ok) {
+      if (r.ok && isCurrent(my)) {
         const url = URL.createObjectURL(await r.blob());
-        speaking?.pause();
-        const a = new Audio(url);
-        speaking = a;
-        a.onended = () => URL.revokeObjectURL(url);
-        await a.play();
-        return 'server';
+        const res = await playOnChannel(url, my);
+        URL.revokeObjectURL(url);
+        if (res !== 'blocked') return 'server';
       }
     } catch { /* fall through to the device voice */ }
   }
-  try {
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = lang === 'ur' ? 'ur-PK' : 'en-US';
-    window.speechSynthesis.speak(u);
-    return 'device';
-  } catch { return 'none'; }
+  if (!isCurrent(my)) return 'none';
+  const voice = deviceVoice(lang);
+  if (!voice) return 'none';
+  return new Promise((resolve) => {
+    try {
+      const u = new SpeechSynthesisUtterance(text);
+      u.voice = voice;
+      u.lang = voice.lang;
+      u.onend = () => resolve('device');
+      u.onerror = () => resolve('none');
+      window.speechSynthesis.speak(u);
+    } catch { resolve('none'); }
+  });
 }

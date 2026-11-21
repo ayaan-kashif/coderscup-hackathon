@@ -6,7 +6,7 @@
  * - navigations: network-first, falling back to the cached page, then to the cached citizen shell
  * - /api/*: never cached (personal data stays out of the cache; the outbox handles offline writes)
  */
-const VERSION = 'amanat-v2';
+const VERSION = 'amanat-v3'; // v3: real Urdu clips (MP3)
 const SHELL = ['/c', '/h', '/offline', '/manifest.webmanifest', '/icon.svg', '/voice/ur/manifest.json'];
 
 self.addEventListener('install', (event) => {

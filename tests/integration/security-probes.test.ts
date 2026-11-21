@@ -109,7 +109,7 @@ describe('abuse', () => {
 
 describe('repository and configuration', () => {
   it('no secret values from .env.local and no private keys are tracked in git', () => {
-    const tracked = execSync('git ls-files', { encoding: 'utf8' }).split('\n').filter((f) => f && !f.endsWith('.png') && !f.endsWith('.wav') && fs.existsSync(f));
+    const tracked = execSync('git ls-files', { encoding: 'utf8' }).split('\n').filter((f) => f && !f.endsWith('.png') && !f.endsWith('.wav') && !f.endsWith('.mp3') && fs.existsSync(f));
     const secrets: string[] = [];
     if (fs.existsSync('.env.local')) {
       for (const line of fs.readFileSync('.env.local', 'utf8').split(/\r?\n/)) {

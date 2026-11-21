@@ -59,7 +59,7 @@ test('a voice prompt plays with the network off (OFF-1, G1)', async ({ page, con
   await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
   await expect.poll(() => page.evaluate(async () => {
     const c = await caches.open('amanat-v2');
-    return !!(await c.match('/voice/ur/offline.wav')) && !!(await c.match('/c'));
+    return !!(await c.match('/voice/ur/offline.mp3')) && !!(await c.match('/c'));
   }), { timeout: 20_000 }).toBe(true);
 
   await context.setOffline(true);

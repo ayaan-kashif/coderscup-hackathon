@@ -17,7 +17,7 @@ import { ApiError } from '@/lib/errors';
 import { sha256Hex } from '@/lib/hash';
 import { ticksFor } from './cases';
 import { DISTRICTS } from './seed/demo-accounts';
-import { dhash, inspectImage, sharpness } from './documents/image';
+import { dhash, fineHash, inspectImage, sharpness } from './documents/image';
 import { putFact } from './pipeline/data';
 import { alertOfficers } from './notify';
 import { nightBulkEdits, releaseDuePayments, walletSharers } from './pipeline/steps';
@@ -144,7 +144,7 @@ export async function storeDocument(db: DbOrTx, actor: Actor, caseId: string, b:
   const sh = await sharpness(buf);
   const dh = await dhash(buf);
   const [row] = await db.insert(documents).values({
-    caseId, tenantId: c.tenantId, docType: b.docType, storageKey: key, mime: meta.mime, bytes: buf.length, sharpness: sh, dhash: dh,
+    caseId, tenantId: c.tenantId, docType: b.docType, storageKey: key, mime: meta.mime, bytes: buf.length, sharpness: sh, dhash: dh, fineHash: await fineHash(buf),
     contentEnc: encryptBytes(buf), uploadedBy: `${actor.role}:${actor.id}`,
   }).returning({ id: documents.id });
   return { id: row!.id, sha256: key, sharpness: sh, created: true, retake: sh < 0.35 };

@@ -2,9 +2,9 @@
  * Resource loaders for authorization: only tenant and citizen ids, never personal data before the verdict.
  * An unknown id returns null → 404 identical to another tenant's resource (TEN-2).
  */
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import type { DbOrTx } from '@/db/client';
-import { aiDecisions, cases, complaints, consents, correctionRequests, decisions, payments, payoutChanges, scamAlerts, scamReports } from '@/db/schema/all';
+import { aiDecisions, apiKeys, cases, evalRuns, memberships, ruleSets, twinRuns, complaints, consents, correctionRequests, decisions, payments, payoutChanges, scamAlerts, scamReports } from '@/db/schema/all';
 import type { LoadedResource } from '@/lib/api/route';
 
 const UUID = /^[0-9a-f-]{36}$/i;
@@ -53,4 +53,30 @@ export async function loadConsentRef(db: DbOrTx, id: string): Promise<LoadedReso
   if (!UUID.test(id)) return null;
   const [r] = await db.select({ id: consents.id, citizenId: consents.citizenId }).from(consents).where(eq(consents.id, id)).limit(1);
   return r ? { ...r, tenantId: null } : null;
+}
+
+export async function loadRuleSetRef(db: DbOrTx, id: string): Promise<LoadedResource | null> {
+  if (!UUID.test(id)) return null;
+  const [r] = await db.select({ id: ruleSets.id, tenantId: ruleSets.tenantId }).from(ruleSets).where(eq(ruleSets.id, id)).limit(1);
+  return r ? { ...r, citizenId: null } : null;
+}
+export async function loadTwinRunRef(db: DbOrTx, id: string): Promise<LoadedResource | null> {
+  if (!UUID.test(id)) return null;
+  const [r] = await db.select({ id: twinRuns.id, tenantId: twinRuns.tenantId }).from(twinRuns).where(eq(twinRuns.id, id)).limit(1);
+  return r ? { ...r, citizenId: null } : null;
+}
+export async function loadEvalRunRef(db: DbOrTx, id: string): Promise<LoadedResource | null> {
+  if (!UUID.test(id)) return null;
+  const [r] = await db.select({ id: evalRuns.id, tenantId: evalRuns.tenantId }).from(evalRuns).where(eq(evalRuns.id, id)).limit(1);
+  return r ? { ...r, citizenId: null } : null;
+}
+export async function loadUserRef(db: DbOrTx, id: string, tenantId: string | undefined): Promise<LoadedResource | null> {
+  if (!UUID.test(id) || !tenantId) return null;
+  const [r] = await db.select({ id: memberships.userId, tenantId: memberships.tenantId }).from(memberships).where(and(eq(memberships.userId, id), eq(memberships.tenantId, tenantId))).limit(1);
+  return r ? { ...r, citizenId: null } : null;
+}
+export async function loadApiKeyRef(db: DbOrTx, id: string): Promise<LoadedResource | null> {
+  if (!UUID.test(id)) return null;
+  const [r] = await db.select({ id: apiKeys.id, tenantId: apiKeys.tenantId }).from(apiKeys).where(eq(apiKeys.id, id)).limit(1);
+  return r ? { ...r, citizenId: null } : null;
 }

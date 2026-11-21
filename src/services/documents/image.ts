@@ -40,6 +40,30 @@ export async function dhash(buf: Buffer): Promise<bigint> {
   return BigInt.asIntN(64, bits);
 }
 
+/**
+ * DOC-5, second check: a 1024-bit difference hash (33×32). Measured on the SPECIMEN set: different people's cards of
+ * the same template are 51+ bits apart, an identical or re-encoded copy a few bits. A cropped re-photo is not caught.
+ */
+export async function fineHash(buf: Buffer): Promise<string> {
+  const W = 33, H = 32;
+  const { data } = await sharp(buf).rotate().greyscale().resize(W, H, { fit: 'fill' }).raw().toBuffer({ resolveWithObject: true });
+  let hex = '';
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W - 1; x += 4) {
+      let n = 0;
+      for (let k = 0; k < 4; k++) n = (n << 1) | (data[y * W + x + k]! > data[y * W + x + k + 1]! ? 1 : 0);
+      hex += n.toString(16);
+    }
+  }
+  return hex;
+}
+export const FINE_REUSE_MAX_BITS = 24;
+export function fineDistance(a: string, b: string) {
+  let d = 0;
+  for (let i = 0; i < Math.min(a.length, b.length); i++) { let x = parseInt(a[i]!, 16) ^ parseInt(b[i]!, 16); while (x) { d += x & 1; x >>= 1; } }
+  return d + Math.abs(a.length - b.length) * 4;
+}
+
 export function hamming(a: bigint, b: bigint) {
   let x = BigInt.asUintN(64, a ^ b);
   let n = 0;

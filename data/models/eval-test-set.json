@@ -1,0 +1,807 @@
+{
+ "dataset": "D1 test",
+ "scorer": "scorer-v1",
+ "n": 100,
+ "cases": [
+  {
+   "case_ref": "D1-0009",
+   "category": "legit_name_variant",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE_OR_REVIEW"
+  },
+  {
+   "case_ref": "D1-0010",
+   "category": "legit_curable_gap",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "REQUEST_PROOF"
+  },
+  {
+   "case_ref": "D1-0017",
+   "category": "legit_name_variant",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE_OR_REVIEW"
+  },
+  {
+   "case_ref": "D1-0018",
+   "category": "legit_name_variant",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE_OR_REVIEW"
+  },
+  {
+   "case_ref": "D1-0019",
+   "category": "legit_name_variant",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE_OR_REVIEW"
+  },
+  {
+   "case_ref": "D1-0030",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0034",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0037",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0038",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0045",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0053",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0057",
+   "category": "legit_curable_gap",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "REQUEST_PROOF"
+  },
+  {
+   "case_ref": "D1-0063",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0064",
+   "category": "legit_name_variant",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE_OR_REVIEW"
+  },
+  {
+   "case_ref": "D1-0068",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0069",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0077",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0079",
+   "category": "helper_fraud",
+   "label": "not_payable",
+   "p_legit": 0.005,
+   "stop": "S7",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0083",
+   "category": "legit_curable_gap",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "REQUEST_PROOF"
+  },
+  {
+   "case_ref": "D1-0087",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0089",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0090",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0102",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0104",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0105",
+   "category": "forged_document",
+   "label": "not_payable",
+   "p_legit": 0.005,
+   "stop": "S6",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0116",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0119",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0122",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0125",
+   "category": "legit_curable_gap",
+   "label": "legitimate",
+   "p_legit": 0.5,
+   "stop": null,
+   "first_route": "REQUEST_PROOF"
+  },
+  {
+   "case_ref": "D1-0133",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0139",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0142",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0144",
+   "category": "ineligible",
+   "label": "not_payable",
+   "p_legit": 0.995,
+   "stop": "S12",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0145",
+   "category": "ineligible",
+   "label": "not_payable",
+   "p_legit": 0.995,
+   "stop": "S12",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0146",
+   "category": "helper_fraud",
+   "label": "not_payable",
+   "p_legit": 0.005,
+   "stop": "S7",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0148",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0150",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0153",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0159",
+   "category": "legit_name_variant",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE_OR_REVIEW"
+  },
+  {
+   "case_ref": "D1-0162",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0168",
+   "category": "ambiguous_identity",
+   "label": "legitimate",
+   "p_legit": 0.5,
+   "stop": "S1",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0173",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0175",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0176",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.005,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0177",
+   "category": "ineligible",
+   "label": "not_payable",
+   "p_legit": 0.102782,
+   "stop": "S12",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0186",
+   "category": "duplicate",
+   "label": "not_payable",
+   "p_legit": 0.005,
+   "stop": "S5",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0196",
+   "category": "legit_curable_gap",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "REQUEST_PROOF"
+  },
+  {
+   "case_ref": "D1-0197",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0201",
+   "category": "legit_name_variant",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE_OR_REVIEW"
+  },
+  {
+   "case_ref": "D1-0205",
+   "category": "ambiguous_identity",
+   "label": "legitimate",
+   "p_legit": 0.902962,
+   "stop": "S1",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0234",
+   "category": "forged_document",
+   "label": "not_payable",
+   "p_legit": 0.607378,
+   "stop": "S6",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0240",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0246",
+   "category": "forged_document",
+   "label": "not_payable",
+   "p_legit": 0.5,
+   "stop": "S6",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0247",
+   "category": "legit_curable_gap",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "REQUEST_PROOF"
+  },
+  {
+   "case_ref": "D1-0248",
+   "category": "helper_fraud",
+   "label": "not_payable",
+   "p_legit": 0.005,
+   "stop": "S7",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0258",
+   "category": "legit_curable_gap",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "REQUEST_PROOF"
+  },
+  {
+   "case_ref": "D1-0260",
+   "category": "forged_document",
+   "label": "not_payable",
+   "p_legit": 0.005,
+   "stop": "S6",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0267",
+   "category": "ambiguous_identity",
+   "label": "not_payable",
+   "p_legit": 0.995,
+   "stop": "S1",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0277",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0289",
+   "category": "ineligible",
+   "label": "not_payable",
+   "p_legit": 0.995,
+   "stop": "S12",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0293",
+   "category": "duplicate",
+   "label": "not_payable",
+   "p_legit": 0.005,
+   "stop": "S5",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0294",
+   "category": "legit_curable_gap",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "REQUEST_PROOF"
+  },
+  {
+   "case_ref": "D1-0311",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0313",
+   "category": "legit_curable_gap",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "REQUEST_PROOF"
+  },
+  {
+   "case_ref": "D1-0314",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0325",
+   "category": "legit_name_variant",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE_OR_REVIEW"
+  },
+  {
+   "case_ref": "D1-0327",
+   "category": "helper_fraud",
+   "label": "not_payable",
+   "p_legit": 0.005,
+   "stop": "S7",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0332",
+   "category": "forged_document",
+   "label": "not_payable",
+   "p_legit": 0.67026,
+   "stop": "S6",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0338",
+   "category": "ineligible",
+   "label": "not_payable",
+   "p_legit": 0.995,
+   "stop": "S12",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0341",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0346",
+   "category": "legit_name_variant",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE_OR_REVIEW"
+  },
+  {
+   "case_ref": "D1-0352",
+   "category": "duplicate",
+   "label": "not_payable",
+   "p_legit": 0.005,
+   "stop": "S5",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0366",
+   "category": "legit_name_variant",
+   "label": "legitimate",
+   "p_legit": 0.5,
+   "stop": null,
+   "first_route": "AUTO_APPROVE_OR_REVIEW"
+  },
+  {
+   "case_ref": "D1-0369",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0371",
+   "category": "legit_curable_gap",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "REQUEST_PROOF"
+  },
+  {
+   "case_ref": "D1-0378",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0380",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0385",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0386",
+   "category": "legit_curable_gap",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "REQUEST_PROOF"
+  },
+  {
+   "case_ref": "D1-0389",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.005,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0391",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0407",
+   "category": "legit_curable_gap",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "REQUEST_PROOF"
+  },
+  {
+   "case_ref": "D1-0409",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0410",
+   "category": "legit_curable_gap",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "REQUEST_PROOF"
+  },
+  {
+   "case_ref": "D1-0415",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0417",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0428",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0442",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0449",
+   "category": "legit_curable_gap",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "REQUEST_PROOF"
+  },
+  {
+   "case_ref": "D1-0453",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0455",
+   "category": "ineligible",
+   "label": "not_payable",
+   "p_legit": 0.995,
+   "stop": "S12",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0460",
+   "category": "duplicate",
+   "label": "not_payable",
+   "p_legit": 0.005,
+   "stop": "S5",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0468",
+   "category": "ineligible",
+   "label": "not_payable",
+   "p_legit": 0.995,
+   "stop": "S12",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0473",
+   "category": "duplicate",
+   "label": "not_payable",
+   "p_legit": 0.005,
+   "stop": "S5",
+   "first_route": "OFFICER_REVIEW"
+  },
+  {
+   "case_ref": "D1-0474",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0478",
+   "category": "legit_curable_gap",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "REQUEST_PROOF"
+  },
+  {
+   "case_ref": "D1-0484",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0487",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0488",
+   "category": "clean_legit",
+   "label": "legitimate",
+   "p_legit": 0.995,
+   "stop": null,
+   "first_route": "AUTO_APPROVE"
+  },
+  {
+   "case_ref": "D1-0498",
+   "category": "ineligible",
+   "label": "not_payable",
+   "p_legit": 0.995,
+   "stop": "S12",
+   "first_route": "OFFICER_REVIEW"
+  }
+ ]
+}

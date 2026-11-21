@@ -80,7 +80,11 @@ export const MOCK_ROUTES: MockRoute[] = [
         const nameCond = sql`similarity(lower(${mockIdentityRecords.name}), lower(${b.name})) > 0.3`;
         conds.push(b.districtCode ? and(nameCond, eq(mockIdentityRecords.districtCode, b.districtCode))! : nameCond);
       }
-      const rows = await db.select().from(mockIdentityRecords).where(or(...conds)).limit(10);
+      // best candidates first (CNIC hit, then name and husband-name similarity), so a near-duplicate twin is never cut off
+      const rank = sql`(case when ${mockIdentityRecords.cnic} = ${b.cnic ?? ''} then 10 else 0 end)
+        + similarity(lower(${mockIdentityRecords.name}), lower(${b.name ?? ''}))
+        + coalesce(similarity(lower(${mockIdentityRecords.relationName}), lower(${b.relationName ?? ''})), 0)`;
+      const rows = await db.select().from(mockIdentityRecords).where(or(...conds)).orderBy(sql`${rank} desc`, mockIdentityRecords.id).limit(10);
       return { body: { candidates: rows } };
     },
   },

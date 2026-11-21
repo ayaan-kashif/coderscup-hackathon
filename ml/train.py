@@ -196,7 +196,12 @@ def train_scorer(cases, matcher, registry):
         return min(CLIP[1], max(CLIP[0], p))
     art['parity_samples'] = [{'case_ref': refs['test'][i]['case_ref'], 'features': dict(zip(FEATURES, X['test'][i])), 'p_legit': r6(runtime_p(X['test'][i]))}
                              for i in range(0, len(X['test']), 10)]
-    return art
+    # the frozen D1 test set as the cost slider and dashboard use it (F14): calibrated score + what routes first
+    eval_set = {'dataset': 'D1 test', 'scorer': art['version'], 'n': len(refs['test']), 'cases': [
+        {'case_ref': c['case_ref'], 'category': c['category'], 'label': c['label'], 'p_legit': r6(runtime_p(X['test'][i])),
+         'stop': c['expected'].get('stop'), 'first_route': c['expected'].get('first_route')}
+        for i, c in enumerate(refs['test'])]}
+    return art, eval_set
 
 
 def main():
@@ -211,8 +216,8 @@ def main():
         assert compare_fields(p['a'], p['b']) == p['levels'], p['id']
 
     matcher = train_matcher(d3)
-    scorer = train_scorer(d1, matcher, registry)
-    out = {'models/matcher-v1.json': matcher, 'models/scorer-v1.json': scorer}
+    scorer, eval_set = train_scorer(d1, matcher, registry)
+    out = {'models/matcher-v1.json': matcher, 'models/scorer-v1.json': scorer, 'models/eval-test-set.json': eval_set}
     if args.check:
         # numeric tolerance: lbfgs can differ in the 6th decimal between platforms (Windows dev, Linux CI)
         def close(a, b):

@@ -99,7 +99,11 @@ export async function runCaseProcess(db: DbOrTx, caseId: string, step: Stepper, 
     // 9. duplicates and anomalies (a check that cannot run is not a pass → S8)
     const chk = await gated('checks', () => stepChecks(db, caseId));
     if (chk === STOP) return { runId, stopped: 'consent' };
-    state.services.checks = chk.available ? 'ok' : 'unavailable';
+    // F3 / §12.1: an extraction that failed (model down, schema failure twice) is a person's job, never a pass —
+    // without it the printed text cannot be compared with the signed QR, so the case goes to an officer (S8)
+    const extractionFailed = ex.failures.some((f) => !f.endsWith(':unreadable'));
+    state.services.checks = chk.available && !extractionFailed ? 'ok' : 'unavailable';
+    if (extractionFailed) state.notes.push(`extraction unavailable: ${ex.failures.join(', ')}`);
     state.duplicates = chk.duplicates;
     state.anomalies = chk.anomalies;
     state.duplicateScore = chk.duplicateScore;

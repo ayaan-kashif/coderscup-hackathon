@@ -71,6 +71,8 @@ export const documents = pgTable('documents', {
   sharpness: doublePrecision('sharpness'),
   /** 64-bit difference hash, compared by Hamming distance (5 bits or less = reuse) */
   dhash: bigint('dhash', { mode: 'bigint' }),
+  /** 1024-bit difference hash (hex): a fixed-layout card makes the 64-bit hash collide across people, so reuse needs both */
+  fineHash: text('fine_hash'),
   qrPayload: jsonb('qr_payload'),
   qrSigValid: boolean('qr_sig_valid'),
   extraction: jsonb('extraction'),

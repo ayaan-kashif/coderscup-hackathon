@@ -1,0 +1,182 @@
+{
+ "generatedAt": "2026-11-21T06:41:07.609Z",
+ "versions": {
+  "scorer": "scorer-v1",
+  "matcher": "matcher-v1",
+  "datasets": "seed 2026"
+ },
+ "routing": {
+  "dataset": "D1 test (n=100)",
+  "threshold": 0.9801587301587301,
+  "wrongApprovals": {
+   "value": 0,
+   "num": 0,
+   "den": 23
+  },
+  "wrongApprovalUpper95": 0.1304,
+  "unnecessaryEscalations": {
+   "value": 0.04,
+   "num": 2,
+   "den": 50
+  },
+  "split": {
+   "auto": 57,
+   "proof": 15,
+   "person": 28
+  },
+  "targets": {
+   "wrongApprovals": 0,
+   "unnecessaryEscalationsMax": 0.5
+  }
+ },
+ "calibration": {
+  "dataset": "D1 calibration / test",
+  "eceCalibration": 0.004663,
+  "eceTestScored": 0.045704,
+  "eceTestAll": 0.118234,
+  "reliability": [
+   {
+    "band": "0.00–0.50",
+    "n": 14,
+    "meanP": 0.012,
+    "observedLegit": 0.1429
+   },
+   {
+    "band": "0.50–0.80",
+    "n": 6,
+    "meanP": 0.5463,
+    "observedLegit": 0.5
+   },
+   {
+    "band": "0.80–0.90",
+    "n": 0,
+    "meanP": null,
+    "observedLegit": null
+   },
+   {
+    "band": "0.90–0.95",
+    "n": 1,
+    "meanP": 0.903,
+    "observedLegit": 1
+   },
+   {
+    "band": "0.95–0.98",
+    "n": 0,
+    "meanP": null,
+    "observedLegit": null
+   },
+   {
+    "band": "0.98–1.00",
+    "n": 79,
+    "meanP": 0.995,
+    "observedLegit": 0.8987
+   }
+  ],
+  "target": 0.05
+ },
+ "matcher": {
+  "dataset": "D3 test",
+  "n": 200,
+  "auto_match_precision": 1,
+  "recall_auto_match": 1,
+  "review_zone_rate": 0.01,
+  "false_auto_matches": 0,
+  "targets": {
+   "precision": 1,
+   "recall": 0.9,
+   "review_zone_rate_max": 0.1
+  }
+ },
+ "scam": {
+  "dataset": "D2 test (n=100)",
+  "precisionFake": {
+   "value": 1,
+   "num": 51,
+   "den": 51
+  },
+  "recallFake": {
+   "value": 1,
+   "num": 51,
+   "den": 51
+  },
+  "falseAlarmsOnGenuine": {
+   "value": 0,
+   "num": 0,
+   "den": 36
+  },
+  "notSureRate": {
+   "value": 0.13,
+   "num": 13,
+   "den": 100
+  },
+  "targets": {
+   "precision": 0.95,
+   "recall": 0.9,
+   "falseAlarmsMax": 0.02,
+   "notSureMax": 0.15
+  },
+  "note": "claim checks only; Jev can only move a verdict to \"not sure\" and needs the gateway key"
+ },
+ "documents": {
+  "dataset": "D6 (n=60)",
+  "editedAndForgedCaught": {
+   "value": 1,
+   "num": 24,
+   "den": 24
+  },
+  "cleanFlagged": {
+   "value": 0,
+   "num": 0,
+   "den": 20
+  },
+  "byVariant": {
+   "blurred": {
+    "value": 1,
+    "num": 8,
+    "den": 8
+   },
+   "edited_text": {
+    "value": 1,
+    "num": 8,
+    "den": 8
+   },
+   "forged_qr": {
+    "value": 1,
+    "num": 8,
+    "den": 8
+   },
+   "reused_image": {
+    "value": 1,
+    "num": 8,
+    "den": 8
+   }
+  },
+  "targets": {
+   "caught": 1,
+   "cleanFlaggedMax": 0.01
+  },
+  "note": "signature, blur and reuse are measured on the images; \"edited text\" uses the printed fields an extraction model would read (upper bound — live extraction needs the gateway key)"
+ },
+ "rag": {
+  "dataset": "D5 (n=40; 30 answerable)",
+  "retrievalHitAt4": {
+   "value": 0.9,
+   "num": 27,
+   "den": 30
+  },
+  "citationAccuracy": null,
+  "correctRefusals": null,
+  "note": "citation accuracy and refusals need the answering model (gateway key); refusal is the safe default without it"
+ },
+ "voice": {
+  "dataset": "D4 (30 texts)",
+  "wer": null,
+  "digitAccuracy": null,
+  "note": "needs synthesised audio and a speech key: pnpm voice:generate --d4 && pnpm stt:bakeoff"
+ },
+ "jevLabelSwap": {
+  "dataset": "D2 test",
+  "changed": null,
+  "note": "needs the gateway key"
+ }
+}

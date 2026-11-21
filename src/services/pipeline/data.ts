@@ -11,6 +11,7 @@ import type { MatcherWeights } from '@/domain/matcher/fellegi-sunter';
 import type { Costs, Rule, Thresholds } from '@/domain/rules/schema';
 import type { EvidenceFeatures, ScorerArtifact } from '@/domain/scorer';
 import { effectiveConfig } from '../config';
+import { FINE_REUSE_MAX_BITS, fineDistance } from '../documents/image';
 
 export const OPEN_STATUSES = ['draft', 'submitted', 'processing', 'needs_proof', 'in_review', 'approved_on_hold', 'approved', 'paused_for_consent', 'frozen', 'disputed'] as const;
 
@@ -172,13 +173,14 @@ export async function buildSnapshot(db: DbOrTx, c: LoadedCase, t: Transient, asO
 
 /** DOC-5: an image within 5 bits of an image on ANOTHER citizen's case */
 export async function reusedImage(db: DbOrTx, c: LoadedCase) {
+  // coarse filter in SQL (64-bit hash within 5 bits), then the fine 1024-bit hash, because fixed-layout cards collide
   const res = await db.execute(sql`
-    select 1 as hit from documents d
+    select d.fine_hash as a, o.fine_hash as b from documents d
     join documents o on o.case_id <> d.case_id and o.dhash is not null and dhash_distance(o.dhash, d.dhash) <= 5
     join cases oc on oc.id = o.case_id
     where d.case_id = ${c.id} and d.dhash is not null and oc.citizen_id is distinct from ${c.citizenId}
-    limit 1`);
-  return rowsOf(res).length > 0;
+    limit 200`);
+  return rowsOf<{ a: string | null; b: string | null }>(res).some((r) => !r.a || !r.b || fineDistance(r.a, r.b) <= FINE_REUSE_MAX_BITS);
 }
 
 async function daysSinceLastPayoutChange(db: DbOrTx, citizenId: string | null, asOf: string) {

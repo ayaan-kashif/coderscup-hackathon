@@ -74,6 +74,7 @@ const READ_ACTIONS: Record<string, { en: string; ur: string }> = {
   'decision.read': { en: 'read a decision on your case', ur: 'نے آپ کے کیس کا فیصلہ دیکھا' },
   'tool.identity.search': { en: 'checked the identity registry (simulated)', ur: 'نے شناختی ریکارڈ چیک کیا' },
   'tool.civil.lookup': { en: 'checked the civil registry (simulated)', ur: 'نے سول رجسٹری چیک کی' },
+  'breakglass.open': { en: 'opened your data for a complaint or legal request (break-glass)', ur: 'نے شکایت یا قانونی درخواست کے لیے آپ کی معلومات کھولیں' },
 };
 
 /** CONS-2: "Officer Imran, Badin office, opened your documents yesterday" — allowed AND denied attempts */

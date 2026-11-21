@@ -46,21 +46,35 @@ const URDU_DIGITS = '۰۱۲۳۴۵۶۷۸۹';
 const westernDigits = (s: string) => s.replace(/[۰-۹]/g, (d) => String(URDU_DIGITS.indexOf(d)));
 
 /** SCAM-1: deterministic claim extraction (English, Roman Urdu, Urdu script) into a schema */
+/** reassurances the programme itself prints ("no fee is ever charged", "never share your PIN") are not requests */
+const NEGATED = [
+  /\bno (fee|fees|link|code|pin)s?(,| or| and)?( no (fee|fees|link|code|pin)s?,?)*( (is|are) ever (charged|asked|needed|sent))?/gi,
+  /\bnever (share|send|give|tell)( anyone)? your (pin|code|otp|password)\b/gi,
+  /\b(fee|fees|pin|code)\b[^.]{0,20}\b(kabhi nahin|kabhi nahi|nahin|nahi)\b[^.]{0,15}/gi,
+  /\bkoi (fee|fees|code|link)s? (nahin|nahi)\b/gi,
+  /\bapna (pin|code) kisi ko na (batayein|batain|bataen|dein)\b/gi,
+  /never charges? (a |any )?fees?/gi,
+  /کوئی (فیس|کوڈ|لنک) نہیں/g,
+  /اپنا (پن|کوڈ) کسی کو نہ بتائیں/g,
+];
+
 export function extractClaims(raw: string, sender: string | null): Claims {
   const text = westernDigits(raw);
   const t = text.toLowerCase();
+  let asked = text;
+  for (const re of NEGATED) asked = asked.replace(re, ' ');
   const amounts = [...text.matchAll(/(?:rs\.?|pkr|روپے)\s*([\d,]{3,9})|([\d,]{3,9})\s*(?:rs|روپے|rupees)/gi)].map((m) => num(m[1] ?? m[2] ?? '')).filter((n) => Number.isFinite(n) && n > 0);
   const feeMatch = /(?:fee|fees|charges?|tax|ٹیکس|فیس|bring)\D{0,12}(?:rs\.?\s*)?([\d,]{2,7})|(?:rs\.?\s*)?([\d,]{2,7})\s*(?:rs\.?\s*)?(?:روپے\s*)?(?:fee|fees|فیس|ٹیکس|tax)/i.exec(text);
   const fee = feeMatch ? num(feeMatch[1] ?? feeMatch[2] ?? '') : null;
-  const feeRequested = /\b(fee|fees|charges?|tax)\b|فیس|ٹیکس|bring rs|send rs/i.test(text) && !/no fee is ever charged|fee kabhi nahin|never charges? (a )?fee|فیس نہیں/i.test(text);
-  const codeRequested = /\b(pin|otp|one[- ]time code|password|code)\b|photo of your cnic|cnic (copy|photo)|پن|کوڈ/i.test(text) && !/never share your pin|pin kabhi share na|اپنا پن کسی کو نہ/i.test(text);
+  const feeRequested = /\b(fee|fees|charges?|tax)\b|فیس|ٹیکس|bring rs|send rs|روپے[^۔.]{0,25}(لائیں|بھیجیں)/i.test(asked);
+  const codeRequested = /\b(pin|otp|one[- ]time code|password|code)\b|photo of your cnic|cnic (copy|photo)|پن|کوڈ|کارڈ کی (کاپی|تصویر)/i.test(asked);
   const links = [...text.matchAll(/https?:\/\/\S+|www\.\S+|\b[a-z0-9-]+\.(?:com|pk|net|org|example|info)\S*/gi)].map((m) => m[0]);
   const phoneNumbers = [...text.matchAll(/\+?\d[\d\s-]{9,14}\d/g)].map((m) => m[0].replace(/[\s-]/g, '')).filter((p) => p.replace(/\D/g, '').length >= 10);
   const callRequested = /\b(call|phone|contact)\b|کال کریں|فون کریں/i.test(t) && phoneNumbers.length > 0;
   const payment = amounts.filter((a) => a !== fee).sort((a, b) => b - a)[0] ?? null;
   return {
     sender: sender?.trim() || null,
-    mentionsProgramme: /saaya|سایہ/i.test(text),
+    mentionsProgramme: /saaya|سایہ|\brelief\b|\bimdad\b|امداد|\bprogramme?\b/i.test(text),
     amounts, claimedPayment: payment, fee, feeRequested, codeRequested, links, phoneNumbers, callRequested,
     urgency: /\b(urgent|immediately|today|now|jaldi|foran|aaj hi|final notice)\b|فوراً|آج ہی/i.test(t),
     walletLast4: /wallet\D{0,12}(\d{4})/i.exec(text)?.[1] ?? null,
@@ -78,7 +92,9 @@ export function combineVerdict(c: Claims, o: { officialSenders: string[]; ledger
   if (c.codeRequested) lines.push({ code: 'code', result: 'contradiction', en: 'This programme never asks for a PIN, a code or a photo of your card by message.', ur: 'یہ پروگرام پیغام میں کبھی پن، کوڈ یا کارڈ کی تصویر نہیں مانگتا۔', clause: 'SRP-POL-1.3' });
   if (c.links.length) lines.push({ code: 'link', result: 'contradiction', en: 'Programme messages never contain links.', ur: 'پروگرام کے پیغامات میں کبھی لنک نہیں ہوتا۔', clause: 'SRP-POL-1.3' });
   if (c.callRequested) lines.push({ code: 'call', result: 'contradiction', en: 'The programme never asks you to call a mobile number.', ur: 'پروگرام کبھی موبائل نمبر پر کال کرنے کو نہیں کہتا۔', clause: 'SRP-POL-1.3' });
-  if (c.sender && !official) lines.push({ code: 'sender', result: 'contradiction', en: mobileSender ? 'It came from a mobile number; the programme never sends from mobile numbers.' : 'The sender is not the official sender.', ur: mobileSender ? 'یہ موبائل نمبر سے آیا؛ پروگرام موبائل نمبر سے پیغام نہیں بھیجتا۔' : 'بھیجنے والا سرکاری نہیں ہے۔' });
+  // the sender only matters for a message that claims to be from the programme (a shop's offer from a mobile is not a scam)
+  const claimsSomething = !!(c.claimedPayment || c.feeRequested || c.codeRequested || c.links.length || c.callRequested);
+  if (c.sender && !official && c.mentionsProgramme && claimsSomething) lines.push({ code: 'sender', result: 'contradiction', en: mobileSender ? 'It came from a mobile number; the programme never sends from mobile numbers.' : 'The sender is not the official sender.', ur: mobileSender ? 'یہ موبائل نمبر سے آیا؛ پروگرام موبائل نمبر سے پیغام نہیں بھیجتا۔' : 'بھیجنے والا سرکاری نہیں ہے۔' });
   else if (official) lines.push({ code: 'sender', result: 'support', en: 'The sender name is official (sender names can be faked).', ur: 'بھیجنے والا سرکاری ہے (نام جعلی بھی ہو سکتا ہے)۔' });
   // SCAM-2: a missing payment counts ONLY when the ledger checked belongs to the message's recipient
   if (o.ledger.checked && o.ledger.ownMessage && c.claimedPayment) {

@@ -18,7 +18,7 @@ export const POST = route({
       return { ...p, audit: { ...p.audit, subjectCitizenId: c.body.citizenId } };
     }
     if (r.duress) {
-      await triggerDuress(db, { citizenId: c.body.citizenId, trigger: 'helper_unlock', helperUserId: c.actor!.id, quarantinedGrantId: r.grant.id, session: duressSession(c, c.body.deviceId), afterCommit: c.afterCommit });
+      await triggerDuress(db, { citizenId: c.body.citizenId, trigger: 'helper_unlock', helperUserId: c.actor!.id, quarantinedGrantIds: r.quarantined, session: duressSession(c, c.body.deviceId), afterCommit: c.afterCommit });
     }
     return {
       status: 201,

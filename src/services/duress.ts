@@ -79,7 +79,7 @@ export const DURESS_SAFETY_SMS = [
  */
 export async function triggerDuress(db: DbOrTx, o: {
   citizenId: string; trigger: DuressTrigger; session: DuressSession; payoutChangeId?: string | null; helperUserId?: string | null;
-  quarantinedGrantId?: string | null; afterCommit?: (fn: () => Promise<void>) => void;
+  quarantinedGrantIds?: string[]; afterCommit?: (fn: () => Promise<void>) => void;
 }) {
   // 1a. shadow-freeze every open case (the payout can never be disbursed while frozen)
   const frozen = await db.update(cases).set({ status: 'frozen', frozenReason: DURESS_FREEZE_REASON, priority: 400, updatedAt: new Date() })
@@ -105,7 +105,7 @@ export async function triggerDuress(db: DbOrTx, o: {
   const revoked = await db.update(helperGrants).set({ revokedAt: new Date() })
     .where(and(eq(helperGrants.citizenId, o.citizenId), isNull(helperGrants.revokedAt)))
     .returning({ id: helperGrants.id, helperUserId: helperGrants.helperUserId });
-  const grantIds = [...new Set([...(o.quarantinedGrantId ? [o.quarantinedGrantId] : []), ...revoked.map((g) => g.id)])];
+  const grantIds = [...new Set([...(o.quarantinedGrantIds ?? []), ...revoked.map((g) => g.id)])];
   const helperUserId = o.helperUserId ?? revoked[0]?.helperUserId ?? null;
 
   // the tenant that owns the alarm: the payout change's, else the most recent case's

@@ -59,12 +59,14 @@ export async function unlockFamily(db: DbOrTx, helperUserId: string, citizenId: 
   }
   await db.update(citizens).set({ pinFailedAttempts: 0, pinLockedUntil: null }).where(eq(citizens.id, c.id));
   // HELP-3: switching families locks the previous one
-  await db.update(helperGrants).set({ revokedAt: new Date() }).where(and(eq(helperGrants.helperUserId, helperUserId), isNull(helperGrants.revokedAt)));
+  const switched = await db.update(helperGrants).set({ revokedAt: new Date() }).where(and(eq(helperGrants.helperUserId, helperUserId), isNull(helperGrants.revokedAt))).returning({ id: helperGrants.id, citizenId: helperGrants.citizenId });
   // Silent Duress PIN: the family typed its PIN backwards in front of the helper. The grant is created (so the reply
   // looks like any unlock) but born revoked, and the caller runs the lockdown.
   const duress = match === 'duress';
   const [g] = await db.insert(helperGrants).values({ assignmentId: a.id, helperUserId, citizenId, scope: GRANT_SCOPE, method: 'pin', deviceId: deviceId ?? null, expiresAt: new Date(Date.now() + GRANT_HOURS * 3_600_000), revokedAt: duress ? new Date() : null }).returning();
-  return { ok: true as const, grant: g!, family: { name: c.nameDisplay, avatarId: c.avatarId }, duress };
+  // the unlocks this helper held on this family just before the duress entry are evidence too
+  const quarantined = duress ? [g!.id, ...switched.filter((x) => x.citizenId === citizenId).map((x) => x.id)] : [];
+  return { ok: true as const, grant: g!, family: { name: c.nameDisplay, avatarId: c.avatarId }, duress, quarantined };
 }
 
 export async function lockGrant(db: DbOrTx, helperUserId: string, grantId: string) {

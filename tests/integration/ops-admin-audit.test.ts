@@ -109,10 +109,10 @@ describe('ops endpoints', () => {
     expect(r.headers.get('x-request-id')).toMatch(/^req_/);
   });
 
-  it('status reports database, 53 tables, mocks and chain status', async () => {
+  it('status reports database, 54 tables, mocks and chain status', async () => {
     const r = await call(statusRoute.GET, '/api/v1/status');
     expect(r.body.checks.database.status).toBe('ok');
-    expect(r.body.checks.schema.detail.tables).toBe(53);
+    expect(r.body.checks.schema.detail.tables).toBe(54);
     expect(r.body.checks.mocks.detail).toHaveLength(6);
     expect(r.body.chains.length).toBeGreaterThanOrEqual(1);
   });

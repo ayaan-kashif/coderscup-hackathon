@@ -72,6 +72,7 @@ const BODY_OVERRIDES: Record<string, unknown> = {
   updateRuleDraft: { rules: [], thresholds: {}, costs: {} },
   createUser: { email: 'probe.user@sindh.amanat.test', displayName: 'Probe User', role: 'officer' },
   createApiKey: { name: 'probe key', scopes: ['scam:check'] },
+  resolveDuressAlarm: { action: 'escalate', note: 'matrix probe' },
 };
 const QUERY_OVERRIDES: Record<string, Record<string, string>> = { getConsentAndAccess: { citizenId: '00000000-0000-4000-8000-000000000000' } };
 
@@ -118,6 +119,9 @@ beforeAll(async () => {
   F.alert = al!.id;
   const [rep] = await t.db.insert(scamReports).values({ tenantId: s, districtId: hyd!.id, messageHash: 'matrix', channel: 'text', verdict: 'not_sure', extractedClaims: {} }).returning({ id: scamReports.id });
   F.report = rep!.id;
+  const { duressAlarms } = await import('@/db/schema/all');
+  const [da] = await t.db.insert(duressAlarms).values({ tenantId: s, citizenId: zarina, trigger: 'pin_verify', session: { requestId: 'matrix' } }).returning({ id: duressAlarms.id });
+  F.duress = da!.id;
   const [rs] = await t.db.select({ id: ruleSets.id }).from(ruleSets).where(eq(ruleSets.tenantId, s)).limit(1);
   F.ruleSet = rs!.id;
   const [tw] = await t.db.insert(twinRuns).values({ tenantId: s, ruleSetId: rs!.id, draftHash: 'x', status: 'done' }).returning({ id: twinRuns.id });
@@ -162,7 +166,7 @@ function fixtureFor(path: string, axis: 'normal' | 'consent'): { params: Record<
   const pick: [RegExp, string, 'zarina' | null][] = [
     [/^cases\/\{id\}/, axis === 'consent' ? 'fatimaCase' : 'zarinaCase', 'zarina'], [/^complaints\/\{id\}/, 'complaint', 'zarina'], [/^corrections\/\{id\}/, 'correction', 'zarina'],
     [/^payout-changes\/\{id\}/, 'payoutChange', 'zarina'], [/^payments\/\{id\}/, 'payment', 'zarina'], [/^me\/consents\/\{id\}/, 'consent', 'zarina'], [/^helper\/grants\/\{id\}/, 'grant', 'zarina'],
-    [/^scam\/alerts\/\{id\}/, 'alert', null], [/^scam\/reports\/\{id\}/, 'report', null], [/^decisions\/\{id\}/, 'decision', null], [/^ai-decisions\/\{id\}/, 'aiDecision', null],
+    [/^scam\/alerts\/\{id\}/, 'alert', null], [/^scam\/duress\/\{id\}/, 'duress', null], [/^scam\/reports\/\{id\}/, 'report', null], [/^decisions\/\{id\}/, 'decision', null], [/^ai-decisions\/\{id\}/, 'aiDecision', null],
     [/^rules\/drafts\/\{id\}/, 'ruleSet', null], [/^twin-runs\/\{id\}/, 'twin', null], [/^eval\/runs\/\{id\}/, 'evalRun', null], [/^admin\/users\/\{id\}/, 'user', null], [/^admin\/api-keys\/\{id\}/, 'apiKey', null],
     [/^admin\/webhooks\/deliveries\/\{id\}/, 'webhookDelivery', null], [/^admin\/webhooks\/\{id\}/, 'webhook', null],
   ];

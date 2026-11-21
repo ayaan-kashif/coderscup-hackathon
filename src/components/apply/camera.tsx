@@ -87,7 +87,7 @@ export function CameraCapture({ prompt, title, onAccept }: { prompt: string; tit
         {/* eslint-disable-next-line @next/next/no-img-element */}
         {shot && !low ? <img src={shot.preview} alt="" className="h-full w-full object-contain" /> : shot ? <span className="text-sm text-muted-foreground" data-testid="no-preview">{bi('Photo taken', 'تصویر لے لی')} · {Math.round(shot.bytes / 1024)} KB</span> : <Camera className="size-16 text-muted-foreground" aria-hidden />}
         {shot && (
-          <div className={`absolute bottom-2 left-2 rounded-full px-3 py-1 text-sm font-semibold ${blurry ? 'bg-destructive text-white' : 'bg-success text-white'}`} data-testid="blur-meter">
+          <div className={`absolute bottom-2 left-2 rounded-full px-3 py-1 text-sm font-semibold ${blurry ? 'bg-destructive text-void' : 'bg-success text-success-foreground'}`} data-testid="blur-meter">
             {blurry ? bi('Not clear', 'صاف نہیں') : bi('Clear', 'صاف')} · {Math.round(shot.sharpness * 100)}
           </div>
         )}

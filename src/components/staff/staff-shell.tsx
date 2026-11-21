@@ -6,6 +6,8 @@ import { getDb } from '@/db/client';
 import { tenants, users } from '@/db/schema/all';
 import { Badge } from '@/components/ui/badge';
 import { listMyTenants } from '@/services/auth';
+import { Logo } from '@/components/brand/logo';
+import { NavPills } from './nav-pills';
 import { SignOutButton } from './sign-out';
 import { TenantSwitcher } from './tenant-switcher';
 
@@ -30,27 +32,27 @@ export async function StaffShell({ actor, title, children, nav }: { actor: Actor
   const [tenant] = actor.tenantId ? await db.select({ name: tenants.name, code: tenants.code, sandbox: tenants.isSandbox }).from(tenants).where(eq(tenants.id, actor.tenantId)) : [];
   const mine = actor.role && actor.role !== 'citizen' ? await listMyTenants(db, actor.id) : [];
   return (
-    <div className="min-h-dvh">
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-card px-4 py-3">
-        <div className="flex flex-wrap items-center gap-3">
-          <Link href="/" className="font-bold">AMANAT AI</Link>
-          <span className="text-muted-foreground">/</span>
-          <span className="font-medium">{title}</span>
+    <div className="min-h-dvh bg-void">
+      <header className="sticky top-0 z-30 bg-void/85 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6">
+          <Link href="/" aria-label="AMANAT AI home"><Logo /></Link>
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <span className="font-medium text-white/80">{u?.name}</span>
+            <Badge variant="secondary">{t('role')}: {actor.role}{actor.isSenior ? ' (senior)' : ''}</Badge>
+            {tenant && <Badge variant={tenant.sandbox ? 'warning' : 'outline'}>{t('tenant')}: {tenant.name}</Badge>}
+            <TenantSwitcher current={tenant?.code ?? null} tenants={mine} />
+            <SignOutButton />
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2 text-sm">
-          <span>{u?.name}</span>
-          <Badge variant="secondary">{t('role')}: {actor.role}{actor.isSenior ? ' (senior)' : ''}</Badge>
-          {tenant && <Badge variant={tenant.sandbox ? 'warning' : 'outline'}>{t('tenant')}: {tenant.name}</Badge>}
-          <TenantSwitcher current={tenant?.code ?? null} tenants={mine} />
-          <SignOutButton />
-        </div>
+        {nav && <div className="mx-auto max-w-[1400px]"><NavPills items={nav} /></div>}
       </header>
-      {nav && (
-        <nav className="flex gap-1 overflow-x-auto border-b border-border bg-card px-4" aria-label="console">
-          {nav.map((n) => <Link key={n.href} href={n.href} className="whitespace-nowrap border-b-2 border-transparent px-3 py-2 text-sm hover:border-primary">{n.label}</Link>)}
-        </nav>
-      )}
-      <main className="mx-auto max-w-6xl space-y-6 px-4 py-6">{children}</main>
+      <div className="mx-auto max-w-[1400px] px-4 pb-10 sm:px-6">
+        <section className="canvas-violet iso-grid mb-6 overflow-hidden rounded-[28px] px-6 py-8 sm:px-10 sm:py-10" aria-label={title}>
+          <p className="micro-label text-white/70">{t('role')} · {actor.role}</p>
+          <p className="display-lg mt-2 uppercase">{title}</p>
+        </section>
+        <main className="space-y-6">{children}</main>
+      </div>
     </div>
   );
 }

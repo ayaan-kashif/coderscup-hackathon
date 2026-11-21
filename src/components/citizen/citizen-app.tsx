@@ -1,5 +1,8 @@
 'use client';
 import { WifiOff } from 'lucide-react';
+import { motion } from 'motion/react';
+import React from 'react';
+import { Logo } from '@/components/brand/logo';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
@@ -204,10 +207,17 @@ function ConsentStep({ onDone }: { onDone: () => void }) {
 
 function Screen({ title, prompt, replay, children }: { title: string; prompt: string; replay: string; children: React.ReactNode }) {
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-5 px-4 py-6">
-      <h1 className="text-2xl font-bold">{title}</h1>
-      <VoicePrompt clip={prompt} label={replay} />
-      {children}
+    <main className="mx-auto flex max-w-md flex-col gap-4 px-4 py-5">
+      <Logo className="px-1" />
+      <motion.div key={title} initial={{ opacity: 0, y: 24, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="flex flex-col gap-4">
+        <section className="canvas-violet iso-grid space-y-4 overflow-hidden rounded-[28px] p-6">
+          <h1 className="display-lg !text-[clamp(1.6rem,6vw,2.1rem)]">{title}</h1>
+          <VoicePrompt clip={prompt} label={replay} />
+        </section>
+        <motion.div className="flex flex-col gap-5 rounded-[28px] border border-white/[0.08] bg-bento p-5" initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06, delayChildren: 0.15 } } }}>
+          {React.Children.map(children, (c) => <motion.div variants={{ hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0 } }}>{c}</motion.div>)}
+        </motion.div>
+      </motion.div>
     </main>
   );
 }

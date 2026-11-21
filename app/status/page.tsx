@@ -1,3 +1,4 @@
+import { PageFrame } from '@/components/shell/page-frame';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getDb } from '@/db/client';
@@ -13,8 +14,7 @@ export default async function StatusPage() {
   let err: string | null = null;
   try { s = await getSystemStatus(getDb()); } catch (e) { err = e instanceof Error ? e.message : String(e); }
   return (
-    <main className="mx-auto max-w-3xl space-y-4 px-4 py-8">
-      <h1 className="text-2xl font-bold">System status {s && <Badge variant={variant(s.overall)}>{s.overall}</Badge>}</h1>
+    <PageFrame title={<>System status {s && <Badge variant={variant(s.overall)} className="align-middle normal-case">{s.overall}</Badge>}</>}>
       {err && <p className="text-destructive">Database unreachable: {err}</p>}
       {s && (
         <>
@@ -59,6 +59,6 @@ export default async function StatusPage() {
           <p className="text-xs text-muted-foreground">version {s.version} · {s.time}</p>
         </>
       )}
-    </main>
+    </PageFrame>
   );
 }

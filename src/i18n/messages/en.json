@@ -63,5 +63,97 @@
     "CONSENT_WITHDRAWN": "Access withdrawn by the citizen.",
     "RATE_LIMITED": "Too many requests. Please wait.",
     "INTERNAL": "Something went wrong. Please try again."
+  },
+  "landing": {
+    "nav": {
+      "home": "Home",
+      "how": "How it works",
+      "roles": "Who it is for",
+      "features": "Features",
+      "trust": "Trust",
+      "login": "Login",
+      "start": "Start applying"
+    },
+    "heroBody": "A widow who cannot read applies by voice on a weak signal. The system acts alone only when the evidence clears a bar set by the cost of a mistake. Otherwise an officer gets the case, the reason, and the one fact that would settle it.",
+    "ctaPrimary": "Apply by voice",
+    "promo": "Synthetic data · no real money moves",
+    "statA": "Synthetic identities",
+    "statB": "Policy clauses",
+    "ticker": {
+      "roles": "Roles",
+      "languages": "Languages",
+      "token": "Access token life",
+      "audit": "Audit log",
+      "rules": "Decisions",
+      "sms": "SMS",
+      "tables": "Database tables"
+    },
+    "tickerV": {
+      "roles": "4",
+      "languages": "English / اردو",
+      "token": "15 min",
+      "audit": "Hash-chained",
+      "rules": "Rules + officer",
+      "sms": "Mock only",
+      "tables": "53"
+    },
+    "howEyebrow": "How a decision is made",
+    "howTitle": "AI reads. Mocks confirm. Rules decide. People sign off.",
+    "steps": [
+      {
+        "t": "AI reads",
+        "d": "Voice answers and document photos become structured facts, with a confidence for every field."
+      },
+      {
+        "t": "Mocks confirm",
+        "d": "Identity, civil registry and wallet checks run against labelled mock government systems."
+      },
+      {
+        "t": "Rules decide",
+        "d": "Auto-approve only when the evidence clears a bar set by what a mistake would cost. Everything else escalates."
+      },
+      {
+        "t": "People sign off",
+        "d": "An officer sees the reason and the single fact that would settle the case, then decides."
+      }
+    ],
+    "rolesEyebrow": "Pick your door",
+    "rolesTitle": "One system, three ways in",
+    "roleCitizenD": "Answer by voice or icons. Works on a weak signal. Answers wait safely on the phone.",
+    "roleHelperD": "Help someone in your community apply, with drafts they can review and confirm.",
+    "roleStaffD": "Officer queue, admin rules and twin, and the auditor's chain checks.",
+    "open": "Open",
+    "featEyebrow": "Built for the last mile",
+    "featTitle": "Details that keep people safe",
+    "feats": [
+      {
+        "t": "Voice first, Urdu and English",
+        "d": "Every step can be heard and answered without reading."
+      },
+      {
+        "t": "Offline outbox",
+        "d": "Answers are saved on the phone and sent when the signal returns, with ticks that show where each one is."
+      },
+      {
+        "t": "Tamper-evident audit",
+        "d": "Every decision is chained. The auditor can see exactly where a chain would break."
+      },
+      {
+        "t": "Break It and chaos tools",
+        "d": "Admins can slow, fail or attack the mock services and watch the system hold."
+      },
+      {
+        "t": "Scam desk",
+        "d": "Reports about fake officers and fee demands land in one queue with the evidence."
+      },
+      {
+        "t": "Mock phone",
+        "d": "Read the codes and messages a citizen would get. No real SMS is ever sent."
+      }
+    ],
+    "ctaTitle": "See it work end to end",
+    "ctaBody": "Sign in as a citizen, a helper or an officer in one click. Demo mode is on.",
+    "ctaStaff": "Staff sign-in",
+    "footer": "Prototype for Coder's Cup '26. Every person, document and government system here is synthetic or a labelled mock."
   }
 }

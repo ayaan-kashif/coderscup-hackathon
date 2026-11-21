@@ -12,7 +12,7 @@ export function Keypad({ value, onChange, max, masked = false }: { value: string
   };
   return (
     <div className="space-y-4">
-      <div dir="ltr" className="flex min-h-14 items-center justify-center gap-2 rounded-lg border border-border bg-card text-3xl font-bold tracking-[0.3em]" aria-live="polite">
+      <div dir="ltr" className="flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-void text-3xl font-bold tracking-[0.3em]" aria-live="polite">
         {masked ? '•'.repeat(value.length) : value || ' '}
       </div>
       <div dir="ltr" className="grid grid-cols-3 gap-3">

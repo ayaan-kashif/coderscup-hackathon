@@ -60,9 +60,9 @@ export function CostSlider() {
             </div>
             <div aria-label="route split" data-testid="split">
               <div className="flex h-8 overflow-hidden rounded">
-                <div className="flex items-center justify-center bg-success text-xs text-white" style={{ width: `${p.at.split.auto}%` }}>{p.at.split.auto} auto</div>
+                <div className="flex items-center justify-center bg-success text-xs text-void" style={{ width: `${p.at.split.auto}%` }}>{p.at.split.auto} auto</div>
                 <div className="flex items-center justify-center bg-warning text-xs text-warning-foreground" style={{ width: `${p.at.split.proof}%` }}>{p.at.split.proof} proof</div>
-                <div className="flex items-center justify-center bg-muted-foreground text-xs text-white" style={{ width: `${p.at.split.person}%` }}>{p.at.split.person} person</div>
+                <div className="flex items-center justify-center bg-muted-foreground text-xs text-void" style={{ width: `${p.at.split.person}%` }}>{p.at.split.person} person</div>
               </div>
             </div>
             <figure>

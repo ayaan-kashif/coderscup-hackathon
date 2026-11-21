@@ -9,7 +9,7 @@ export function LanguageToggle({ label }: { label: string }) {
     <button
       type="button"
       disabled={pending}
-      className="rounded border border-warning-foreground/40 px-2 py-0.5 font-semibold hover:bg-warning-foreground/10"
+      className="shrink-0 rounded-full border border-white/20 bg-white/5 px-3 py-0.5 font-semibold text-white transition-colors hover:border-mint hover:text-mint disabled:opacity-50"
       onClick={() => {
         const current = document.documentElement.lang === 'ur' ? 'ur' : 'en';
         const next = current === 'ur' ? 'en' : 'ur';

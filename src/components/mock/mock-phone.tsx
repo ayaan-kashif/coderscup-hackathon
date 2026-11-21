@@ -1,4 +1,5 @@
 'use client';
+import { AnimatePresence, motion } from 'motion/react';
 import { PhoneCall, ShieldQuestion, Smartphone, Volume2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { SimulatedBadge } from '@/components/shell/simulated-badge';
@@ -43,8 +44,8 @@ export function MockPhone({ initialPhone }: { initialPhone: string }) {
   };
 
   return (
-    <main className="mx-auto max-w-sm px-4 py-6">
-      <div className="space-y-3 rounded-[2rem] border-4 border-foreground/80 bg-card p-4 shadow-lg">
+    <main className="canvas-violet iso-grid flex min-h-dvh items-start justify-center px-4 py-8">
+      <motion.div initial={{ opacity: 0, y: 40, rotate: -1.5 }} animate={{ opacity: 1, y: 0, rotate: 0 }} transition={{ type: 'spring', stiffness: 140, damping: 18 }} className="w-full max-w-sm space-y-3 rounded-[2.5rem] border-[6px] border-void bg-bento p-4 shadow-[0_40px_80px_-30px_rgb(20_10_70/0.7)]">
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-2 font-semibold"><Smartphone className="size-5" /> Mock phone</span>
           <SimulatedBadge what="SMS / IVR" />
@@ -66,12 +67,12 @@ export function MockPhone({ initialPhone }: { initialPhone: string }) {
         </form>
         {note && <p role="status" className="rounded-lg bg-warning p-2 text-sm text-warning-foreground">{note}</p>}
         {error && <p className="text-sm text-destructive">{error}</p>}
-        <ul className="max-h-[60vh] space-y-2 overflow-y-auto" dir="ltr">
+        <ul className="max-h-[60vh] space-y-2 overflow-y-auto" dir="ltr"><AnimatePresence initial={false}>
           {msgs.map((m) => {
             const code = m.body.match(/code is (\d{6})/)?.[1];
             const objection = m.kind === 'ivr' && /\[Press 9 to object\]/.test(m.body) && /PC-[0-9a-f-]{36}:/.test(m.body);
             return (
-              <li key={m.id} className={`rounded-xl p-3 text-sm ${m.kind === 'ivr' ? 'border-2 border-primary bg-card' : 'bg-secondary text-secondary-foreground'}`} data-kind={m.kind}>
+              <motion.li layout initial={{ opacity: 0, y: 16, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0 }} key={m.id} className={`rounded-2xl p-3 text-sm ${m.kind === 'ivr' ? 'border-2 border-primary bg-card' : 'bg-secondary text-secondary-foreground'}`} data-kind={m.kind}>
                 <div className="mb-1 flex justify-between text-xs opacity-70"><span>{m.kind === 'ivr' ? <><PhoneCall className="me-1 inline size-3" />voice call</> : m.fromSender} · {m.kind}</span><span>{new Date(m.createdAt).toLocaleTimeString()}</span></div>
                 <p>{m.body.replace(/\s*\(ref PC-[^)]+\)/, '')}</p>
                 {code && <Button size="sm" variant="outline" className="mt-2" onClick={() => playSequence(code.split('').map((d) => `digit_${d}`))}><Volume2 /> Read code aloud</Button>}
@@ -81,12 +82,12 @@ export function MockPhone({ initialPhone }: { initialPhone: string }) {
                     <ShieldQuestion className="size-3" /> Is this real?
                   </a>
                 )}
-              </li>
+              </motion.li>
             );
-          })}
+          })}</AnimatePresence>
           {!msgs.length && <li className="text-center text-sm text-muted-foreground">No messages</li>}
         </ul>
-      </div>
+      </motion.div>
     </main>
   );
 }

@@ -12,7 +12,7 @@ export function TenantSwitcher({ current, tenants }: { current: string | null; t
   return (
     <span className="flex items-center gap-1">
       <label htmlFor="tenant-switch" className="sr-only">Switch tenant</label>
-      <select id="tenant-switch" data-testid="tenant-switcher" className="h-8 rounded border border-border bg-card px-2 text-sm" value={current ?? ''}
+      <select id="tenant-switch" data-testid="tenant-switcher" className="h-8 rounded-full border border-white/15 bg-pill px-3 text-sm text-white transition-colors hover:border-mint" value={current ?? ''}
         onChange={async (e) => {
           const r = await fetch('/api/v1/auth/switch-tenant', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ tenantCode: e.target.value }) });
           const b = await r.json().catch(() => ({}));

@@ -43,5 +43,5 @@ export function useLowBandwidth() {
 export function LowBandwidthBadge({ label }: { label: string }) {
   const low = useLowBandwidth();
   if (!low) return null;
-  return <span data-testid="low-bandwidth" className="rounded bg-warning px-2 py-0.5 text-xs text-warning-foreground">{label}</span>;
+  return <span data-testid="low-bandwidth" className="rounded-full bg-warning px-2.5 py-0.5 text-xs font-semibold text-warning-foreground">{label}</span>;
 }

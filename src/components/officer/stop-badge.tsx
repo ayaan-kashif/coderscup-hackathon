@@ -6,7 +6,7 @@ const SEVERE = new Set(['S2', 'S6', 'S7']);
 
 export function StopBadge({ code, suffix = '' }: { code: string; suffix?: string }) {
   return (
-    <span title={NAMES[code] ?? code} className={`inline-flex items-center rounded px-1.5 py-0.5 text-xs font-semibold ${SEVERE.has(code) ? 'bg-destructive text-white' : 'bg-warning text-warning-foreground'}`}>
+    <span title={NAMES[code] ?? code} className={`inline-flex items-center rounded px-1.5 py-0.5 text-xs font-semibold ${SEVERE.has(code) ? 'bg-destructive text-void' : 'bg-warning text-warning-foreground'}`}>
       {code} {NAMES[code] ?? ''}{suffix}
     </span>
   );
@@ -14,7 +14,7 @@ export function StopBadge({ code, suffix = '' }: { code: string; suffix?: string
 
 /** source chips on every fact (§16.2) */
 const SOURCE: Record<string, [string, string]> = {
-  registry: ['Registry', 'bg-primary text-primary-foreground'], qr_signed: ['Signed QR', 'bg-success text-white'], officer: ['Officer', 'bg-foreground text-background'],
+  registry: ['Registry', 'bg-primary text-primary-foreground'], qr_signed: ['Signed QR', 'bg-success text-success-foreground'], officer: ['Officer', 'bg-foreground text-background'],
   ocr: ['OCR', 'bg-secondary text-secondary-foreground'], voice: ['Voice', 'bg-secondary text-secondary-foreground'], self_declared: ['Self-declared', 'bg-muted text-muted-foreground'],
 };
 export function SourceChip({ source }: { source: string }) {

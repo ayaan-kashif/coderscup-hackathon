@@ -24,8 +24,8 @@ export async function api(path: string, init: { method?: string; body?: unknown;
 
 /** pass = green circle + tick, fail = red square + cross, unclear = amber triangle (shape carries the meaning, §16.1) */
 export function CheckIcon({ state }: { state: string }) {
-  if (state === 'pass') return <span className="inline-flex size-10 items-center justify-center rounded-full bg-success text-white" aria-label="pass"><Check className="size-6" /></span>;
-  if (state === 'fail') return <span className="inline-flex size-10 items-center justify-center rounded-sm bg-destructive text-white" aria-label="fail"><X className="size-6" /></span>;
+  if (state === 'pass') return <span className="inline-flex size-10 items-center justify-center rounded-full bg-success text-success-foreground" aria-label="pass"><Check className="size-6" /></span>;
+  if (state === 'fail') return <span className="inline-flex size-10 items-center justify-center rounded-sm bg-destructive text-void" aria-label="fail"><X className="size-6" /></span>;
   return <span className="inline-flex size-10 items-center justify-center text-warning" aria-label="unclear"><AlertTriangle className="size-9 fill-warning stroke-warning-foreground" /></span>;
 }
 

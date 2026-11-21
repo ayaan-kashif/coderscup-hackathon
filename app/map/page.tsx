@@ -1,4 +1,5 @@
 import { getDb } from '@/db/client';
+import { PageFrame } from '@/components/shell/page-frame';
 import { SimulatedBadge } from '@/components/shell/simulated-badge';
 import { scamMap } from '@/services/scam';
 
@@ -14,11 +15,10 @@ export default async function ScamMapPage() {
   const rows = await scamMap(getDb(), 7);
   const n = (v: number | string) => (typeof v === 'number' ? v : 2);
   return (
-    <main className="mx-auto max-w-4xl space-y-4 px-4 py-6">
-      <h1 className="text-2xl font-bold">Scam Map <SimulatedBadge what="Saaya programme" /></h1>
+    <PageFrame width="max-w-5xl" title={<>Scam Map <SimulatedBadge what="Saaya programme" /></>}>
       <p className="text-muted-foreground">Confirmed fake messages reported in the last 7 days. Districts with fewer than 3 reports show no exact count. Nothing here identifies a person.</p>
       <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        <svg viewBox="0 0 100 100" className="w-full rounded-lg border border-border bg-card" role="img" aria-label="district map">
+        <svg viewBox="0 0 100 100" className="w-full rounded-3xl border border-white/10 bg-bento" role="img" aria-label="district map">
           {Object.entries(POS).map(([code, [x, y]]) => {
             const d = rows.find((r) => r.code === code);
             const r = d ? 2 + Math.sqrt(n(d.total)) * 1.6 : 1.2;
@@ -42,6 +42,6 @@ export default async function ScamMapPage() {
           </table>
         </div>
       </div>
-    </main>
+    </PageFrame>
   );
 }

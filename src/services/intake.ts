@@ -21,6 +21,7 @@ import { dhash, fineHash, inspectImage, sharpness } from './documents/image';
 import { putFact } from './pipeline/data';
 import { alertOfficers } from './notify';
 import { nightBulkEdits, releaseDuePayments, walletSharers } from './pipeline/steps';
+import { citizenFacingStatus, isDuressFreeze } from './duress';
 
 export const WALLET_PREFIX = 'PK00MOCK';
 export const walletFromDigits = (d: string) => `${WALLET_PREFIX}${d}`;
@@ -211,7 +212,7 @@ export async function fulfilProof(db: DbOrTx, actor: Actor, caseId: string, b: z
 /** OFF-6: light status for the phone, well under 10 KB */
 export async function citizenStatus(db: DbOrTx, caseId: string) {
   await releaseDuePayments(db).catch(() => {});
-  const [c] = await db.select({ id: cases.id, status: cases.status, firstOpenedAt: cases.firstOpenedAt, updatedAt: cases.updatedAt, decisionId: cases.currentDecisionId, pipeline: cases.pipeline })
+  const [c] = await db.select({ id: cases.id, status: cases.status, frozenReason: cases.frozenReason, firstOpenedAt: cases.firstOpenedAt, updatedAt: cases.updatedAt, decisionId: cases.currentDecisionId, pipeline: cases.pipeline })
     .from(cases).where(eq(cases.id, caseId)).limit(1);
   if (!c) throw new ApiError('NOT_FOUND');
   const [d] = c.decisionId ? await db.select({ citizen: decisions.explanationCitizen, outcome: decisions.outcome, actorType: decisions.actorType, reasonCode: decisions.reasonCode }).from(decisions).where(eq(decisions.id, c.decisionId)).limit(1) : [];
@@ -220,12 +221,13 @@ export async function citizenStatus(db: DbOrTx, caseId: string) {
   const ex = d?.citizen as { checks?: { code: string; state: string; icon: string }[]; next?: { code: string; voice: string } } | null | undefined;
   const p = c.pipeline as { step?: string; done?: string[] } | null;
   return {
-    id: c.id, status: c.status, ticks: ticksFor(c), updatedAt: c.updatedAt,
+    // a Silent Duress freeze reads as an ordinary officer review: the coercer may be holding the phone
+    id: c.id, status: citizenFacingStatus(c.status, c.frozenReason), ticks: ticksFor(c), updatedAt: c.updatedAt,
     checks: (ex?.checks ?? []).map((x) => ({ code: x.code, state: x.state, icon: x.icon })),
     next: ex?.next ? { code: ex.next.code, voice: ex.next.voice } : null,
     officerDecision: d?.actorType === 'officer' ? { outcome: d.outcome, reasonCode: d.reasonCode } : null,
     proof: proof ? { item: proof.item, attemptsLeft: Math.max(0, 2 - proof.attempts) } : null,
-    payment: pay ? { id: pay.id, amount: pay.amount, status: pay.status, holdUntil: pay.holdUntil, confirmedAmount: pay.confirmedAmount } : null,
+    payment: pay ? { id: pay.id, amount: pay.amount, status: isDuressFreeze(c.frozenReason) && pay.status === 'hold' ? 'scheduled' : pay.status, holdUntil: pay.holdUntil, confirmedAmount: pay.confirmedAmount } : null,
     pipeline: p ? { step: p.step ?? null, steps: p.done?.length ?? 0 } : null,
   };
 }

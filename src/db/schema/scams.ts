@@ -1,6 +1,8 @@
 import { index, integer, jsonb, pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { createdAt, id, ts } from './_types';
-import { users } from './people';
+import { cases } from './cases';
+import { payoutChanges } from './money';
+import { citizens, users } from './people';
 import { districts, tenants } from './tenancy';
 
 export const scamReports = pgTable('scam_reports', {
@@ -36,3 +38,32 @@ export const scamAlerts = pgTable('scam_alerts', {
   sentAt: ts('sent_at'),
   createdAt: createdAt(),
 });
+
+/**
+ * Silent Duress PIN alarms (DURESS_SILENT_ALARM). Raised when a citizen enters her PIN reversed: the coercer sees a
+ * normal screen while the case is shadow-frozen, the payout change held and any helper unlock quarantined.
+ * Officer-only (Scam Desk); never shown to the citizen or the helper.
+ */
+export const duressAlarms = pgTable('duress_alarms', {
+  id: id(),
+  tenantId: uuid('tenant_id').notNull().references(() => tenants.id),
+  type: text('type').notNull().default('DURESS_SILENT_ALARM'),
+  severity: text('severity', { enum: ['CRITICAL'] }).notNull().default('CRITICAL'),
+  citizenId: uuid('citizen_id').notNull().references(() => citizens.id),
+  caseId: uuid('case_id').references(() => cases.id),
+  payoutChangeId: uuid('payout_change_id').references(() => payoutChanges.id),
+  /** where the reversed PIN was entered */
+  trigger: text('trigger', { enum: ['pin_verify', 'payout_change', 'helper_unlock'] }).notNull(),
+  helperUserId: uuid('helper_user_id').references(() => users.id),
+  helperGrantIds: uuid('helper_grant_ids').array().notNull().default([]),
+  /** request id, acting user, IP, user agent, device id: staff-only evidence */
+  session: jsonb('session').notNull(),
+  /** the attempted payout change: old and new last-4 only */
+  attempted: jsonb('attempted'),
+  frozenCaseIds: uuid('frozen_case_ids').array().notNull().default([]),
+  status: text('status', { enum: ['open', 'confirmed_block', 'escalated', 'marked_safe'] }).notNull().default('open'),
+  resolvedBy: uuid('resolved_by').references(() => users.id),
+  resolvedAt: ts('resolved_at'),
+  resolutionNote: text('resolution_note'),
+  createdAt: createdAt(),
+}, (t) => [index('duress_alarms_tenant_status').on(t.tenantId, t.status, t.createdAt)]);

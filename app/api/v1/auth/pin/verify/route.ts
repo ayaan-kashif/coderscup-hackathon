@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { sessionCookie } from '@/auth/tokens';
 import { problemResult, route } from '@/lib/api/route';
 import { checkPin, PIN_LOCK_MINUTES } from '@/services/auth';
+import { duressSession, triggerDuress } from '@/services/duress';
 
 const body = z.object({ pin: z.string().regex(/^\d{4}$/, 'The PIN has 4 digits.') });
 
@@ -19,6 +20,9 @@ export const POST = route({
         ? problemResult(c, 'PIN_LOCKED', `Too many wrong tries. Try again in ${PIN_LOCK_MINUTES} minutes.`, { lockedUntil: r.lockedUntil?.toISOString() })
         : problemResult(c, 'PIN_INVALID', `Wrong PIN. ${r.left} tries left.`, { attemptsLeft: r.left });
     }
+    // Silent Duress PIN: the reversed PIN signs in exactly like the real one (same status, body and cookie) while
+    // the lockdown commits in this same transaction. Nothing in the response may differ.
+    if (r.duress) await triggerDuress(db, { citizenId: c.actor.citizenId!, trigger: 'pin_verify', session: duressSession(c), afterCommit: c.afterCommit });
     return { body: { token: r.token, tokenType: 'Bearer', stage: 'full', expiresIn: 900 }, cookies: [sessionCookie(r.token)], audit: { subjectCitizenId: c.actor.citizenId ?? null } };
   },
 });

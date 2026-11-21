@@ -11,6 +11,7 @@ import { cases, citizens, users } from '@/db/schema/all';
 import { mockSmsMessages } from '@/db/schema/mock';
 import { writeAudit } from '@/lib/audit';
 import { trustName } from './notify';
+import { citizenFacingStatus } from './duress';
 
 export const SHORT_CODE = '8171';
 
@@ -45,9 +46,9 @@ export async function handleInboundSms(db: DbOrTx, from: string, body: string) {
     if (!c) reply = NONE;
     else {
       trust = trustName(c.trust);
-      const [k] = await db.select({ id: cases.id, tenantId: cases.tenantId, status: cases.status }).from(cases).where(eq(cases.citizenId, c.citizenId)).orderBy(desc(cases.updatedAt)).limit(1);
+      const [k] = await db.select({ id: cases.id, tenantId: cases.tenantId, status: cases.status, frozenReason: cases.frozenReason }).from(cases).where(eq(cases.citizenId, c.citizenId)).orderBy(desc(cases.updatedAt)).limit(1);
       if (!k) reply = NONE;
-      else { reply = STATE[k.status] ?? NONE; found = { caseId: k.id, tenantId: k.tenantId, citizenId: c.citizenId, status: k.status }; }
+      else { const shown = citizenFacingStatus(k.status, k.frozenReason); reply = STATE[shown] ?? NONE; found = { caseId: k.id, tenantId: k.tenantId, citizenId: c.citizenId, status: shown }; }
     }
   }
   const en = [trust.en, reply.en, NO_MONEY.en].filter(Boolean).join('. ').replace(/\.\./g, '.');

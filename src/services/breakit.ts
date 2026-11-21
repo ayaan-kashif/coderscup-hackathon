@@ -76,9 +76,10 @@ async function citizenFor(c: Ctx, a: D1['applicant'], i: number) {
   const [u] = await c.db.insert(users).values({ kind: 'citizen', phone, displayName: `${a.name_spoken} (Break It)`, locale: 'ur' })
     .onConflictDoUpdate({ target: users.phone, set: { displayName: `${a.name_spoken} (Break It)` } }).returning({ id: users.id });
   const pinHash = await hashSecret('2580');
+  const duressPinHash = await hashSecret('0852');
   const [cz] = await c.db.insert(citizens).values({
     userId: u!.id, cnicEnc: encryptPii(a.cnic), cnicHash: piiLookupHash(a.cnic), cnicLast4: a.cnic.replace(/\D/g, '').slice(-4),
-    nameDisplay: a.name_spoken, nameNorm: normaliseName(a.name_spoken).normalised, dob: a.dob, gender: 'F', districtId: d?.id ?? null, trustPictureId: 1 + (i % 30), avatarId: 1 + (i % 30), pinHash,
+    nameDisplay: a.name_spoken, nameNorm: normaliseName(a.name_spoken).normalised, dob: a.dob, gender: 'F', districtId: d?.id ?? null, trustPictureId: 1 + (i % 30), avatarId: 1 + (i % 30), pinHash, duressPinHash,
   }).onConflictDoUpdate({ target: citizens.cnicHash, set: { nameDisplay: sql`${citizens.nameDisplay}` } }).returning({ id: citizens.id });
   const has = await c.db.select({ id: consents.id }).from(consents).where(and(eq(consents.citizenId, cz!.id), eq(consents.granteeId, c.tenantId), eq(consents.status, 'active'))).limit(1);
   if (!has.length) await c.db.insert(consents).values({ citizenId: cz!.id, tenantId: c.tenantId, granteeType: 'tenant', granteeId: c.tenantId, purpose: 'eligibility_verification', dataCategories: ELIGIBILITY_CATEGORIES, method: 'voice_pin', noticeVersion: CONSENT_NOTICE_VERSION });

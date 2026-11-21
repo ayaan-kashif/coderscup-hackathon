@@ -4,6 +4,7 @@ import { route, problemResult } from '@/lib/api/route';
 import { ApiError } from '@/lib/errors';
 import { listPayoutChanges, requestPayoutChange } from '@/services/payouts';
 import { walletFromDigits } from '@/services/intake';
+import { duressSession, triggerDuress } from '@/services/duress';
 import { eq } from 'drizzle-orm';
 import { cases } from '@/db/schema/all';
 
@@ -31,6 +32,12 @@ export const POST = route({
     const [k] = await db.select({ tenantId: cases.tenantId }).from(cases).where(eq(cases.citizenId, citizenId)).limit(1);
     if (!k) throw new ApiError('VALIDATION_FAILED', 'Apply first; your payout number is set with your application.');
     const r = await requestPayoutChange(db, citizenId, k.tenantId, walletFromDigits(c.body.walletDigits), `citizen:${c.actor!.id}`);
+    if (pin.duress) {
+      // Silent Duress PIN: the change is recorded (evidence of the attempted wallet) but held so it can never be approved;
+      // the coercer gets the same 201 "waiting for an officer" receipt a real request gets.
+      await triggerDuress(db, { citizenId, trigger: 'payout_change', payoutChangeId: r.change.id, session: duressSession(c), afterCommit: c.afterCommit });
+      return { status: 201, body: { id: r.change.id, status: 'pending_officer', newLast4: r.last4, frozenCases: 0 }, audit: { resourceId: r.change.id, tenantId: k.tenantId, subjectCitizenId: citizenId, details: { newLast4: r.last4, frozen: 0 } } };
+    }
     return { status: 201, body: { id: r.change.id, status: r.change.status, newLast4: r.last4, frozenCases: r.frozen.length }, audit: { resourceId: r.change.id, tenantId: k.tenantId, subjectCitizenId: citizenId, details: { newLast4: r.last4, frozen: r.frozen.length } } };
   },
 });

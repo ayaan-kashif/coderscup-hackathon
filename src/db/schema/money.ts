@@ -24,7 +24,7 @@ export const payoutChanges = pgTable('payout_changes', {
   tenantId: uuid('tenant_id').notNull().references(() => tenants.id),
   fromDestinationId: uuid('from_destination_id').references(() => payoutDestinations.id),
   toDestinationId: uuid('to_destination_id').notNull().references(() => payoutDestinations.id),
-  status: text('status', { enum: ['pending_officer', 'cooling_off', 'objected', 'approved', 'rejected'] }).notNull().default('pending_officer'),
+  status: text('status', { enum: ['pending_officer', 'cooling_off', 'objected', 'approved', 'rejected', 'duress_hold'] }).notNull().default('pending_officer'),
   requestedBy: text('requested_by').notNull(),
   approvedBy: uuid('approved_by').references(() => users.id),
   coolingOffUntil: ts('cooling_off_until'),

@@ -6,6 +6,7 @@ import type { Role } from '@/auth/actor';
 import { decryptPii, encryptPii, hashSecret, otpHash, safeEqualHex, verifySecret } from '@/auth/crypto';
 import { signAccessToken, signMfaChallenge, verifyMfaChallenge } from '@/auth/tokens';
 import { newTotpSecret, otpauthUri, verifyTotp } from '@/auth/totp';
+import { duressHashFor, isPalindromePin, matchPin, PALINDROME_PIN_MESSAGE } from './duress';
 import { ApiError } from '@/lib/errors';
 
 export const OTP_TTL_MIN = 5;
@@ -141,7 +142,8 @@ export async function checkOtp(db: DbOrTx, phone: string, code: string): Promise
   return { ok: true, token, pinSet: !!c?.pinHash, hasProfile: !!c };
 }
 
-export type PinCheck = { ok: true; token: string } | { ok: false; locked: boolean; left: number; lockedUntil?: Date };
+/** `duress: true` is for the server only: callers must answer exactly as for the real PIN and run triggerDuress */
+export type PinCheck = { ok: true; token: string; duress: boolean } | { ok: false; locked: boolean; left: number; lockedUntil?: Date };
 
 /** AUTH-3: 5 wrong tries lock the PIN for 15 minutes. Must run in a transaction that commits on failure too. */
 export async function checkPin(db: DbOrTx, userId: string, pin: string): Promise<PinCheck> {
@@ -149,7 +151,8 @@ export async function checkPin(db: DbOrTx, userId: string, pin: string): Promise
   if (!c?.pinHash) throw new ApiError('VALIDATION_FAILED', 'No PIN is set for this account yet.', { extra: { next: 'pin_set' } });
   const now = Date.now();
   if (c.pinLockedUntil && c.pinLockedUntil.getTime() > now) return { ok: false, locked: true, left: 0, lockedUntil: c.pinLockedUntil };
-  if (!(await verifySecret(c.pinHash, pin))) {
+  const match = await matchPin(db, { id: c.id, pinHash: c.pinHash, duressPinHash: c.duressPinHash }, pin);
+  if (match === 'wrong') {
     const tries = (c.pinLockedUntil && c.pinLockedUntil.getTime() <= now ? 0 : c.pinFailedAttempts) + 1;
     if (tries >= PIN_MAX_TRIES) {
       const until = new Date(now + PIN_LOCK_MINUTES * 60_000);
@@ -161,14 +164,17 @@ export async function checkPin(db: DbOrTx, userId: string, pin: string): Promise
   }
   await db.update(citizens).set({ pinFailedAttempts: 0, pinLockedUntil: null }).where(eq(citizens.id, c.id));
   const token = await signAccessToken({ sub: userId, kind: 'citizen', app_role: 'citizen', cid: c.id, stage: 'full' });
-  return { ok: true, token };
+  return { ok: true, token, duress: match === 'duress' };
 }
 
 export async function setPin(db: DbOrTx, userId: string, pin: string) {
   const [c] = await db.select({ id: citizens.id, pinHash: citizens.pinHash }).from(citizens).where(eq(citizens.userId, userId)).limit(1);
   if (!c) throw new ApiError('VALIDATION_FAILED', 'Your citizen profile is created when you apply; set the PIN in the apply flow.', { extra: { next: 'apply' } });
   if (c.pinHash) throw new ApiError('VALIDATION_FAILED', 'A PIN is already set. Use it to continue; an officer can reset a forgotten PIN.');
-  if (/^(\d)\1{3}$/.test(pin) || ['1234', '4321', '0123'].includes(pin)) throw new ApiError('VALIDATION_FAILED', 'Choose a PIN that is harder to guess.');
-  await db.update(citizens).set({ pinHash: await hashSecret(pin) }).where(eq(citizens.id, c.id));
+  // Silent Duress PIN: the reversed PIN is the safety PIN, so it must differ from the PIN (no palindromes such as
+  // 1221, 4554 or 0000). Checked first so the citizen hears why, in both languages.
+  if (isPalindromePin(pin)) throw new ApiError('VALIDATION_FAILED', `${PALINDROME_PIN_MESSAGE.en} / ${PALINDROME_PIN_MESSAGE.ur}`, { extra: { reason: 'palindrome', en: PALINDROME_PIN_MESSAGE.en, ur: PALINDROME_PIN_MESSAGE.ur } });
+  if (/^(\d)\1{3}$/.test(pin) || ['1234', '4321', '0123', '3210'].includes(pin)) throw new ApiError('VALIDATION_FAILED', 'Choose a PIN that is harder to guess.');
+  await db.update(citizens).set({ pinHash: await hashSecret(pin), duressPinHash: await duressHashFor(pin) }).where(eq(citizens.id, c.id));
   return signAccessToken({ sub: userId, kind: 'citizen', app_role: 'citizen', cid: c.id, stage: 'full' });
 }

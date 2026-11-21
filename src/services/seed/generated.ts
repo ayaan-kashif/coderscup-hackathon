@@ -23,7 +23,7 @@ type Ids = Awaited<ReturnType<typeof seedCore>>;
 type Family = { case_ref: string; phone: string; name: string; cnic: string; dob: string | null; district: string; tenant: 'sindh' | 'punjab'; helper: string; trustPictureId: number; avatarId: number; walletNo: string };
 
 /** Loads everything ml/generate.py and ml/train.py produced. Idempotent. */
-export async function seedGenerated(db: DbOrTx, ids: Ids, o: { citizenPinHash?: string } = {}) {
+export async function seedGenerated(db: DbOrTx, ids: Ids, o: { citizenPinHash?: string; citizenDuressPinHash?: string | null } = {}) {
   // ---- mock systems (SIMULATED) ----
   const identity = read<(typeof mockIdentityRecords.$inferInsert)[]>('seed/mock/identity_records.json');
   await insertChunked(identity, 250, (c) => db.insert(mockIdentityRecords).values(c).onConflictDoNothing());
@@ -96,7 +96,7 @@ export async function seedGenerated(db: DbOrTx, ids: Ids, o: { citizenPinHash?: 
     const [cz] = await db.insert(citizens).values({
       userId: u!.id, cnicEnc: encryptPii(f.cnic), cnicHash: piiLookupHash(f.cnic), cnicLast4: f.cnic.replace(/\D/g, '').slice(-4),
       nameDisplay: f.name, nameNorm: normaliseName(f.name).normalised, dob: f.dob, gender: 'F', districtId: ids.districtIds[f.district],
-      trustPictureId: f.trustPictureId, avatarId: f.avatarId, pinHash: o.citizenPinHash ?? null,
+      trustPictureId: f.trustPictureId, avatarId: f.avatarId, pinHash: o.citizenPinHash ?? null, duressPinHash: o.citizenDuressPinHash ?? null,
     }).onConflictDoUpdate({ target: citizens.cnicHash, set: { userId: u!.id } }).returning({ id: citizens.id });
     const citizenId = cz!.id;
     const hasConsent = await db.select({ id: consents.id }).from(consents).where(and(eq(consents.citizenId, citizenId), eq(consents.status, 'active'))).limit(1);

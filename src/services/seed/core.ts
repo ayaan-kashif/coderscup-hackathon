@@ -7,6 +7,7 @@ import {
 import { encryptPii, hashSecret, piiLookupHash } from '@/auth/crypto';
 import { normaliseName } from '@/domain/matcher/normalise';
 import { DEMO_CITIZENS, DEMO_STAFF, DEMO_TENANTS, DISTRICTS, type TenantCode } from './demo-accounts';
+import { duressHashFor } from '../duress';
 
 export const DEFAULT_CONFIG: Record<string, unknown> = {
   /** F6 default costs, all labelled assumptions (Rs) */
@@ -78,6 +79,8 @@ export async function seedCore(db: DbOrTx, o: SeedCoreOpts) {
   }
 
   const pinHash = await hashSecret(o.citizenPin);
+  // Silent Duress PIN: the demo PIN backwards (4525 → 5254) is the safety PIN
+  const duressPinHash = await duressHashFor(o.citizenPin);
   const citizenIds: Record<string, string> = {};
   for (const c of DEMO_CITIZENS) {
     const [u] = await db.insert(users).values({ kind: 'citizen', phone: c.phone, displayName: c.name, locale: 'ur' })
@@ -86,8 +89,8 @@ export async function seedCore(db: DbOrTx, o: SeedCoreOpts) {
     const [cz] = await db.insert(citizens).values({
       userId: u!.id, cnicEnc: encryptPii(c.cnic), cnicHash: piiLookupHash(c.cnic), cnicLast4: digits.slice(-4),
       nameDisplay: c.name, nameNorm: normaliseName(c.name).normalised, dob: c.dob, gender: 'F', districtId: districtIds[c.district],
-      trustPictureId: c.trustPictureId, avatarId: c.avatarId, pinHash,
-    }).onConflictDoUpdate({ target: citizens.cnicHash, set: { userId: u!.id, pinHash, pinFailedAttempts: 0, pinLockedUntil: null, trustPictureId: c.trustPictureId, avatarId: c.avatarId } }).returning();
+      trustPictureId: c.trustPictureId, avatarId: c.avatarId, pinHash, duressPinHash,
+    }).onConflictDoUpdate({ target: citizens.cnicHash, set: { userId: u!.id, pinHash, duressPinHash, pinFailedAttempts: 0, pinLockedUntil: null, trustPictureId: c.trustPictureId, avatarId: c.avatarId } }).returning();
     citizenIds[c.phone] = cz!.id;
     const tenantId = tenantIds[c.tenant];
     const existing = await db.select({ id: consents.id }).from(consents)

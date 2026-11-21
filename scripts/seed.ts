@@ -9,6 +9,7 @@ import postgres from 'postgres';
 import { hashSecret } from '@/auth/crypto';
 import { setDb, type Db } from '@/db/client';
 import * as schema from '@/db/schema/all';
+import { duressHashFor } from '@/services/duress';
 import { seedCore } from '@/services/seed/core';
 import { seedGenerated } from '@/services/seed/generated';
 import { seedDemoCases } from '@/services/seed/demo-cases';
@@ -27,7 +28,7 @@ async function main() {
   const started = Date.now();
   const ids = await db.transaction(async (tx) => {
     const ids = await seedCore(tx, { staffPassword, citizenPin, reset });
-    const counts = await seedGenerated(tx, ids, { citizenPinHash: await hashSecret(citizenPin) });
+    const counts = await seedGenerated(tx, ids, { citizenPinHash: await hashSecret(citizenPin), citizenDuressPinHash: await duressHashFor(citizenPin) });
     console.log('generated data:', counts);
     return ids;
   });

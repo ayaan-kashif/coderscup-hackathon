@@ -54,6 +54,8 @@ export const citizens = pgTable('citizens', {
   trustPictureId: integer('trust_picture_id'),
   avatarId: integer('avatar_id'),
   pinHash: text('pin_hash'),
+  /** Silent Duress PIN: hash of the reversed PIN (same Argon2id scheme). Entering it looks like a normal sign-in but locks the money down. */
+  duressPinHash: text('duress_pin_hash'),
   pinFailedAttempts: integer('pin_failed_attempts').notNull().default(0),
   pinLockedUntil: ts('pin_locked_until'),
   createdAt: createdAt(),

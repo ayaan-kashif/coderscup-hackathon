@@ -57,6 +57,13 @@
       "when": 1795279022422,
       "tag": "0007_doc7_weak_signals",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1795294878892,
+      "tag": "0008_silent_duress_pin",
+      "breakpoints": true
     }
   ]
 }

@@ -5,12 +5,12 @@ import 'server-only';
  * change payout or consent. Every action is logged under the helper, the family and the unlock.
  */
 import { and, desc, eq, gt, inArray, isNull, sql } from 'drizzle-orm';
-import { verifySecret } from '@/auth/crypto';
 import { GRANT_IDLE_MINUTES } from '@/auth/policy-deps';
 import type { DbOrTx } from '@/db/client';
 import { auditEvents, cases, citizens, helperAssignments, helperGrants, users } from '@/db/schema/all';
 import { ApiError } from '@/lib/errors';
 import { ticksFor } from './cases';
+import { citizenFacingStatus, matchPin } from './duress';
 
 export const GRANT_HOURS = 2;
 export const GRANT_SCOPE = ['answer', 'photo', 'submit'];
@@ -28,7 +28,7 @@ export async function helperFamilies(db: DbOrTx, helperUserId: string) {
   return {
     families: rows.map((r) => {
       const c = caseRows.find((k) => k.citizenId === r.citizenId);
-      return { citizenId: r.citizenId, name: r.name, avatarId: r.avatarId, cnic: `XXXXX-XXXX${r.cnicLast4.slice(0, 3)}-${r.cnicLast4.slice(3)}`, case: c ? { id: c.id, status: c.status, ticks: ticksFor(c), flagged: c.status === 'frozen' } : null };
+      return { citizenId: r.citizenId, name: r.name, avatarId: r.avatarId, cnic: `XXXXX-XXXX${r.cnicLast4.slice(0, 3)}-${r.cnicLast4.slice(3)}`, case: c ? { id: c.id, status: citizenFacingStatus(c.status, c.frozenReason), ticks: ticksFor(c), flagged: citizenFacingStatus(c.status, c.frozenReason) === 'frozen' } : null };
     }),
     unlocked: live ? { grantId: live.id, citizenId: live.citizenId, expiresAt: live.expiresAt, idleExpiresAt: new Date(live.lastActivityAt.getTime() + GRANT_IDLE_MINUTES * 60_000) } : null,
   };
@@ -47,7 +47,8 @@ export async function unlockFamily(db: DbOrTx, helperUserId: string, citizenId: 
   const [c] = await db.select().from(citizens).where(eq(citizens.id, citizenId)).for('update').limit(1);
   if (!c?.pinHash) throw new ApiError('VALIDATION_FAILED', 'This family has not set a PIN yet; send a code to their phone instead.');
   if (c.pinLockedUntil && c.pinLockedUntil.getTime() > Date.now()) return { ok: false as const, locked: true, left: 0 };
-  if (!(await verifySecret(c.pinHash, pin))) {
+  const match = await matchPin(db, { id: c.id, pinHash: c.pinHash, duressPinHash: c.duressPinHash }, pin);
+  if (match === 'wrong') {
     const tries = c.pinFailedAttempts + 1;
     if (tries >= PIN_MAX_TRIES) {
       await db.update(citizens).set({ pinFailedAttempts: 0, pinLockedUntil: new Date(Date.now() + PIN_LOCK_MINUTES * 60_000) }).where(eq(citizens.id, c.id));
@@ -59,8 +60,11 @@ export async function unlockFamily(db: DbOrTx, helperUserId: string, citizenId: 
   await db.update(citizens).set({ pinFailedAttempts: 0, pinLockedUntil: null }).where(eq(citizens.id, c.id));
   // HELP-3: switching families locks the previous one
   await db.update(helperGrants).set({ revokedAt: new Date() }).where(and(eq(helperGrants.helperUserId, helperUserId), isNull(helperGrants.revokedAt)));
-  const [g] = await db.insert(helperGrants).values({ assignmentId: a.id, helperUserId, citizenId, scope: GRANT_SCOPE, method: 'pin', deviceId: deviceId ?? null, expiresAt: new Date(Date.now() + GRANT_HOURS * 3_600_000) }).returning();
-  return { ok: true as const, grant: g!, family: { name: c.nameDisplay, avatarId: c.avatarId } };
+  // Silent Duress PIN: the family typed its PIN backwards in front of the helper. The grant is created (so the reply
+  // looks like any unlock) but born revoked, and the caller runs the lockdown.
+  const duress = match === 'duress';
+  const [g] = await db.insert(helperGrants).values({ assignmentId: a.id, helperUserId, citizenId, scope: GRANT_SCOPE, method: 'pin', deviceId: deviceId ?? null, expiresAt: new Date(Date.now() + GRANT_HOURS * 3_600_000), revokedAt: duress ? new Date() : null }).returning();
+  return { ok: true as const, grant: g!, family: { name: c.nameDisplay, avatarId: c.avatarId }, duress };
 }
 
 export async function lockGrant(db: DbOrTx, helperUserId: string, grantId: string) {

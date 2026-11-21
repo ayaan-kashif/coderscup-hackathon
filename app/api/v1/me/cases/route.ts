@@ -2,6 +2,7 @@ import { desc, eq } from 'drizzle-orm';
 import { cases } from '@/db/schema/all';
 import { route } from '@/lib/api/route';
 import { ticksFor } from '@/services/cases';
+import { citizenFacingStatus } from '@/services/duress';
 
 /** the citizen's own applications (light list for the home screen) */
 export const GET = route({
@@ -10,8 +11,8 @@ export const GET = route({
   authorize: { action: 'case.status', resource: async (c) => ({ citizenId: c.actor?.citizenId ?? null }) },
   audit: false,
   handler: async (c, db) => {
-    const rows = await db.select({ id: cases.id, status: cases.status, firstOpenedAt: cases.firstOpenedAt, updatedAt: cases.updatedAt, clientSubmissionId: cases.clientSubmissionId })
+    const rows = await db.select({ id: cases.id, status: cases.status, frozenReason: cases.frozenReason, firstOpenedAt: cases.firstOpenedAt, updatedAt: cases.updatedAt, clientSubmissionId: cases.clientSubmissionId })
       .from(cases).where(eq(cases.citizenId, c.actor!.citizenId!)).orderBy(desc(cases.createdAt)).limit(10);
-    return { body: { items: rows.map((r) => ({ id: r.id, status: r.status, ticks: ticksFor(r), updatedAt: r.updatedAt, clientSubmissionId: r.clientSubmissionId })) } };
+    return { body: { items: rows.map((r) => ({ id: r.id, status: citizenFacingStatus(r.status, r.frozenReason), ticks: ticksFor(r), updatedAt: r.updatedAt, clientSubmissionId: r.clientSubmissionId })) } };
   },
 });

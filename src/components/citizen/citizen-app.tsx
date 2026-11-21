@@ -18,10 +18,11 @@ import { outboxDb } from '@/offline/outbox';
 import { startSync } from '@/offline/sync';
 import { api, CaseStatusScreen, DataScreen, HelpScreen, ProofScreen, RealScreen, ReceiptScreen } from './screens';
 import { TRUST_PICTURES, trustPicture } from './trust-pictures';
+import { DuressSafetyCard, PayoutChangeFlow } from './duress-safety';
 
 type Me = { role: string; stage: 'otp' | 'full'; displayName?: string; trustPictureId?: number | null; locale?: string };
 type Step = 'loading' | 'offline' | 'welcome' | 'phone' | 'code' | 'pin' | 'pin_set' | 'trust' | 'consent' | 'home';
-type View = { name: 'home' } | { name: 'apply' } | { name: 'status'; caseId: string } | { name: 'proof'; caseId: string; item: string } | { name: 'receipt'; payment: { id: string; amount: number; status: string; confirmedAmount: number | null } } | { name: 'real' } | { name: 'data' } | { name: 'help' };
+type View = { name: 'home' } | { name: 'apply' } | { name: 'status'; caseId: string } | { name: 'proof'; caseId: string; item: string } | { name: 'receipt'; payment: { id: string; amount: number; status: string; confirmedAmount: number | null } } | { name: 'real' } | { name: 'data' } | { name: 'help' } | { name: 'payout' };
 
 const LOCK_AFTER_MS = 5 * 60_000; // AUTH-2: the app locks after 5 minutes in the background
 
@@ -151,12 +152,13 @@ export function CitizenApp() {
       <Screen title={bi('Make a PIN', 'پن بنائیں')} prompt={pin1 ? 'confirm_pin' : 'set_pin'} replay={t('citizen.playPrompt')}>
         <Keypad value={pin} onChange={setPin} max={4} masked />
         {message && <p role="alert" className="text-center text-destructive">{message}</p>}
+        <DuressSafetyCard />
         <Button size="xl" className="w-full" disabled={pin.length !== 4} onClick={async () => {
           if (!pin1) { setPin1(pin); setPin(''); return; }
           if (pin1 !== pin) { setPin1(null); setPin(''); setMessage(bi('The two PINs differ. Start again.', 'دونوں پن مختلف ہیں۔ دوبارہ شروع کریں۔')); return; }
           const r = await api('/api/v1/auth/pin/set', { body: { pin } });
           setPin(''); setPin1(null);
-          if (r.status === 200 || r.status === 201) { setMessage(null); setStep('pin'); } else setMessage(r.body.detail);
+          if (r.status === 200 || r.status === 201) { setMessage(null); setStep('pin'); } else setMessage(r.body.en ? bi(r.body.en, r.body.ur) : r.body.detail);
         }}>{t('citizen.verify')}</Button>
       </Screen>
     );
@@ -241,6 +243,7 @@ const TILES = [
   { view: 'real', clip: 'tile_real', icon: '🛡️', en: 'Is this real?', ur: 'کیا یہ سچ ہے؟' },
   { view: 'data', clip: 'tile_data', icon: '🔐', en: 'My data', ur: 'میری معلومات' },
   { view: 'help', clip: 'tile_help', icon: '🙋', en: 'Help', ur: 'مدد' },
+  { view: 'payout', clip: 'ask_wallet', icon: '💳', en: 'Payout number', ur: 'ادائیگی نمبر' },
 ] as const;
 
 function Home({ me, online }: { me: Me; online: boolean }) {
@@ -319,7 +322,8 @@ function Home({ me, online }: { me: Me; online: boolean }) {
       {view.name === 'proof' && <ProofScreen caseId={view.caseId} item={view.item} onDone={() => setView({ name: 'status', caseId: view.caseId })} />}
       {view.name === 'receipt' && <ReceiptScreen payment={view.payment} trustPictureId={me.trustPictureId} onDone={back} />}
       {view.name === 'real' && <RealScreen signedIn initialText={shared.text} initialSender={shared.from} />}
-      {view.name === 'data' && <DataScreen caseId={caseId} />}
+      {view.name === 'data' && <><DataScreen caseId={caseId} /><DuressSafetyCard /></>}
+      {view.name === 'payout' && <PayoutChangeFlow onDone={back} />}
       {view.name === 'help' && <HelpScreen />}
     </main>
   );

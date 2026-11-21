@@ -5,6 +5,7 @@ import { SimulatedBadge } from '@/components/shell/simulated-badge';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { DuressAlarmsPanel, DuressPayoutBanner } from './duress-alarms';
 
 function useLoad<T>(path: string, every = 10_000) {
   const [data, setData] = useState<T | null>(null);
@@ -35,6 +36,8 @@ export function PayoutDesk() {
     reload();
   };
   return (
+    <div className="space-y-4">
+    <DuressPayoutBanner />
     <Card>
       <CardHeader><CardTitle>Payout changes</CardTitle><CardDescription>No change completes without an officer, a cooling-off period and a notice to the old number. <SimulatedBadge what="SMS / IVR" /></CardDescription></CardHeader>
       <CardContent className="space-y-2" data-testid="payout-desk">
@@ -45,7 +48,9 @@ export function PayoutDesk() {
             <tr key={c.id} className="border-t border-border" data-change={c.id}>
               <td className="p-2">{c.citizenName}</td>
               <td className="p-2 font-mono">…{c.oldLast4 ?? '—'} → …{c.newLast4}</td>
-              <td className="p-2"><Badge variant={c.status === 'objected' ? 'destructive' : c.status === 'approved' ? 'success' : 'secondary'}>{c.status.replace(/_/g, ' ')}</Badge></td>
+              <td className="p-2">{c.status === 'duress_hold'
+                ? <a href="/o/scams" className="inline-flex items-center gap-1" data-testid="duress-hold"><Badge variant="destructive" className="animate-pulse">DURESS HOLD</Badge><span className="text-xs text-destructive underline">see Scam Desk</span></a>
+                : <Badge variant={c.status === 'objected' ? 'destructive' : c.status === 'approved' ? 'success' : 'secondary'}>{c.status.replace(/_/g, ' ')}</Badge>}</td>
               <td className="p-2">{c.status === 'cooling_off' && c.coolingOffUntil && now ? `${Math.max(0, Math.round((new Date(c.coolingOffUntil).getTime() - now) / 1000))} s` : c.objectedAt ? 'objected (press 9)' : '—'}</td>
               <td className="p-2 space-x-1">{c.status === 'pending_officer' && <><Button size="sm" onClick={() => void act(c.id, 'approve')} data-testid="payout-approve">Approve</Button><Button size="sm" variant="destructive" onClick={() => void act(c.id, 'block')}>Block</Button></>}{c.status === 'cooling_off' && <Button size="sm" variant="destructive" onClick={() => void act(c.id, 'block')}>Block</Button>}</td>
             </tr>
@@ -53,6 +58,7 @@ export function PayoutDesk() {
         {data && !data.items.length && <p className="text-muted-foreground">No payout changes.</p>}
       </CardContent>
     </Card>
+    </div>
   );
 }
 
@@ -68,6 +74,7 @@ export function ScamDesk() {
   const [msg, setMsg] = useState<string | null>(null);
   return (
     <div className="space-y-4">
+      <DuressAlarmsPanel />
       {msg && <p role="status" className="rounded-xl border border-mint/30 bg-mint/10 p-2.5 text-sm text-mint animate-in fade-in-0 slide-in-from-top-1">{msg}</p>}
       <Card>
         <CardHeader><CardTitle>District alerts</CardTitle><CardDescription>A spike (today ≥ 3× the 7-day average and ≥ 5 reports) drafts a voice alert; nothing is broadcast until an officer approves.</CardDescription></CardHeader>

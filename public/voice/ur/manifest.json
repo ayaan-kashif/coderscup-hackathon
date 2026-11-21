@@ -1570,6 +1570,36 @@
       "precache": false,
       "bytes": 11232,
       "model": "edge-tts/ur-PK-UzmaNeural"
+    },
+    {
+      "key": "duress_tip",
+      "file": "/voice/ur/duress_tip.mp3",
+      "text_ur": "حفاظتی طریقہ: اگر کوئی زبردستی آپ سے پن ڈلوائے تو اپنا پن الٹا لکھیں، مثلاً ایک دو تین چار کی جگہ چار تین دو ایک۔ اسکرین عام دکھائی دے گی، آپ کے پیسے محفوظ رہیں گے اور افسر کو خفیہ اطلاع مل جائے گی۔",
+      "text_roman": "Hifazati tareeqa: agar koi zabardasti aap se PIN dalwaye to apna PIN ulta likhein...",
+      "placeholder": false,
+      "precache": true,
+      "bytes": 95760,
+      "model": "edge-tts/ur-PK-UzmaNeural"
+    },
+    {
+      "key": "request_received",
+      "file": "/voice/ur/request_received.mp3",
+      "text_ur": "آپ کی درخواست مل گئی ہے۔ تصدیق جاری ہے۔ ایک افسر اسے دیکھے گا۔ کوئی آپ سے پیسے نہیں مانگے گا۔",
+      "text_roman": "Aap ki darkhwast mil gayi hai. Tasdeeq jaari hai.",
+      "placeholder": false,
+      "precache": true,
+      "bytes": 60768,
+      "model": "edge-tts/ur-PK-UzmaNeural"
+    },
+    {
+      "key": "ask_wallet",
+      "file": "/voice/ur/ask_wallet.mp3",
+      "text_ur": "اپنا نیا والیٹ نمبر دس ہندسوں میں لکھیں۔",
+      "text_roman": "Apna naya wallet number das hindson mein likhein.",
+      "placeholder": false,
+      "precache": false,
+      "bytes": 22032,
+      "model": "edge-tts/ur-PK-UzmaNeural"
     }
   ]
 }

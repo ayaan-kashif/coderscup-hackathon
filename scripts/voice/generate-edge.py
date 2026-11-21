@@ -41,13 +41,15 @@ async def main():
     ap.add_argument("--voice", default="ur-PK-UzmaNeural")
     ap.add_argument("--rate", default="-8%", help="slightly slower than default: easier to follow for first-time users")
     ap.add_argument("--concurrency", type=int, default=6)
+    ap.add_argument("--only", default="", help="comma-separated keys to (re)generate; the manifest still lists every clip")
     a = ap.parse_args()
 
     with open(PROMPTS, encoding="utf8") as f:
         prompts = json.load(f)["prompts"]
     os.makedirs(OUT, exist_ok=True)
     sem = asyncio.Semaphore(a.concurrency)
-    await asyncio.gather(*(synth(p, a.voice, a.rate, sem) for p in prompts))
+    only = {k for k in a.only.split(",") if k}
+    await asyncio.gather(*(synth(p, a.voice, a.rate, sem) for p in prompts if not only or p["key"] in only))
 
     clips = []
     for p in prompts:

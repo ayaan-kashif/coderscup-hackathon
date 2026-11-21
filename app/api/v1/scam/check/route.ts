@@ -10,6 +10,8 @@ export const POST = route({
   auth: 'optional', body: scamCheckBody, idempotency: 'optional',
   rateLimit: ({ ip, actor }) => [{ name: 'scam_check', key: actor ? `a:${actor.id}` : `ip:${ip}`, limit: actor ? 30 : 10, windowSec: 600 }],
   audit: { action: 'scam.check', resourceType: 'scam_report' },
+  // calls a (SIMULATED) mock service mid-request: no single wrapping transaction (each write is its own statement)
+  transaction: false,
   handler: async (c, db) => {
     const r = await checkMessage(db, c.actor, c.body);
     return { body: r, audit: { resourceId: r.reportId, tenantId: r.tenantId, details: { verdict: r.verdict, aiDecisionId: r.aiDecisionId, ledgerChecked: r.ledger.checked, alertDrafted: r.alertDrafted } } };

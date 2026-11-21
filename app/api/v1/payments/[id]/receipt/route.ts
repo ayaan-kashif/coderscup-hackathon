@@ -11,6 +11,8 @@ export const POST = route({
   auth: 'required', params, body: receiptBody, idempotency: 'required',
   authorize: { action: 'receipt.confirm', resource: (c, db) => loadPaymentRef(db, c.params.id) },
   audit: { action: 'payment.receipt', resourceType: 'payment' },
+  // calls a (SIMULATED) mock service mid-request: no single wrapping transaction (each write is its own statement)
+  transaction: false,
   handler: async (c, db) => {
     const r = await recordReceipt(db, c.actor!, c.params.id, c.body);
     return { body: r, audit: { details: { received: c.body.received, amountReceived: c.body.amountReceived ?? null, complaintId: r.complaint?.id ?? null, caseId: c.resource!.caseId } } };

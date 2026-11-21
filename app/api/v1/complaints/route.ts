@@ -30,6 +30,8 @@ export const POST = route({
     },
   },
   audit: { action: 'complaint.create', resourceType: 'complaint' },
+  // calls a (SIMULATED) mock service mid-request: no single wrapping transaction (each write is its own statement)
+  transaction: false,
   handler: async (c, db) => {
     const r = c.resource!;
     let tenantId = (r.tenantId as string | null) ?? null;

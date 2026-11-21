@@ -12,6 +12,8 @@ export const GET = route({
   auth: 'required', params,
   authorize: { action: 'complaint.read', resource: (c, db) => loadComplaintRef(db, c.params.id) },
   audit: { action: 'complaint.read', resourceType: 'complaint' },
+  // calls a (SIMULATED) mock service mid-request: no single wrapping transaction (each write is its own statement)
+  transaction: false,
   handler: async (c, db) => {
     const v = await complaintView(db, c.params.id);
     if (!v) throw notFound();

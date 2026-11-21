@@ -20,6 +20,9 @@ export type TokenClaims = {
   jti: string;
 };
 
+/** the server-side HMAC secret (same source as the JWT key); used for one-off references such as the press-9 objection */
+export const serverSecret = () => new TextDecoder().decode(secret());
+
 const secret = () => {
   const s = process.env.AUTH_JWT_SECRET;
   if (s && s.length >= 32) return new TextEncoder().encode(s);

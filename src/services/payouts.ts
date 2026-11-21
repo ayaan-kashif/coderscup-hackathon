@@ -6,6 +6,7 @@ import 'server-only';
  */
 import { and, desc, eq, inArray, lte } from 'drizzle-orm';
 import { decryptPii, encryptPii, piiLookupHash } from '@/auth/crypto';
+import { serverSecret } from '@/auth/tokens';
 import type { DbOrTx } from '@/db/client';
 import { citizens, complaints, payoutChanges, payoutDestinations, users } from '@/db/schema/all';
 import { writeAudit } from '@/lib/audit';
@@ -17,11 +18,7 @@ import { alertOfficers, notifyCitizen, render } from './notify';
 import { coolingOffMinutes } from './pipeline/steps';
 import { walletSharers } from './pipeline/steps';
 
-const secret = () => {
-  const s = process.env.AUTH_JWT_SECRET;
-  if (!s) throw new Error('AUTH_JWT_SECRET is not set');
-  return s;
-};
+const secret = serverSecret;
 /** the objection reference printed in the IVR call on the mock phone: PC-<id>:<8-hex HMAC> */
 export const objectionToken = (changeId: string) => hmacHex(secret(), `payout-objection:${changeId}`).slice(0, 16);
 export const objectionRef = (changeId: string) => `PC-${changeId}:${objectionToken(changeId)}`;

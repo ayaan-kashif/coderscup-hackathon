@@ -60,7 +60,7 @@ describe('every role signs in', () => {
     expect(before.body.stage).toBe('otp');
     expect(before.body.trustPictureId).toBeNull();
     const after = await call(me.GET, '/api/v1/me', { token });
-    expect(after.body).toMatchObject({ role: 'citizen', stage: 'full', trustPictureId: 7 });
+    expect(after.body).toMatchObject({ role: 'citizen', stage: 'full', trustPictureId: 20 });
     // the mock SMS only ever went to the fictional number
     const sent = await t.db.select().from(mockSmsMessages);
     expect(sent.every((m) => m.toPhone.startsWith('+9200000'))).toBe(true);

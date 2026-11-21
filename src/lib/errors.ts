@@ -15,6 +15,8 @@ export const ERROR_CODES = {
   IDEMPOTENCY_KEY_REQUIRED: { status: 400, title: 'Idempotency-Key header required' },
   IDEMPOTENCY_IN_PROGRESS: { status: 409, title: 'A request with this key is still running' },
   STALE_VERSION: { status: 409, title: 'Someone else changed this first' },
+  CASE_STATE: { status: 409, title: 'The case is not in a state that allows this' },
+  REASON_REQUIRED: { status: 422, title: 'A reason code is required' },
   DEPENDENCY_UNAVAILABLE: { status: 503, title: 'A required service is down' },
   PAYLOAD_TOO_LARGE: { status: 413, title: 'File too big' },
   UNSUPPORTED_MEDIA: { status: 415, title: 'Unsupported file type' },

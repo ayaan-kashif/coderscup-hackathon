@@ -126,8 +126,8 @@ export const paymentLedger = {
 
 export const smsGateway = {
   /** Not idempotent at the gateway, so never retried (a duplicate OTP SMS is worse than a retry prompt). */
-  send: (to: string, body: string, kind: 'otp' | 'notification' | 'other' = 'notification') =>
-    callMock('sms', { method: 'POST', path: 'sms/send', body: { to, body, kind, from: '8171-MOCK' } }, sim.extend({ messageId: z.string() }), { idempotent: false }),
+  send: (to: string, body: string, kind: 'otp' | 'notification' | 'other' = 'notification', from = '8171-MOCK') =>
+    callMock('sms', { method: 'POST', path: 'sms/send', body: { to, body, kind, from } }, sim.extend({ messageId: z.string() }), { idempotent: false }),
   ivrCall: (to: string, script: string, objectionDigit?: string) =>
     callMock('sms', { method: 'POST', path: 'ivr/call', body: { to, script, objectionDigit } }, sim.extend({ callId: z.string() }), { idempotent: false }),
 };

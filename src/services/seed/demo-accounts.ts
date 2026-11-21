@@ -35,7 +35,7 @@ export type DemoCitizen = { phone: string; name: string; nameUr: string; cnic: s
 
 /** The persona citizens from the PRD journeys; the generator adds the rest of the population. */
 export const DEMO_CITIZENS: DemoCitizen[] = [
-  { phone: '+920000000001', name: 'Zarina Bibi', nameUr: 'زرینہ بی بی', cnic: '00000-1234567-2', dob: '1972-03-14', district: 'BDN', tenant: 'sindh', trustPictureId: 7, avatarId: 3 },
+  { phone: '+920000000001', name: 'Zarina Bibi', nameUr: 'زرینہ بی بی', cnic: '00000-1234567-2', dob: '1972-03-14', district: 'BDN', tenant: 'sindh', trustPictureId: 20, avatarId: 3 },
   { phone: '+920000000002', name: 'Fatima Bibi', nameUr: 'فاطمہ بی بی', cnic: '00000-2345678-4', dob: '1968-11-02', district: 'BDN', tenant: 'sindh', trustPictureId: 12, avatarId: 5 },
   { phone: '+920000000003', name: 'Rukhsana Begum', nameUr: 'رخسانہ بیگم', cnic: '00000-3456789-6', dob: '1980-06-21', district: 'MUL', tenant: 'punjab', trustPictureId: 21, avatarId: 9 },
 ];

@@ -1,3 +1,4 @@
+import { modelIdsSchema } from '@/ai/model-ids';
 import { and, eq, isNull, or } from 'drizzle-orm';
 import { z } from 'zod';
 import type { DbOrTx } from '@/db/client';
@@ -11,7 +12,7 @@ export const CONFIG_SCHEMAS = {
   'payments.autoCap': z.number().int().positive().max(1_000_000),
   'cooling_off.approval_minutes': z.number().int().min(0).max(60 * 72),
   'cooling_off.payout_change_minutes': z.number().int().min(0).max(60 * 96),
-  'models.ids': z.object({ extractor: z.string(), classifier_fallback: z.string(), router: z.string(), embeddings: z.string() }),
+  'models.ids': modelIdsSchema,
   'pipeline.inline_fallback': z.boolean(),
 } as const;
 export type ConfigKey = keyof typeof CONFIG_SCHEMAS;

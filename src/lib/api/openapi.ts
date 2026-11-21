@@ -20,6 +20,54 @@ import * as demoTokens from '../../../app/api/v1/demo/tokens/route';
 import * as health from '../../../app/api/v1/health/route';
 import * as me from '../../../app/api/v1/me/route';
 import * as status from '../../../app/api/v1/status/route';
+import * as rAiDecisions from '../../../app/api/v1/ai-decisions/route';
+import * as rAiDecisionsById from '../../../app/api/v1/ai-decisions/[id]/route';
+import * as rAssistIntent from '../../../app/api/v1/assist/intent/route';
+import * as rAssistPolicy from '../../../app/api/v1/assist/policy/route';
+import * as rCasesByIdAnswers from '../../../app/api/v1/cases/[id]/answers/route';
+import * as rCasesByIdAssign from '../../../app/api/v1/cases/[id]/assign/route';
+import * as rCasesByIdClose from '../../../app/api/v1/cases/[id]/close/route';
+import * as rCasesByIdDecisions from '../../../app/api/v1/cases/[id]/decisions/route';
+import * as rCasesByIdDocuments from '../../../app/api/v1/cases/[id]/documents/route';
+import * as rCasesByIdDocumentsDoc from '../../../app/api/v1/cases/[id]/documents/[docId]/route';
+import * as rCasesByIdExplanation from '../../../app/api/v1/cases/[id]/explanation/route';
+import * as rCasesByIdFreeze from '../../../app/api/v1/cases/[id]/freeze/route';
+import * as rCasesByIdProof from '../../../app/api/v1/cases/[id]/proof/route';
+import * as rCasesByIdSubmit from '../../../app/api/v1/cases/[id]/submit/route';
+import * as rCasesByIdTimeline from '../../../app/api/v1/cases/[id]/timeline/route';
+import * as rCasesByIdUnfreeze from '../../../app/api/v1/cases/[id]/unfreeze/route';
+import * as rCasesByIdVoice from '../../../app/api/v1/cases/[id]/voice/route';
+import * as rComplaints from '../../../app/api/v1/complaints/route';
+import * as rComplaintsById from '../../../app/api/v1/complaints/[id]/route';
+import * as rComplaintsByIdResolve from '../../../app/api/v1/complaints/[id]/resolve/route';
+import * as rCorrections from '../../../app/api/v1/corrections/route';
+import * as rCorrectionsByIdApprove from '../../../app/api/v1/corrections/[id]/approve/route';
+import * as rCorrectionsByIdReject from '../../../app/api/v1/corrections/[id]/reject/route';
+import * as rDecisionsById from '../../../app/api/v1/decisions/[id]/route';
+import * as rDecisionsByIdReplay from '../../../app/api/v1/decisions/[id]/replay/route';
+import * as rHelperActivity from '../../../app/api/v1/helper/activity/route';
+import * as rHelperFamilies from '../../../app/api/v1/helper/families/route';
+import * as rHelperGrants from '../../../app/api/v1/helper/grants/route';
+import * as rHelperGrantsById from '../../../app/api/v1/helper/grants/[id]/route';
+import * as rMeAccessLog from '../../../app/api/v1/me/access-log/route';
+import * as rMeCases from '../../../app/api/v1/me/cases/route';
+import * as rMeConsents from '../../../app/api/v1/me/consents/route';
+import * as rMeConsentsByIdWithdraw from '../../../app/api/v1/me/consents/[id]/withdraw/route';
+import * as rMeCorrections from '../../../app/api/v1/me/corrections/route';
+import * as rMeNotifications from '../../../app/api/v1/me/notifications/route';
+import * as rPaymentsByIdReceipt from '../../../app/api/v1/payments/[id]/receipt/route';
+import * as rPayoutChanges from '../../../app/api/v1/payout-changes/route';
+import * as rPayoutChangesByIdApprove from '../../../app/api/v1/payout-changes/[id]/approve/route';
+import * as rPayoutChangesByIdBlock from '../../../app/api/v1/payout-changes/[id]/block/route';
+import * as rPayoutChangesByIdObject from '../../../app/api/v1/payout-changes/[id]/object/route';
+import * as rQueue from '../../../app/api/v1/queue/route';
+import * as rScamAlerts from '../../../app/api/v1/scam/alerts/route';
+import * as rScamAlertsByIdApprove from '../../../app/api/v1/scam/alerts/[id]/approve/route';
+import * as rScamAlertsByIdDismiss from '../../../app/api/v1/scam/alerts/[id]/dismiss/route';
+import * as rScamCheck from '../../../app/api/v1/scam/check/route';
+import * as rScamDesk from '../../../app/api/v1/scam/desk/route';
+import * as rScamMap from '../../../app/api/v1/scam/map/route';
+import * as rScamReportsByIdLabel from '../../../app/api/v1/scam/reports/[id]/label/route';
 import { MOCK_ROUTES } from '@/services/mocks/router';
 import { ERROR_CODES } from '../errors';
 import type { RouteSpec } from './route';
@@ -30,6 +78,7 @@ type Mod = Record<string, unknown>;
 export const ROUTE_MODULES: Record<string, Mod> = {
   health, status, me, login, logout, otpRequest, otpVerify, pinSet, pinVerify, demoTokens, cases, caseById, caseStatus,
   adminConfig, adminChaos, auditEvents, auditVerify,
+  rAiDecisions, rAiDecisionsById, rAssistIntent, rAssistPolicy, rCasesByIdAnswers, rCasesByIdAssign, rCasesByIdClose, rCasesByIdDecisions, rCasesByIdDocuments, rCasesByIdDocumentsDoc, rCasesByIdExplanation, rCasesByIdFreeze, rCasesByIdProof, rCasesByIdSubmit, rCasesByIdTimeline, rCasesByIdUnfreeze, rCasesByIdVoice, rComplaints, rComplaintsById, rComplaintsByIdResolve, rCorrections, rCorrectionsByIdApprove, rCorrectionsByIdReject, rDecisionsById, rDecisionsByIdReplay, rHelperActivity, rHelperFamilies, rHelperGrants, rHelperGrantsById, rMeAccessLog, rMeCases, rMeConsents, rMeConsentsByIdWithdraw, rMeCorrections, rMeNotifications, rPaymentsByIdReceipt, rPayoutChanges, rPayoutChangesByIdApprove, rPayoutChangesByIdBlock, rPayoutChangesByIdObject, rQueue, rScamAlerts, rScamAlertsByIdApprove, rScamAlertsByIdDismiss, rScamCheck, rScamDesk, rScamMap, rScamReportsByIdLabel,
 };
 
 export function allSpecs(): AnySpec[] {

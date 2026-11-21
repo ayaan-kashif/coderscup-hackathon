@@ -3,6 +3,7 @@ import type { Actor } from '@/auth/actor';
 import { maskCnic } from '@/auth/crypto';
 import type { DbOrTx } from '@/db/client';
 import { cases, citizens, districts, programs } from '@/db/schema/all';
+import { writeAudit } from '@/lib/audit';
 import { ApiError } from '@/lib/errors';
 import type { LoadedResource } from '@/lib/api/route';
 
@@ -63,7 +64,10 @@ export async function readCase(db: DbOrTx, id: string, mask: string[] = []) {
 }
 
 /** OQ-5: the first officer to open the case turns the citizen's ticks blue. */
-export async function markOpened(db: DbOrTx, id: string) {
-  const [c] = await db.select({ firstOpenedAt: cases.firstOpenedAt }).from(cases).where(eq(cases.id, id)).limit(1);
-  if (c && !c.firstOpenedAt) await db.update(cases).set({ firstOpenedAt: new Date() }).where(eq(cases.id, id));
+export async function markOpened(db: DbOrTx, id: string, officerId?: string, requestId?: string) {
+  const [c] = await db.select({ firstOpenedAt: cases.firstOpenedAt, tenantId: cases.tenantId, citizenId: cases.citizenId }).from(cases).where(eq(cases.id, id)).limit(1);
+  if (c && !c.firstOpenedAt) {
+    await db.update(cases).set({ firstOpenedAt: new Date() }).where(eq(cases.id, id));
+    if (officerId) await writeAudit(db, { requestId, actorType: 'user', actorId: officerId, tenantId: c.tenantId, subjectCitizenId: c.citizenId, action: 'case.open', resourceType: 'case', resourceId: id, outcome: 'allowed', details: { ticks: 'blue2' } });
+  }
 }

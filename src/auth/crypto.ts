@@ -36,6 +36,20 @@ export function decryptPii(buf: Buffer): string {
   return Buffer.concat([d.update(buf.subarray(28)), d.final()]).toString('utf8');
 }
 
+/** Binary personal data (document photos, voice clips): same AES-256-GCM layout as encryptPii. */
+export function encryptBytes(plain: Buffer): Buffer {
+  const iv = randomBytes(12);
+  const c = createCipheriv('aes-256-gcm', encKey(), iv);
+  const ct = Buffer.concat([c.update(plain), c.final()]);
+  return Buffer.concat([iv, c.getAuthTag(), ct]);
+}
+
+export function decryptBytes(buf: Buffer): Buffer {
+  const d = createDecipheriv('aes-256-gcm', encKey(), buf.subarray(0, 12));
+  d.setAuthTag(buf.subarray(12, 28));
+  return Buffer.concat([d.update(buf.subarray(28)), d.final()]);
+}
+
 /** Lookup hash for an encrypted value (HMAC with a server-side pepper). */
 export const piiLookupHash = (value: string) => hmacHex(pepper(), value.replace(/\D/g, '') || value);
 

@@ -31,6 +31,11 @@ export async function seedGenerated(db: DbOrTx, ids: Ids, o: { citizenPinHash?: 
   await insertChunked(civil, 250, (c) => db.insert(mockCivilEvents).values(c).onConflictDoNothing());
   const wallets = read<(typeof mockWallets.$inferInsert)[]>('seed/mock/wallets.json');
   await insertChunked(wallets, 250, (c) => db.insert(mockWallets).values(c).onConflictDoNothing());
+  // demo wallets: Zarina's new phone wallet (payout change, J8) and one wallet a dishonest helper might reuse (J3 step 5)
+  await db.insert(mockWallets).values([
+    { id: 'W-DEMO-4417', walletNo: 'PK00MOCK0000004417', provider: 'MockPay', holderCnic: '00000-1234567-2', holderName: 'ZARINA BIBI' },
+    { id: 'W-DEMO-9999', walletNo: 'PK00MOCK0000009999', provider: 'MockPay', holderCnic: '00000-0000000-0', holderName: 'UNKNOWN HOLDER (fictional)' },
+  ]).onConflictDoNothing();
   const ledger = read<(Omit<typeof mockLedgerTransactions.$inferInsert, 'createdAt'> & { createdAt: string })[]>('seed/mock/ledger_transactions.json');
   await insertChunked(ledger, 250, (c) => db.insert(mockLedgerTransactions).values(c.map((l) => ({ ...l, createdAt: new Date(l.createdAt) }))).onConflictDoNothing());
   if (fs.existsSync(path.join(DATA, 'seed/mock/issuer_keys.json'))) {
@@ -107,6 +112,15 @@ export async function seedGenerated(db: DbOrTx, ids: Ids, o: { citizenPinHash?: 
     if (!hasWallet.length) {
       await db.insert(payoutDestinations).values({ citizenId, tenantId, provider: 'MockPay', walletEnc: encryptPii(f.walletNo), walletHash, walletLast4: f.walletNo.slice(-4) });
     }
+  }
+
+  // persona payout wallets (the mock wallets the generator created for Zarina and Fatima)
+  for (const [phone, cnic] of [['+920000000001', '00000-1234567-2'], ['+920000000002', '00000-2345678-4']] as const) {
+    const citizenId = ids.citizenIds[phone];
+    const w = wallets.find((x) => x.holderCnic === cnic);
+    if (!citizenId || !w) continue;
+    const has = await db.select({ id: payoutDestinations.id }).from(payoutDestinations).where(and(eq(payoutDestinations.citizenId, citizenId), eq(payoutDestinations.status, 'active'))).limit(1);
+    if (!has.length) await db.insert(payoutDestinations).values({ citizenId, tenantId: ids.tenantIds.sindh, provider: w.provider, walletEnc: encryptPii(w.walletNo), walletHash: piiLookupHash(w.walletNo), walletLast4: w.walletNo.slice(-4) });
   }
 
   return { identity: identity.length, civil: civil.length, wallets: wallets.length, ledger: ledger.length, families: families.length, clauses: pol.chunks.length };

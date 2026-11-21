@@ -12,7 +12,11 @@ export type Action =
   | 'org.manage' | 'org.read'
   | 'audit.read' | 'audit.verify'
   | 'scam.check' | 'scam.alert.approve'
-  | 'self.read';
+  | 'self.read'
+  | 'case.write' | 'case.status' | 'case.explain' | 'case.freeze' | 'queue.read'
+  | 'decision.read' | 'decision.replay' | 'aidecision.read'
+  | 'complaint.create' | 'correction.create' | 'correction.review' | 'receipt.confirm'
+  | 'helper.work' | 'scam.desk' | 'assist.policy' | 'notifications.read';
 
 type Scope = 'own' | 'grant' | 'tenant' | 'any';
 export type ConsentNeed = { purpose: string; category: string };
@@ -42,7 +46,7 @@ export const MATRIX: Record<Action, Partial<Record<Role | 'api_key', Rule>>> = {
     auditor: T({ mask: ['cnic', 'name', 'dob', 'wallet', 'phone'] }),
     api_key: T({ apiScope: 'cases:read', consent: ELIGIBILITY }),
   },
-  'case.decide': { officer: T() },
+  'case.decide': { officer: T({ consent: ELIGIBILITY }) },
   'case.assign': { officer: T(), admin: T() },
   'case.escalate': { officer: T() },
   'case.close': { officer: T() },
@@ -71,6 +75,28 @@ export const MATRIX: Record<Action, Partial<Record<Role | 'api_key', Rule>>> = {
   'audit.verify': { admin: T(), auditor: T() },
   'scam.check': { citizen: { scope: 'any' }, helper: { scope: 'any' }, officer: { scope: 'any' }, admin: { scope: 'any' }, api_key: { scope: 'any', apiScope: 'scam:check' } },
   'scam.alert.approve': { officer: T() },
+  /** answers, documents, voice, submit, proof: her own case, or a helper under a live grant (HELP-4) */
+  'case.write': { citizen: { scope: 'own' }, helper: { scope: 'grant' }, api_key: T({ apiScope: 'cases:write' }) },
+  'case.status': { citizen: { scope: 'own' }, helper: { scope: 'grant' } },
+  'case.explain': {
+    citizen: { scope: 'own', view: 'citizen' },
+    helper: { scope: 'grant', view: 'citizen' },
+    officer: T({ consent: ELIGIBILITY, view: 'officer' }),
+    auditor: T({ view: 'auditor', mask: ['cnic', 'name', 'dob', 'wallet', 'phone'] }),
+  },
+  'case.freeze': { officer: T() },
+  'queue.read': { officer: T() },
+  'decision.read': { officer: T({ consent: ELIGIBILITY }), auditor: T({ mask: ['cnic', 'name', 'dob', 'wallet', 'phone'] }) },
+  'decision.replay': { officer: T({ consent: ELIGIBILITY }), auditor: T() },
+  'aidecision.read': { officer: T(), auditor: T() },
+  'complaint.create': { citizen: { scope: 'own' }, helper: { scope: 'grant' }, officer: T() },
+  'correction.create': { citizen: { scope: 'own' } },
+  'correction.review': { officer: T() },
+  'receipt.confirm': { citizen: { scope: 'own' } },
+  'helper.work': { helper: { scope: 'any' } },
+  'scam.desk': { officer: T() },
+  'assist.policy': { citizen: { scope: 'any' }, helper: { scope: 'any' }, officer: { scope: 'any' } },
+  'notifications.read': { citizen: { scope: 'any' }, helper: { scope: 'any' }, officer: { scope: 'any' }, admin: { scope: 'any' } },
   'self.read': { citizen: { scope: 'any' }, helper: { scope: 'any' }, officer: { scope: 'any' }, admin: { scope: 'any' }, auditor: { scope: 'any' } },
 };
 

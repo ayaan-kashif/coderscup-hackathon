@@ -17,6 +17,10 @@ export const scamReports = pgTable('scam_reports', {
   extractedClaims: jsonb('extracted_claims').notNull(),
   ledgerCheck: jsonb('ledger_check'),
   probabilities: jsonb('probabilities'),
+  /** scam desk: an officer's label settles a "not sure" verdict */
+  officerLabel: text('officer_label', { enum: ['fake', 'genuine'] }),
+  labelledBy: uuid('labelled_by').references(() => users.id),
+  labelledAt: ts('labelled_at'),
   createdAt: createdAt(),
 }, (t) => [index('scam_reports_district_time').on(t.districtId, t.createdAt)]);
 

@@ -1,0 +1,143 @@
+{
+ "dataset": "persona-documents",
+ "note": "SPECIMEN documents for the demo personas; print them for the live demo",
+ "documents": [
+  {
+   "file": "documents/persona-zarina-cnic_front.png",
+   "kind": "cnic_front",
+   "variant": "clean",
+   "person": "zarina",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-1234567-2",
+    "cnic": "00000-1234567-2",
+    "name": "ZARINA BIBI",
+    "relation_name": "MUHAMMAD ASLAM",
+    "dob": "1972-03-14",
+    "issued_at": "2018-10-20",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "ZARINA BIBI",
+    "Husband": "MUHAMMAD ASLAM",
+    "CNIC (mock)": "00000-1234567-2",
+    "Date of birth": "1972-03-14",
+    "District": "Badin"
+   }
+  },
+  {
+   "file": "documents/persona-zarina-cnic_back.png",
+   "kind": "cnic_back",
+   "variant": "clean",
+   "person": "zarina",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-1234567-2",
+    "cnic": "00000-1234567-2",
+    "name": "ZARINA BIBI",
+    "relation_name": "MUHAMMAD ASLAM",
+    "dob": "1972-03-14",
+    "issued_at": "2018-10-20",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "CNIC (mock)": "00000-1234567-2",
+    "Date of issue": "2018-10-20",
+    "Date of expiry": "2030-01-14",
+    "Address": "Mock Street 1, Badin (fictional)"
+   }
+  },
+  {
+   "file": "documents/persona-zarina-death_certificate-blurred.png",
+   "kind": "death_certificate",
+   "variant": "blurred",
+   "person": "zarina",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-BDN-2025-00731",
+    "cnic": "00000-9001865-1",
+    "name": "MUHAMMAD ASLAM",
+    "relation_name": "ZARINA BIBI",
+    "date_of_death": "2025-08-02",
+    "issued_at": "2025-08-02",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-BDN-2025-00731",
+    "Deceased": "MUHAMMAD ASLAM",
+    "CNIC (mock)": "00000-9001865-1",
+    "Spouse": "ZARINA BIBI",
+    "Date of death": "2025-08-02"
+   }
+  },
+  {
+   "file": "documents/persona-zarina-death_certificate.png",
+   "kind": "death_certificate",
+   "variant": "clean",
+   "person": "zarina",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-BDN-2025-00731",
+    "cnic": "00000-9001865-1",
+    "name": "MUHAMMAD ASLAM",
+    "relation_name": "ZARINA BIBI",
+    "date_of_death": "2025-08-02",
+    "issued_at": "2025-08-02",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-BDN-2025-00731",
+    "Deceased": "MUHAMMAD ASLAM",
+    "CNIC (mock)": "00000-9001865-1",
+    "Spouse": "ZARINA BIBI",
+    "Date of death": "2025-08-02"
+   }
+  },
+  {
+   "file": "documents/persona-fatima-cnic_front.png",
+   "kind": "cnic_front",
+   "variant": "clean",
+   "person": "fatima",
+   "qr_payload": {
+    "doc_type": "cnic",
+    "doc_no": "00000-2345678-4",
+    "cnic": "00000-2345678-4",
+    "name": "FATIMA BIBI",
+    "relation_name": "MUHAMMAD AKRAM",
+    "dob": "1968-11-02",
+    "issued_at": "2022-08-13",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Name": "FATIMA BIBI",
+    "Husband": "MUHAMMAD AKRAM",
+    "CNIC (mock)": "00000-2345678-4",
+    "Date of birth": "1968-11-02",
+    "District": "Badin"
+   }
+  },
+  {
+   "file": "documents/persona-fatima-death_certificate.png",
+   "kind": "death_certificate",
+   "variant": "clean",
+   "person": "fatima",
+   "qr_payload": {
+    "doc_type": "death_certificate",
+    "doc_no": "DC-BDN-2021-00586",
+    "cnic": "00000-9165454-5",
+    "name": "MUHAMMAD AKRAM",
+    "relation_name": "FATIMA BIBI",
+    "date_of_death": "2021-02-21",
+    "issued_at": "2021-02-21",
+    "kid": "mock-issuer-2026"
+   },
+   "visible_fields": {
+    "Certificate no.": "DC-BDN-2021-00586",
+    "Deceased": "MUHAMMAD AKRAM",
+    "CNIC (mock)": "00000-9165454-5",
+    "Spouse": "FATIMA BIBI",
+    "Date of death": "2021-02-21"
+   }
+  }
+ ]
+}

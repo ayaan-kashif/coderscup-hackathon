@@ -781,6 +781,45 @@ def build_documents(g: Gen, cases, key, render: bool):
     return docs, {'kid': kid, 'algorithm': 'Ed25519', 'publicKey': b64url(key.public_key().public_bytes_raw()), 'status': 'active'}
 
 
+PERSONA_DOCS = [
+    # Zarina (J1, demo beat 2): CNIC front and back, a blurred certificate first, then the clean retake
+    {'file': 'persona-zarina-cnic_front.png', 'kind': 'cnic_front', 'variant': 'clean', 'person': 'zarina'},
+    {'file': 'persona-zarina-cnic_back.png', 'kind': 'cnic_back', 'variant': 'clean', 'person': 'zarina'},
+    {'file': 'persona-zarina-death_certificate-blurred.png', 'kind': 'death_certificate', 'variant': 'blurred', 'person': 'zarina'},
+    {'file': 'persona-zarina-death_certificate.png', 'kind': 'death_certificate', 'variant': 'clean', 'person': 'zarina'},
+    # Fatima (J4, demo beat 3): her own CNIC, the husband's certificate settles the two-Fatima ambiguity
+    {'file': 'persona-fatima-cnic_front.png', 'kind': 'cnic_front', 'variant': 'clean', 'person': 'fatima'},
+    {'file': 'persona-fatima-death_certificate.png', 'kind': 'death_certificate', 'variant': 'clean', 'person': 'fatima'},
+]
+PERSONAS = {
+    'zarina': {'name': 'ZARINA BIBI', 'cnic': '00000-1234567-2', 'dob': '1972-03-14', 'district': 'BDN', 'issued': '2018-10-20', 'expiry': '2030-01-14',
+               'husband': 'MUHAMMAD ASLAM', 'husband_cnic': '00000-9001865-1', 'cert_no': 'DC-BDN-2025-00731', 'dod': '2025-08-02'},
+    'fatima': {'name': 'FATIMA BIBI', 'cnic': '00000-2345678-4', 'dob': '1968-11-02', 'district': 'BDN', 'issued': '2022-08-13', 'expiry': '2030-03-19',
+               'husband': 'MUHAMMAD AKRAM', 'husband_cnic': '00000-9165454-5', 'cert_no': 'DC-BDN-2021-00586', 'dod': '2021-02-21'},
+}
+
+
+def build_persona_documents(key):
+    """Printable SPECIMEN documents for the demo personas (data/documents/persona-*.png)."""
+    kid = 'mock-issuer-2026'
+    out = []
+    for d in PERSONA_DOCS:
+        p = PERSONAS[d['person']]
+        if d['kind'] in ('cnic_front', 'cnic_back'):
+            payload = {'doc_type': 'cnic', 'doc_no': p['cnic'], 'cnic': p['cnic'], 'name': p['name'], 'relation_name': p['husband'],
+                       'dob': p['dob'], 'issued_at': p['issued'], 'kid': kid}
+            fields = ({'Name': p['name'], 'Husband': p['husband'], 'CNIC (mock)': p['cnic'], 'Date of birth': p['dob'], 'District': DISTRICT_NAMES[p['district']]}
+                      if d['kind'] == 'cnic_front' else
+                      {'CNIC (mock)': p['cnic'], 'Date of issue': p['issued'], 'Date of expiry': p['expiry'], 'Address': f'Mock Street 1, {DISTRICT_NAMES[p["district"]]} (fictional)'})
+        else:
+            payload = {'doc_type': 'death_certificate', 'doc_no': p['cert_no'], 'cnic': p['husband_cnic'], 'name': p['husband'],
+                       'relation_name': p['name'], 'date_of_death': p['dod'], 'issued_at': p['dod'], 'kid': kid}
+            fields = {'Certificate no.': p['cert_no'], 'Deceased': p['husband'], 'CNIC (mock)': p['husband_cnic'], 'Spouse': p['name'], 'Date of death': p['dod']}
+        render_document(d['kind'], fields, qr_string(payload, key), d['variant'], DATA / 'documents' / d['file'])
+        out.append({**d, 'file': f'documents/{d["file"]}', 'qr_payload': payload, 'visible_fields': fields})
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--seed', type=int, default=2026)
@@ -841,6 +880,7 @@ def main():
         docs, pub = build_documents(g, cases, key, render=True)
         write_json(DATA / 'datasets/d6_documents.json', {'dataset': 'D6', 'count': len(docs), 'issuer_kid': pub['kid'], 'documents': docs})
         write_json(DATA / 'seed/mock/issuer_keys.json', [pub])
+        write_json(DATA / 'datasets/persona_documents.json', {'dataset': 'persona-documents', 'note': 'SPECIMEN documents for the demo personas; print them for the live demo', 'documents': build_persona_documents(key)})
     cats = {}
     for c in cases:
         cats[c['category']] = cats.get(c['category'], 0) + 1

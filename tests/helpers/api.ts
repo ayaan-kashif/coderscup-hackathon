@@ -33,3 +33,19 @@ export async function seededDb(): Promise<TestDb & { ids: Awaited<ReturnType<typ
   const ids = await seedCore(t.db, { staffPassword: TEST_PASSWORD, citizenPin: TEST_PIN });
   return { ...t, ids };
 }
+
+/** core + generated data (mock registries, rule sets, models, families) + optional demo fixtures */
+export async function fullSeededDb(o: { demoCases?: boolean } = {}) {
+  const t = await seededDb();
+  const { seedGenerated } = await import('@/services/seed/generated');
+  const { hashSecret } = await import('@/auth/crypto');
+  await seedGenerated(t.db, t.ids, { citizenPinHash: await hashSecret(TEST_PIN) });
+  if (o.demoCases) {
+    const { seedDemoCases } = await import('@/services/seed/demo-cases');
+    await seedDemoCases(t.db, t.ids);
+  }
+  return t;
+}
+
+/** a ready-made Idempotency-Key header */
+export const idem = (k?: string) => ({ 'idempotency-key': k ?? `test-${crypto.randomUUID()}` });

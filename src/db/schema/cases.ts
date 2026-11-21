@@ -1,6 +1,6 @@
 import { sql } from 'drizzle-orm';
 import { bigint, boolean, check, doublePrecision, index, integer, jsonb, pgEnum, pgTable, text, unique, uuid } from 'drizzle-orm/pg-core';
-import { createdAt, id, ts } from './_types';
+import { bytea, createdAt, id, ts } from './_types';
 import { citizens, users } from './people';
 import { programs, ruleSets } from './policy';
 import { tenants } from './tenancy';
@@ -32,6 +32,8 @@ export const cases = pgTable('cases', {
   createdByType: text('created_by_type').notNull(),
   createdById: text('created_by_id').notNull(),
   frozenReason: text('frozen_reason'),
+  /** pipeline progress for the status screen and the officer view: { mode, runId, step, steps[] } */
+  pipeline: jsonb('pipeline'),
   closeReason: text('close_reason'),
   submittedAt: ts('submitted_at'),
   firstOpenedAt: ts('first_opened_at'),
@@ -73,6 +75,9 @@ export const documents = pgTable('documents', {
   qrSigValid: boolean('qr_sig_valid'),
   extraction: jsonb('extraction'),
   injectionFlag: boolean('injection_flag').notNull().default(false),
+  /** AES-256-GCM encrypted image bytes (prototype stand-in for object storage); nulled by the retention sweep */
+  contentEnc: bytea('content_enc'),
+  uploadedBy: text('uploaded_by'),
   createdAt: createdAt(),
 }, (t) => [unique('documents_case_storage_key').on(t.caseId, t.storageKey), index('documents_dhash').on(t.dhash)]);
 
@@ -85,6 +90,11 @@ export const voiceInputs = pgTable('voice_inputs', {
   transcript: text('transcript'),
   sttModel: text('stt_model'),
   confirmed: boolean('confirmed').notNull().default(false),
+  status: text('status', { enum: ['pending', 'transcribed', 'empty', 'failed'] }).notNull().default('pending'),
+  mediaType: text('media_type'),
+  /** encrypted clip, kept only while a transcript is pending; deleted right after transcription in the demo tenant (VOICE-1) */
+  audioEnc: bytea('audio_enc'),
+  audioDeletedAt: ts('audio_deleted_at'),
   createdAt: createdAt(),
 });
 

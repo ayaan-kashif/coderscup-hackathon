@@ -1,3 +1,4 @@
+import { DEFAULT_MODEL_IDS } from '@/ai/model-ids';
 import { and, eq, sql } from 'drizzle-orm';
 import type { DbOrTx } from '@/db/client';
 import {
@@ -15,7 +16,8 @@ export const DEFAULT_CONFIG: Record<string, unknown> = {
   'cooling_off.approval_minutes': 2,
   'cooling_off.payout_change_minutes': 2,
   'cooling_off.product': { approvalHours: 48, payoutChangeHours: 72 },
-  'models.ids': { extractor: 'google/gemini-3.8-flash', classifier_fallback: 'google/gemini-3.5-flash-lite', router: 'typesafe-ai/jev', embeddings: 'google/gemini-embedding' },
+  'models.ids': DEFAULT_MODEL_IDS,
+  'scam.official_senders': ['SAAYA', '7240'],
   'pipeline.inline_fallback': true,
   'demo.mode': true,
 };
@@ -81,7 +83,7 @@ export async function seedCore(db: DbOrTx, o: SeedCoreOpts) {
       userId: u!.id, cnicEnc: encryptPii(c.cnic), cnicHash: piiLookupHash(c.cnic), cnicLast4: digits.slice(-4),
       nameDisplay: c.name, nameNorm: normaliseName(c.name).normalised, dob: c.dob, gender: 'F', districtId: districtIds[c.district],
       trustPictureId: c.trustPictureId, avatarId: c.avatarId, pinHash,
-    }).onConflictDoUpdate({ target: citizens.cnicHash, set: { userId: u!.id, pinHash, pinFailedAttempts: 0, pinLockedUntil: null } }).returning();
+    }).onConflictDoUpdate({ target: citizens.cnicHash, set: { userId: u!.id, pinHash, pinFailedAttempts: 0, pinLockedUntil: null, trustPictureId: c.trustPictureId, avatarId: c.avatarId } }).returning();
     citizenIds[c.phone] = cz!.id;
     const tenantId = tenantIds[c.tenant];
     const existing = await db.select({ id: consents.id }).from(consents)

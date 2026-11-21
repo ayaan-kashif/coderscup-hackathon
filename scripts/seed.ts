@@ -7,10 +7,11 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import { hashSecret } from '@/auth/crypto';
-import type { Db } from '@/db/client';
+import { setDb, type Db } from '@/db/client';
 import * as schema from '@/db/schema/all';
 import { seedCore } from '@/services/seed/core';
 import { seedGenerated } from '@/services/seed/generated';
+import { seedDemoCases } from '@/services/seed/demo-cases';
 import { loadEnvFiles } from './load-env';
 
 async function main() {
@@ -30,6 +31,9 @@ async function main() {
     console.log('generated data:', counts);
     return ids;
   });
+  // demo fixtures run through the real pipeline (mocks in-process on this same connection)
+  setDb(db);
+  console.log('demo cases:', JSON.stringify(await seedDemoCases(db, ids)));
   console.log(`${reset ? 'demo reset' : 'seed'} done in ${((Date.now() - started) / 1000).toFixed(1)} s; tenants: ${Object.keys(ids.tenantIds).join(', ')}`);
   await client.end();
 }

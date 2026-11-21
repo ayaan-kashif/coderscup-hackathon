@@ -6,7 +6,7 @@ const SEVERE = new Set(['S2', 'S6', 'S7']);
 
 export function StopBadge({ code, suffix = '' }: { code: string; suffix?: string }) {
   return (
-    <span title={NAMES[code] ?? code} className={`inline-flex items-center rounded px-1.5 py-0.5 text-xs font-semibold ${SEVERE.has(code) ? 'bg-destructive text-void' : 'bg-warning text-warning-foreground'}`}>
+    <span title={NAMES[code] ?? code} className={`inline-flex items-center rounded-xl px-1.5 py-0.5 text-xs font-semibold ${SEVERE.has(code) ? 'bg-destructive text-void' : 'bg-warning text-warning-foreground'}`}>
       {code} {NAMES[code] ?? ''}{suffix}
     </span>
   );
@@ -19,5 +19,5 @@ const SOURCE: Record<string, [string, string]> = {
 };
 export function SourceChip({ source }: { source: string }) {
   const [label, cls] = SOURCE[source] ?? [source, 'bg-muted'];
-  return <span className={`rounded px-1.5 py-0.5 text-[11px] font-semibold ${cls}`}>{label}</span>;
+  return <span className={`rounded-xl px-1.5 py-0.5 text-[11px] font-semibold ${cls}`}>{label}</span>;
 }

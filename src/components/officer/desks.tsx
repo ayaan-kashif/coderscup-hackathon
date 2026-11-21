@@ -39,7 +39,7 @@ export function PayoutDesk() {
       <CardHeader><CardTitle>Payout changes</CardTitle><CardDescription>No change completes without an officer, a cooling-off period and a notice to the old number. <SimulatedBadge what="SMS / IVR" /></CardDescription></CardHeader>
       <CardContent className="space-y-2" data-testid="payout-desk">
         {err && <p className="text-destructive">{err}</p>}
-        {msg && <p role="status" className="rounded bg-muted p-2 text-sm">{msg}</p>}
+        {msg && <p role="status" className="rounded-xl border border-mint/30 bg-mint/10 p-2.5 text-sm text-mint animate-in fade-in-0 slide-in-from-top-1">{msg}</p>}
         <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="text-muted-foreground"><th className="p-2 text-start">Citizen</th><th className="p-2 text-start">Old → new</th><th className="p-2 text-start">Status</th><th className="p-2 text-start">Cooling-off</th><th /></tr></thead>
           <tbody>{data?.items.map((c) => (
             <tr key={c.id} className="border-t border-border" data-change={c.id}>
@@ -68,12 +68,12 @@ export function ScamDesk() {
   const [msg, setMsg] = useState<string | null>(null);
   return (
     <div className="space-y-4">
-      {msg && <p role="status" className="rounded bg-muted p-2 text-sm">{msg}</p>}
+      {msg && <p role="status" className="rounded-xl border border-mint/30 bg-mint/10 p-2.5 text-sm text-mint animate-in fade-in-0 slide-in-from-top-1">{msg}</p>}
       <Card>
         <CardHeader><CardTitle>District alerts</CardTitle><CardDescription>A spike (today ≥ 3× the 7-day average and ≥ 5 reports) drafts a voice alert; nothing is broadcast until an officer approves.</CardDescription></CardHeader>
         <CardContent className="space-y-2" data-testid="scam-alerts">
           {alerts.data?.items.map((a) => (
-            <div key={a.id} className="flex flex-wrap items-center justify-between gap-2 rounded border border-border p-2">
+            <div key={a.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border p-2">
               <span><strong>{a.districtName}</strong> · {a.scamType.replace(/_/g, ' ')} · {a.count} today · <Badge variant={a.status === 'draft' ? 'warning' : 'secondary'}>{a.status}</Badge></span>
               {a.status === 'draft' && <span className="space-x-1"><Button size="sm" data-testid="alert-approve" onClick={async () => { const r = await api(`/api/v1/scam/alerts/${a.id}/approve`, { method: 'POST' }); setMsg(r.status < 300 ? 'Alert approved and sent (in-app, mock SMS, voice note).' : r.body.detail); alerts.reload(); }}>Approve & send</Button><Button size="sm" variant="ghost" onClick={async () => { await api(`/api/v1/scam/alerts/${a.id}/dismiss`, { method: 'POST' }); alerts.reload(); }}>Dismiss</Button></span>}
             </div>
@@ -85,7 +85,7 @@ export function ScamDesk() {
         <CardHeader><CardTitle>Scam Map (last 7 days)</CardTitle><CardDescription>Confirmed fakes by district. Fewer than 3 shows no count; no personal data.</CardDescription></CardHeader>
         <CardContent className="grid grid-cols-2 gap-2 sm:grid-cols-4" data-testid="scam-map">
           {map.data?.districts.map((d) => (
-            <div key={d.code} className="rounded border border-border p-2 text-center">
+            <div key={d.code} className="rounded-xl border border-border p-2 text-center">
               <p className="font-semibold">{d.name}</p>
               <p className="text-2xl font-black">{String(d.today)}</p>
               <p className="text-xs text-muted-foreground">today · {String(d.total)} this week</p>
@@ -97,7 +97,7 @@ export function ScamDesk() {
         <CardHeader><CardTitle>Not sure — needs a person</CardTitle></CardHeader>
         <CardContent className="space-y-2" data-testid="scam-desk">
           {desk.data?.items.map((i) => (
-            <div key={i.id} className="space-y-1 rounded border border-border p-2 text-sm">
+            <div key={i.id} className="space-y-1 rounded-xl border border-border p-2 text-sm">
               <p className="font-medium">“{i.text}”</p>
               <p className="break-all text-xs text-muted-foreground">{i.district ?? '—'} · {i.channel} · Jev: {i.probabilities ? JSON.stringify(i.probabilities) : 'unavailable'}</p>
               <div className="space-x-1"><Button size="sm" variant="destructive" onClick={async () => { await api(`/api/v1/scam/reports/${i.id}/label`, { body: { label: 'fake' } }); desk.reload(); map.reload(); alerts.reload(); }}>Fake</Button><Button size="sm" variant="outline" onClick={async () => { await api(`/api/v1/scam/reports/${i.id}/label`, { body: { label: 'genuine' } }); desk.reload(); }}>Genuine</Button></div>
@@ -127,7 +127,7 @@ export function ComplaintsDesk() {
         <CardHeader><CardTitle>Complaints</CardTitle><CardDescription>Severity is set by rules; the model can only raise it.</CardDescription></CardHeader>
         <CardContent className="space-y-2" data-testid="complaints">
           {list.data?.items.map((c) => (
-            <button key={c.id} type="button" className="flex w-full items-center justify-between gap-2 rounded border border-border p-2 text-start text-sm hover:bg-muted" onClick={async () => { const r = await api(`/api/v1/complaints/${c.id}`); setOpen(r.status === 200 ? r.body : { error: r.body.detail }); }}>
+            <button key={c.id} type="button" className="flex w-full items-center justify-between gap-2 rounded-xl border border-border p-2 text-start text-sm hover:bg-muted" onClick={async () => { const r = await api(`/api/v1/complaints/${c.id}`); setOpen(r.status === 200 ? r.body : { error: r.body.detail }); }}>
               <span><Badge variant={c.severity >= 3 ? 'destructive' : c.severity === 2 ? 'warning' : 'secondary'}>sev {c.severity}</Badge> {c.type.replace(/_/g, ' ')}{c.amountMissing ? ` · Rs ${c.amountMissing} missing` : ''}{c.helperName ? ` · helper ${c.helperName} (${c.helperComplaints})` : ''}</span>
               <span className="text-xs text-muted-foreground">{new Date(c.createdAt).toLocaleString()}</span>
             </button>
@@ -148,9 +148,9 @@ export function ComplaintsDesk() {
                 <p className="break-all text-xs">Ledger entry: <code>{JSON.stringify(o.ledgerEntry)}</code></p>
                 <p className="text-xs">Helper actions on this case: {o.helperActions?.length ?? 0} · earlier complaints against the helper: {o.earlierHelperComplaints?.length ?? 0}</p>
                 <details><summary>Case timeline ({o.timeline?.length ?? 0})</summary><ul className="text-xs">{o.timeline?.map((e, i) => <li key={i}>{new Date(e.ts).toLocaleString()} · {e.action}</li>)}</ul></details>
-                <select className="w-full rounded border border-border bg-card p-2" value={form.resolution} onChange={(e) => setForm({ ...form, resolution: e.target.value })}>{['upheld', 'not_upheld', 'referred'].map((r) => <option key={r}>{r}</option>)}</select>
-                <select className="w-full rounded border border-border bg-card p-2" value={form.reasonCode} onChange={(e) => setForm({ ...form, reasonCode: e.target.value })}><option value="">Reason code…</option>{REASONS.map((r) => <option key={r}>{r}</option>)}</select>
-                <textarea className="w-full rounded border border-border bg-card p-2" placeholder="Note (required)" value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} />
+                <select className="w-full rounded-xl border border-white/12 bg-white/5 transition-colors focus-visible:border-mint -2" value={form.resolution} onChange={(e) => setForm({ ...form, resolution: e.target.value })}>{['upheld', 'not_upheld', 'referred'].map((r) => <option key={r}>{r}</option>)}</select>
+                <select className="w-full rounded-xl border border-white/12 bg-white/5 transition-colors focus-visible:border-mint -2" value={form.reasonCode} onChange={(e) => setForm({ ...form, reasonCode: e.target.value })}><option value="">Reason code…</option>{REASONS.map((r) => <option key={r}>{r}</option>)}</select>
+                <textarea className="w-full rounded-xl border border-white/12 bg-white/5 transition-colors focus-visible:border-mint -2" placeholder="Note (required)" value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} />
                 <div className="flex gap-2">
                   <Button onClick={async () => { const r = await api(`/api/v1/complaints/${o.complaint!.id}/resolve`, { body: { resolution: form.resolution, reasonCode: form.reasonCode || undefined, note: form.note } }); setMsg(r.status < 300 ? 'Resolved; the citizen hears the outcome.' : `${r.body.code}: ${r.body.detail}`); if (r.status < 300) { setOpen(null); list.reload(); } }}>Resolve</Button>
                   <Button variant="ghost" onClick={() => setOpen(null)}>Back</Button>
@@ -160,7 +160,7 @@ export function ComplaintsDesk() {
           })() : (
             <div className="space-y-2" data-testid="corrections">
               {corr.data?.items.map((c) => (
-                <div key={c.id} className="rounded border border-border p-2">
+                <div key={c.id} className="rounded-xl border border-border p-2">
                   <p><strong>{c.fieldKey}</strong>: {JSON.stringify(c.oldValue)} → <strong>{JSON.stringify(c.claimedValue)}</strong></p>
                   <div className="mt-1 space-x-1">
                     <Button size="sm" onClick={async () => { const r = await api(`/api/v1/corrections/${c.id}/approve`, { body: { reasonCode: 'document_supports_claim' } }); setMsg(r.status < 300 ? 'Approved: stored as an officer fact; the case is re-decided.' : r.body.detail); corr.reload(); }}>Approve</Button>
@@ -171,7 +171,7 @@ export function ComplaintsDesk() {
               {corr.data && !corr.data.items.length && <p className="text-muted-foreground">No open correction requests.</p>}
             </div>
           )}
-          {msg && <p role="status" className="rounded bg-muted p-2">{msg}</p>}
+          {msg && <p role="status" className="rounded-xl bg-muted p-2">{msg}</p>}
         </CardContent>
       </Card>
     </div>

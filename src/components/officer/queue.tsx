@@ -37,20 +37,20 @@ export function OfficerQueue() {
     <section className="space-y-3">
       <div className="flex flex-wrap items-end gap-2">
         <label className="text-xs text-muted-foreground">Status
-          <select className="block h-9 rounded-md border border-border bg-card px-2 text-sm" value={f.status} onChange={(e) => setF({ ...f, status: e.target.value })}>{STATUSES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>
+          <select className="block h-9 rounded-xl border border-white/12 bg-white/5 transition-colors focus-visible:border-mint -2 text-sm" value={f.status} onChange={(e) => setF({ ...f, status: e.target.value })}>{STATUSES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>
         </label>
         <label className="text-xs text-muted-foreground">Stop
-          <select className="block h-9 rounded-md border border-border bg-card px-2 text-sm" value={f.stop} onChange={(e) => setF({ ...f, stop: e.target.value })}><option value="">Any</option>{Array.from({ length: 12 }, (_, i) => `S${i + 1}`).map((s) => <option key={s} value={s}>{s}{counts[s] ? ` (${counts[s]})` : ''}</option>)}</select>
+          <select className="block h-9 rounded-xl border border-white/12 bg-white/5 transition-colors focus-visible:border-mint -2 text-sm" value={f.stop} onChange={(e) => setF({ ...f, stop: e.target.value })}><option value="">Any</option>{Array.from({ length: 12 }, (_, i) => `S${i + 1}`).map((s) => <option key={s} value={s}>{s}{counts[s] ? ` (${counts[s]})` : ''}</option>)}</select>
         </label>
         <label className="text-xs text-muted-foreground">District
-          <input className="block h-9 w-20 rounded-md border border-border bg-card px-2 text-sm" value={f.district} placeholder="BDN" onChange={(e) => setF({ ...f, district: e.target.value.toUpperCase() })} />
+          <input className="block h-9 w-20 rounded-xl border border-white/12 bg-white/5 transition-colors focus-visible:border-mint -2 text-sm" value={f.district} placeholder="BDN" onChange={(e) => setF({ ...f, district: e.target.value.toUpperCase() })} />
         </label>
         <label className="flex items-center gap-1 text-sm"><input type="checkbox" checked={f.mine} onChange={(e) => setF({ ...f, mine: e.target.checked })} /> Assigned to me</label>
         <span className="ms-auto text-xs text-muted-foreground">J / K move · Enter opens · in a case: A approve · R reject · P proof</span>
       </div>
       <div className="flex flex-wrap gap-1">{Object.entries(counts).sort().map(([k, n]) => <StopBadge key={k} code={k} suffix={` ${n}`} />)}</div>
       {err && <p role="alert" className="text-destructive">{err}</p>}
-      <div className="overflow-x-auto rounded-lg border border-border">
+      <div className="overflow-x-auto rounded-2xl border border-border">
         <table className="w-full text-sm" data-testid="queue">
           <thead className="sticky top-0 bg-muted text-start"><tr>
             <th className="p-2 text-start">Priority</th><th className="p-2 text-start">Stops</th><th className="p-2 text-start">Confidence</th><th className="p-2 text-start">Waiting</th><th className="p-2 text-start">District</th><th className="p-2 text-start">Status</th><th className="p-2"></th>

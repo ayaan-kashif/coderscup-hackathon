@@ -41,7 +41,7 @@ export function BreakIt({ sandbox }: { sandbox: boolean }) {
         }}>{run?.status === 'running' ? 'Running…' : 'Run Break It'}</Button>
       </CardHeader>
       <CardContent className="space-y-3">
-        {!sandbox && <p className="rounded bg-muted p-2 text-sm">Break It runs only in the sandbox office (sign in as the Break It admin). Real offices see the latest report read-only.</p>}
+        {!sandbox && <p className="rounded-xl bg-muted p-2 text-sm">Break It runs only in the sandbox office (sign in as the Break It admin). Real offices see the latest report read-only.</p>}
         {msg && <p role="alert" className="text-destructive">{msg}</p>}
         {run && <p className="text-sm">Run {run.status} · {new Date(run.createdAt).toLocaleString()}</p>}
         {!!rows.length && (
@@ -85,7 +85,7 @@ export function ConfigPanel() {
             <div key={k} className="space-y-1">
               <label className="text-sm font-medium">{k} <Badge variant="outline">{cfg[k]?.scope ?? 'default'}</Badge></label>
               {k === 'models.ids'
-                ? <textarea className="h-40 w-full rounded border border-border bg-card p-2 font-mono text-xs" value={edit[k] ?? cur} onChange={(e) => setEdit({ ...edit, [k]: e.target.value })} />
+                ? <textarea className="h-40 w-full rounded-xl border border-white/12 bg-white/5 transition-colors focus-visible:border-mint -2 font-mono text-xs" value={edit[k] ?? cur} onChange={(e) => setEdit({ ...edit, [k]: e.target.value })} />
                 : <Input className="font-mono" value={edit[k] ?? cur} onChange={(e) => setEdit({ ...edit, [k]: e.target.value })} />}
               {edit[k] !== undefined && edit[k] !== cur && <Button size="sm" onClick={async () => {
                 let value: unknown;
@@ -151,7 +151,7 @@ export function OrgPanel() {
           <div className="grid gap-2 pt-2 sm:grid-cols-3">
             <Input placeholder="name.surname@office.amanat.test" value={nu.email} onChange={(e) => setNu({ ...nu, email: e.target.value })} />
             <Input placeholder="Display name (fictional)" value={nu.displayName} onChange={(e) => setNu({ ...nu, displayName: e.target.value })} />
-            <select className="h-10 rounded border border-border bg-card px-2" value={nu.role} onChange={(e) => setNu({ ...nu, role: e.target.value })}>{['officer', 'admin', 'auditor', 'helper'].map((r) => <option key={r}>{r}</option>)}</select>
+            <select className="h-10 rounded-xl border border-white/12 bg-white/5 transition-colors focus-visible:border-mint -2" value={nu.role} onChange={(e) => setNu({ ...nu, role: e.target.value })}>{['officer', 'admin', 'auditor', 'helper'].map((r) => <option key={r}>{r}</option>)}</select>
           </div>
           <Button size="sm" onClick={async () => { const r = await api('/api/v1/admin/users', { body: nu, idem: true }); setShown(r.status === 201 ? `Temporary password (shown once): ${r.body.temporaryPassword}` : null); setMsg(r.status === 201 ? 'User added.' : `${r.body.code}: ${r.body.detail}`); setV((x) => x + 1); }}>Add user</Button>
         </CardContent>
@@ -227,7 +227,7 @@ export function OrgPanel() {
           </div>
         </CardContent>
       </Card>
-      {shown && <p className="rounded border-2 border-warning p-2 font-mono text-sm lg:col-span-2" role="status">{shown}</p>}
+      {shown && <p className="rounded-xl border-2 border-warning p-2 font-mono text-sm lg:col-span-2" role="status">{shown}</p>}
       {msg && <p className="text-sm lg:col-span-2" role="status">{msg}</p>}
     </div>
   );

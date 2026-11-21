@@ -36,7 +36,7 @@ export function MfaCard() {
         {setup && !st.enabled && (
           <div className="space-y-2">
             <p>Add this key to your authenticator app (shown once):</p>
-            <p className="break-all rounded border-2 border-warning p-2 font-mono" data-testid="mfa-secret">{setup.secret}</p>
+            <p className="break-all rounded-xl border-2 border-warning p-2 font-mono" data-testid="mfa-secret">{setup.secret}</p>
             <p className="break-all text-xs text-muted-foreground">{setup.otpauthUri}</p>
             <div className="flex gap-2">
               <Input inputMode="numeric" maxLength={6} placeholder="123456" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} className="w-32" />

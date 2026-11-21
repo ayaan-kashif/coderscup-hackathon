@@ -33,7 +33,7 @@ export async function StaffShell({ actor, title, children, nav }: { actor: Actor
   const mine = actor.role && actor.role !== 'citizen' ? await listMyTenants(db, actor.id) : [];
   return (
     <div className="min-h-dvh bg-void">
-      <header className="sticky top-0 z-30 bg-void/85 backdrop-blur-xl">
+      <header className="z-30 sm:sticky sm:top-0 bg-void/85 backdrop-blur-xl">
         <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6">
           <Link href="/" aria-label="AMANAT AI home"><Logo /></Link>
           <div className="flex flex-wrap items-center gap-2 text-sm">

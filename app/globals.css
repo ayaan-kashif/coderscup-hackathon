@@ -195,3 +195,8 @@ textarea:focus-visible { border-color: var(--mint); }
 a:not([class]) { text-underline-offset: 3px; transition: color 0.2s; }
 a:not([class]):hover { color: var(--mint); }
 details > summary { cursor: pointer; }
+
+/* bars that grow in from the left when they mount */
+@keyframes grow-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.grow-x { transform-origin: left; animation: grow-x 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+[dir='rtl'] .grow-x { transform-origin: right; }

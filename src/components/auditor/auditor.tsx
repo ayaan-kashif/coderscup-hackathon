@@ -34,13 +34,13 @@ export function DecisionSearch() {
             <Input placeholder="case id" value={q.caseId} onChange={(e) => setQ({ ...q, caseId: e.target.value.trim() })} />
             <Input placeholder="citizen id" value={q.citizenId} onChange={(e) => setQ({ ...q, citizenId: e.target.value.trim() })} />
             <Input placeholder="actor id (e.g. pipeline:case.process)" value={q.actor} onChange={(e) => setQ({ ...q, actor: e.target.value.trim() })} />
-            <select className="h-10 rounded border border-border bg-card px-2 text-sm" value={q.kind} onChange={(e) => setQ({ ...q, kind: e.target.value })}><option value="all">case + AI decisions</option><option value="case">case decisions</option><option value="ai">AI decisions</option></select>
+            <select className="h-10 rounded-xl border border-white/12 bg-white/5 transition-colors focus-visible:border-mint -2 text-sm" value={q.kind} onChange={(e) => setQ({ ...q, kind: e.target.value })}><option value="all">case + AI decisions</option><option value="case">case decisions</option><option value="ai">AI decisions</option></select>
           </div>
           <Button onClick={() => void search()} data-testid="search-decisions">Search</Button>
           {msg && <p className="text-sm text-muted-foreground">{msg}</p>}
           <ul className="max-h-[60vh] space-y-1 overflow-y-auto text-sm" data-testid="decision-results">
             {items.map((it) => (
-              <li key={it.id}><button type="button" className="w-full rounded border border-border p-2 text-start hover:bg-muted" onClick={() => void open(it)}>
+              <li key={it.id}><button type="button" className="w-full rounded-xl border border-border p-2 text-start hover:bg-muted" onClick={() => void open(it)}>
                 <Badge variant={it.type === 'case' ? 'secondary' : 'outline'}>{it.kind.replace(/_/g, ' ')}</Badge> <strong>{it.outcome}</strong> {it.gates?.map((g) => <Badge key={g} variant="warning" className="ms-1">{g}</Badge>)}
                 <span className="block font-mono text-xs text-muted-foreground">{new Date(it.createdAt).toLocaleString()} · {it.actor ?? it.model} · input {it.inputHash.slice(0, 12)}…</span>
               </button></li>
@@ -56,8 +56,8 @@ export function DecisionSearch() {
               {'outcome' in trace && 'caseId' in trace && (
                 <Button variant="outline" data-testid="replay" onClick={async () => { const r = await api(`/api/v1/decisions/${String(trace.id)}/replay`, { method: 'POST' }); setReplay(r.status === 200 ? r.body : null); setMsg(r.status === 200 ? null : `${r.body.code}: ${r.body.detail}`); }}>Replay</Button>
               )}
-              {replay && <p className={`rounded p-2 text-sm ${replay.identical ? 'bg-success/15' : 'bg-destructive/15'}`} data-testid="replay-verdict">{replay.identical ? 'Replay identical: same input hash, same decision hash.' : 'Replay differs.'} <span className="font-mono text-xs">{replay.decisionHashNow.slice(0, 16)}…</span></p>}
-              <pre className="max-h-[60vh] overflow-auto rounded bg-muted p-2 text-xs" data-testid="trace">{JSON.stringify(trace, null, 1)}</pre>
+              {replay && <p className={`rounded-xl p-2 text-sm ${replay.identical ? 'bg-success/15' : 'bg-destructive/15'}`} data-testid="replay-verdict">{replay.identical ? 'Replay identical: same input hash, same decision hash.' : 'Replay differs.'} <span className="font-mono text-xs">{replay.decisionHashNow.slice(0, 16)}…</span></p>}
+              <pre className="max-h-[60vh] overflow-auto rounded-xl bg-muted p-2 text-xs" data-testid="trace">{JSON.stringify(trace, null, 1)}</pre>
             </>
           ) : <p className="text-sm text-muted-foreground">Open a result.</p>}
         </CardContent>
@@ -98,9 +98,9 @@ export function ConsentAccess() {
       <Card>
         <CardHeader><CardTitle>Break-glass</CardTitle><CardDescription>Personal fields of one case for 30 minutes, only for an open complaint or a legal request, with a written reason. It appears in the citizen&apos;s access log.</CardDescription></CardHeader>
         <CardContent className="space-y-2">
-          <select className="h-10 w-full rounded border border-border bg-card px-2 text-sm" value={bg.basis} onChange={(e) => setBg({ ...bg, basis: e.target.value })}><option value="open_complaint">Open complaint</option><option value="legal_request">Legal request</option></select>
+          <select className="h-10 w-full rounded-xl border border-white/12 bg-white/5 transition-colors focus-visible:border-mint -2 text-sm" value={bg.basis} onChange={(e) => setBg({ ...bg, basis: e.target.value })}><option value="open_complaint">Open complaint</option><option value="legal_request">Legal request</option></select>
           {bg.basis === 'open_complaint' && <Input placeholder="complaint id" value={bg.complaintId} onChange={(e) => setBg({ ...bg, complaintId: e.target.value.trim() })} />}
-          <textarea className="w-full rounded border border-border bg-card p-2 text-sm" placeholder="Reason (at least 15 characters)" value={bg.reason} onChange={(e) => setBg({ ...bg, reason: e.target.value })} />
+          <textarea className="w-full rounded-xl border border-white/12 bg-white/5 transition-colors focus-visible:border-mint -2 text-sm" placeholder="Reason (at least 15 characters)" value={bg.reason} onChange={(e) => setBg({ ...bg, reason: e.target.value })} />
           <Button variant="destructive" disabled={!caseId} onClick={async () => {
             const r = await api('/api/v1/audit/break-glass', { body: { caseId, basis: bg.basis, reason: bg.reason, ...(bg.complaintId ? { complaintId: bg.complaintId } : {}) } });
             setMsg(r.status === 201 ? `Break-glass open until ${new Date(r.body.expiresAt).toLocaleTimeString()}; logged in her access log.` : `${r.body.code}: ${r.body.detail}`);

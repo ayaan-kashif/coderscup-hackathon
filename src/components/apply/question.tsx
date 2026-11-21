@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { StepFrame } from '@/components/brand/step-frame';
 import { Button } from '@/components/ui/button';
 import { Keypad } from '@/components/voice/keypad';
 import { VoicePrompt, playSequence } from '@/components/voice/voice-prompt';
@@ -37,17 +38,13 @@ export function QuestionScreen({ q, caseId, initial, onAnswer, onBack, step, tot
   const [iconsOnly, setIconsOnly] = useState(false);
   const yes = (v: boolean) => { void playSequence([v ? 'yes' : 'no']); onAnswer({ question: q.key, value: v, via: 'icon', display: v ? bi('Yes', 'ہاں') : bi('No', 'نہیں') }); };
   return (
-    <section className="space-y-5" data-testid={`question-${q.key}`}>
-      <div className="flex items-center justify-between text-sm text-muted-foreground"><span>{step} / {total}</span><button type="button" className="underline" onClick={onBack}>← {bi('Back', 'واپس')}</button></div>
-      <h2 className="text-2xl font-bold">{bi(q.en, q.ur)}</h2>
-      <VoicePrompt clip={q.prompt} label={bi('Play again', 'دوبارہ سنیں')} />
-
+    <StepFrame data-testid={`question-${q.key}`} title={bi(q.en, q.ur)} voice={<VoicePrompt clip={q.prompt} label={bi('Play again', 'دوبارہ سنیں')} />} step={step} total={total} onBack={onBack} backLabel={bi('Back', 'واپس')}>
       {q.kind === 'text' && !iconsOnly && (
         <VoiceAnswer caseId={caseId} questionKey={q.key} onGiveUp={() => setIconsOnly(true)}
           onConfirmed={(h) => onAnswer({ question: q.key, value: h.transcript, via: 'voice', voiceInputId: h.voiceInputId, display: h.transcript })} />
       )}
       {q.kind === 'text' && iconsOnly && (
-        <div className="space-y-3 rounded-xl border border-border p-4">
+        <div className="space-y-3 rounded-[20px] border border-white/10 bg-pill/40 p-4">
           <p>{bi('No problem. The name on your identity card will be used.', 'کوئی بات نہیں۔ شناختی کارڈ والا نام لیا جائے گا۔')}</p>
           <Button size="xl" className="w-full" onClick={() => onAnswer(null)}>🪪 {bi('Use the name on my card', 'کارڈ والا نام لیں')}</Button>
         </div>
@@ -83,6 +80,6 @@ export function QuestionScreen({ q, caseId, initial, onAnswer, onBack, step, tot
         </div>
       )}
       {q.optional && <Button variant="ghost" className="w-full" onClick={() => onAnswer(null)}>{bi('Skip — I will show the card', 'چھوڑیں — کارڈ دکھاؤں گی')}</Button>}
-    </section>
+    </StepFrame>
   );
 }

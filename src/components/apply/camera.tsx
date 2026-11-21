@@ -1,4 +1,5 @@
 'use client';
+import { StepFrame } from '@/components/brand/step-frame';
 import { Camera, CheckCircle2, RotateCcw } from 'lucide-react';
 import { useLowBandwidth } from '@/components/shell/low-bandwidth';
 import { useRef, useState } from 'react';
@@ -79,15 +80,13 @@ export function CameraCapture({ prompt, title, onAccept }: { prompt: string; tit
   };
   const blurry = shot && shot.sharpness < SHARPNESS_MIN;
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-bold">{title}</h2>
-      <VoicePrompt clip={prompt} label={bi('Play again', 'دوبارہ سنیں')} />
-      <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl border-4 border-dashed border-primary/60 bg-muted">
+    <StepFrame title={title} voice={<VoicePrompt clip={prompt} label={bi('Play again', 'دوبارہ سنیں')} />}>
+      <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-[20px] border-2 border-dashed border-mint/50 bg-void">
         {/* OFF-7: no preview in low-bandwidth mode, only the clarity check */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         {shot && !low ? <img src={shot.preview} alt="" className="h-full w-full object-contain" /> : shot ? <span className="text-sm text-muted-foreground" data-testid="no-preview">{bi('Photo taken', 'تصویر لے لی')} · {Math.round(shot.bytes / 1024)} KB</span> : <Camera className="size-16 text-muted-foreground" aria-hidden />}
         {shot && (
-          <div className={`absolute bottom-2 left-2 rounded-full px-3 py-1 text-sm font-semibold ${blurry ? 'bg-destructive text-void' : 'bg-success text-success-foreground'}`} data-testid="blur-meter">
+          <div className={`absolute bottom-3 start-3 rounded-full px-3 py-1 text-sm font-semibold ${blurry ? 'bg-destructive text-void' : 'bg-success text-success-foreground'}`} data-testid="blur-meter">
             {blurry ? bi('Not clear', 'صاف نہیں') : bi('Clear', 'صاف')} · {Math.round(shot.sharpness * 100)}
           </div>
         )}
@@ -103,6 +102,6 @@ export function CameraCapture({ prompt, title, onAccept }: { prompt: string; tit
           <Button size="xl" onClick={() => onAccept(shot)} data-testid="photo-accept"><CheckCircle2 className="!size-6" /> {bi('Use this', 'یہ ٹھیک ہے')}</Button>
         </div>
       )}
-    </div>
+    </StepFrame>
   );
 }

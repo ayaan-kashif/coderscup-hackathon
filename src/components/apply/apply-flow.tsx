@@ -1,4 +1,5 @@
 'use client';
+import { StepFrame } from '@/components/brand/step-frame';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Send } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -91,10 +92,8 @@ export function ApplyFlow({ mode, citizenId, existingCaseId, onSubmitted, banner
           onAccept={(c) => void savePhoto(PHOTOS[pi]!.docType, c, bi(PHOTOS[pi]!.en, PHOTOS[pi]!.ur))} />
       )}
       {pi === PHOTOS.length && (
-        <section className="space-y-4" data-testid="review">
-          <h2 className="text-2xl font-bold">{bi('Check and send', 'دیکھیں اور بھیجیں')}</h2>
-          <VoicePrompt clip="review" label={bi('Play again', 'دوبارہ سنیں')} />
-          <ul className="divide-y divide-border rounded-xl border border-border">
+        <StepFrame data-testid="review" title={bi('Check and send', 'دیکھیں اور بھیجیں')} voice={<VoicePrompt clip="review" label={bi('Play again', 'دوبارہ سنیں')} />}>
+          <ul className="divide-y divide-white/10 overflow-hidden rounded-[20px] border border-white/10 bg-void/40">
             {QUESTION_DEFS.map((q) => (
               <li key={q.key} className="flex items-center justify-between gap-2 p-3">
                 <span className="text-muted-foreground">{bi(q.en, q.ur)}</span>
@@ -115,8 +114,8 @@ export function ApplyFlow({ mode, citizenId, existingCaseId, onSubmitted, banner
             void syncNow();
             onSubmitted({ caseId, createRef });
           }}><Send className="!size-6" /> {bi('Send application', 'درخواست بھیجیں')}</Button>
-          <button type="button" className="w-full text-center underline" onClick={() => setStep(0)}>{bi('Change an answer', 'جواب بدلیں')}</button>
-        </section>
+          <button type="button" className="w-full text-center text-sm font-semibold text-white/70 underline underline-offset-4 transition-colors hover:text-mint" onClick={() => setStep(0)}>{bi('Change an answer', 'جواب بدلیں')}</button>
+        </StepFrame>
       )}
     </div>
   );
@@ -128,8 +127,8 @@ export function OutboxList({ title }: { title: string }) {
   const entries = useLiveQuery(() => outboxDb().outbox.orderBy('createdAt').reverse().limit(12).toArray(), []);
   if (!entries?.length) return null;
   return (
-    <section className="rounded-xl border border-border bg-card p-4" data-testid="outbox">
-      <h3 className="mb-2 font-semibold">{title}</h3>
+    <section className="rounded-[24px] border border-white/[0.08] bg-bento p-5" data-testid="outbox">
+      <h3 className="micro-label mb-3 text-label">{title}</h3>
       <ul className="space-y-2">
         {entries.map((e: OutboxEntry) => (
           <li key={e.id} className="flex items-center justify-between gap-2 border-b border-border pb-2 last:border-0" data-entry-type={e.type}>

@@ -65,7 +65,7 @@ export function MockPhone({ initialPhone }: { initialPhone: string }) {
           <Input dir="ltr" value={outText} onChange={(e) => setOutText(e.target.value)} aria-label="text to 8171" data-testid="sms-out" />
           <Button type="submit" size="sm" variant="secondary" data-testid="sms-send-8171">Text 8171</Button>
         </form>
-        {note && <p role="status" className="rounded-lg bg-warning p-2 text-sm text-warning-foreground">{note}</p>}
+        {note && <p role="status" className="rounded-2xl bg-warning p-2 text-sm text-warning-foreground">{note}</p>}
         {error && <p className="text-sm text-destructive">{error}</p>}
         <ul className="max-h-[60vh] space-y-2 overflow-y-auto" dir="ltr"><AnimatePresence initial={false}>
           {msgs.map((m) => {

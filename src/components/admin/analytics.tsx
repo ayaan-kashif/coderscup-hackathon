@@ -38,7 +38,7 @@ export function AnalyticsPanel() {
         <label className="grid gap-1">From<Input type="date" value={from} max={to} onChange={(e) => setFrom(e.target.value)} /></label>
         <label className="grid gap-1">To<Input type="date" value={to} min={from} onChange={(e) => setTo(e.target.value)} /></label>
         <label className="grid gap-1">District
-          <select className="h-10 rounded border border-border bg-card px-2" value={district} onChange={(e) => setDistrict(e.target.value)} data-testid="analytics-district">
+          <select className="h-10 rounded-xl border border-white/12 bg-white/5 transition-colors focus-visible:border-mint -2" value={district} onChange={(e) => setDistrict(e.target.value)} data-testid="analytics-district">
             <option value="">All districts</option>
             {d?.districts.map((x) => <option key={x.code} value={x.code}>{x.name}</option>)}
           </select>
@@ -55,7 +55,7 @@ export function AnalyticsPanel() {
                   <li key={f.step} className="grid grid-cols-[9rem_1fr_6rem] items-center gap-2 text-sm" title={`${f.label}: ${f.n}${f.fromPrevious !== null ? ` (${pct(f.fromPrevious)} of the previous step)` : ''}`}>
                     <span>{f.label}</span>
                     <span className="h-5 rounded-e bg-muted" aria-hidden>
-                      <span className="block h-5 rounded-e-[4px] bg-primary" style={{ width: `${(f.n / max) * 100}%`, minWidth: f.n ? 4 : 0 }} />
+                      <span className="grow-x block h-5 rounded-e-[4px] bg-primary" style={{ width: `${(f.n / max) * 100}%`, minWidth: f.n ? 4 : 0 }} />
                     </span>
                     <span className="text-end tabular-nums">{f.n}{f.fromPrevious !== null && <span className="ms-1 text-xs text-muted-foreground">{pct(f.fromPrevious)}</span>}</span>
                   </li>

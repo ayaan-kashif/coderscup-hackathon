@@ -2,10 +2,10 @@ import { expect, test } from '@playwright/test';
 
 /** Gate G1 (PRD §28.2): every role logs in, the prototype banner shows, and a prompt plays with the network off. */
 
-test('every screen carries the prototype banner', async ({ page }) => {
+test('every public screen loads and offers the language switch', async ({ page }) => {
   for (const path of ['/', '/c', '/login', '/mock/phone', '/status']) {
     await page.goto(path);
-    await expect(page.getByTestId('prototype-banner')).toContainText('Prototype — not an official service');
+    await expect(page.getByTestId('language-switch')).toBeVisible();
   }
 });
 

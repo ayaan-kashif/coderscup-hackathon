@@ -70,7 +70,7 @@ export function VoiceAnswer({ caseId, questionKey, onConfirmed, onGiveUp }: { ca
 
   if (state === 'heard' && heard) {
     return (
-      <div className="space-y-3 rounded-xl border-2 border-primary bg-card p-4" data-testid="readback">
+      <div className="space-y-3 rounded-[20px] border-2 border-primary bg-card p-4" data-testid="readback">
         <p className="text-sm text-muted-foreground">{bi('I heard', 'میں نے سنا')}</p>
         <p className="text-2xl font-bold">{heard.transcript}</p>
         <div className="grid grid-cols-2 gap-3">

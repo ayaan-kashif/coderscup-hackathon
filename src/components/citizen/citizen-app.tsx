@@ -3,6 +3,7 @@ import { WifiOff } from 'lucide-react';
 import { motion } from 'motion/react';
 import React from 'react';
 import { Logo } from '@/components/brand/logo';
+import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
@@ -167,7 +168,7 @@ export function CitizenApp() {
       <Screen title={bi('Choose your picture', 'اپنی تصویر چنیں')} prompt="choose_trust" replay={t('citizen.playPrompt')}>
         <div className="grid grid-cols-5 gap-2">
           {TRUST_PICTURES.map((p, i) => (
-            <button key={i} type="button" className="aspect-square rounded-xl border-2 border-border text-4xl focus:border-primary" aria-label={`trust ${i + 1}`}
+            <button key={i} type="button" className="aspect-square rounded-[20px] border border-white/10 bg-void text-4xl transition-[transform,border-color] hover:scale-105 hover:border-mint focus-visible:border-mint active:scale-95" aria-label={`trust ${i + 1}`}
               onClick={async () => { void playSequence([`trust_${i + 1}`]); await api('/api/v1/me', { method: 'PATCH', body: { trustPictureId: i + 1 } }); await load(); }}>{p}</button>
           ))}
         </div>
@@ -190,9 +191,9 @@ function ConsentStep({ onDone }: { onDone: () => void }) {
   return (
     <Screen title={bi('Your permission', 'آپ کی اجازت')} prompt="consent_notice" replay={bi('Play again', 'دوبارہ سنیں')}>
       <ul className="space-y-2">
-        <li className="rounded-xl border border-border p-3">🪪 {bi('Identity registry check', 'شناختی ریکارڈ کی جانچ')} <SimulatedBadge what="registry" /></li>
-        <li className="rounded-xl border border-border p-3">📜 {bi('Civil registry check (marriage, death)', 'سول ریکارڈ کی جانچ')} <SimulatedBadge what="registry" /></li>
-        <li className="rounded-xl border border-border p-3">💵 {bi('Payment to your wallet', 'آپ کے والیٹ میں ادائیگی')} <SimulatedBadge what="ledger" /></li>
+        <li className="rounded-[20px] border border-white/10 bg-void/40 p-3">🪪 {bi('Identity registry check', 'شناختی ریکارڈ کی جانچ')} <SimulatedBadge what="registry" /></li>
+        <li className="rounded-[20px] border border-white/10 bg-void/40 p-3">📜 {bi('Civil registry check (marriage, death)', 'سول ریکارڈ کی جانچ')} <SimulatedBadge what="registry" /></li>
+        <li className="rounded-[20px] border border-white/10 bg-void/40 p-3">💵 {bi('Payment to your wallet', 'آپ کے والیٹ میں ادائیگی')} <SimulatedBadge what="ledger" /></li>
       </ul>
       <Keypad value={pin} onChange={setPin} max={4} masked />
       {msg && <p role="alert" className="text-destructive">{msg}</p>}
@@ -264,34 +265,51 @@ function Home({ me, online }: { me: Me; online: boolean }) {
   }, [version]);
   const back = () => { setView({ name: 'home' }); setVersion((v) => v + 1); };
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-5 px-4 py-6">
+    <main className="mx-auto flex max-w-md flex-col gap-4 px-4 py-5">
+      <Logo className="px-1" />
       {/* CIT-8: the trust picture heads every signed-in screen */}
-      <header className="flex items-center gap-4 rounded-xl border border-border bg-card p-4" data-testid="trust-header">
-        <button type="button" className="text-5xl" aria-label="trust picture" onClick={() => me.trustPictureId && void playSequence([`trust_${me.trustPictureId}`])}>{trustPicture(me.trustPictureId)}</button>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-lg font-semibold">{me.displayName}</p>
-          <SimulatedBadge what="Saaya" /> <LowBandwidthBadge label={bi('Low data mode', 'کم ڈیٹا موڈ')} />
+      <motion.header layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className={cn('canvas-violet iso-grid overflow-hidden rounded-[28px]', view.name === 'home' ? 'p-5' : 'p-3')} data-testid="trust-header">
+        <div className="flex items-center gap-4">
+          <motion.button whileTap={{ scale: 0.9, rotate: -6 }} whileHover={{ scale: 1.06 }} type="button" className={cn('flex shrink-0 items-center justify-center bg-void', view.name === 'home' ? 'size-[72px] rounded-2xl text-5xl' : 'size-12 rounded-xl text-3xl')} aria-label="trust picture" onClick={() => me.trustPictureId && void playSequence([`trust_${me.trustPictureId}`])}>{trustPicture(me.trustPictureId)}</motion.button>
+          <div className="min-w-0 flex-1 space-y-1">
+            {view.name === 'home' && <p className="micro-label text-white/70">{bi('Welcome', 'خوش آمدید')}</p>}
+            <p className={cn('display truncate font-extrabold leading-tight tracking-tight', view.name === 'home' ? 'text-2xl' : 'text-lg')}>{me.displayName}</p>
+            <div className="flex flex-wrap items-center gap-1.5"><SimulatedBadge what="Saaya" /> <LowBandwidthBadge label={bi('Low data mode', 'کم ڈیٹا موڈ')} /></div>
+          </div>
+          {view.name !== 'home' && <Button variant="white" size="sm" onClick={back}>← {bi('Home', 'واپس')}</Button>}
         </div>
-        {view.name !== 'home' && <Button variant="ghost" onClick={back}>← {bi('Home', 'واپس')}</Button>}
-      </header>
-      {!online && <p className="rounded-md bg-warning px-3 py-2 text-warning-foreground" role="status">{t('shell.offline')} · {bi('one grey tick = saved on the phone', 'ایک سرمئی نشان = فون میں محفوظ')}</p>}
+      </motion.header>
+      {!online && <p className="rounded-2xl border border-warning/40 bg-warning/10 px-4 py-3 text-sm font-medium text-warning" role="status">{t('shell.offline')} · {bi('one grey tick = saved on the phone', 'ایک سرمئی نشان = فون میں محفوظ')}</p>}
 
       {view.name === 'home' && (
         <>
           <VoicePrompt clip="home_tiles" label={t('citizen.playPrompt')} />
-          <div className="grid grid-cols-2 gap-3">
-            {TILES.map((tile) => (
-              <Button key={tile.view} size="xl" variant="outline" className="h-28 flex-col gap-2 text-lg" data-testid={`tile-${tile.view}`}
-                disabled={tile.view === 'status' && !caseId}
-                onClick={() => { void playSequence([tile.clip]); setView(tile.view === 'status' ? { name: 'status', caseId: caseId! } : { name: tile.view } as View); }}>
-                <span className="text-4xl">{tile.icon}</span>{bi(tile.en, tile.ur)}
-              </Button>
-            ))}
-            <a href={`/mock/phone`} target="_blank" rel="noreferrer" className="flex h-28 flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border text-lg">📱 {t('home.mockPhone')}</a>
-          </div>
+          <motion.div className="grid grid-cols-2 gap-3" initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.07, delayChildren: 0.1 } } }}>
+            {TILES.map((tile) => {
+              const primary = tile.view === 'apply';
+              const off = tile.view === 'status' && !caseId;
+              return (
+                <motion.div key={tile.view} className={primary ? 'col-span-2' : undefined} variants={{ hidden: { opacity: 0, y: 22, scale: 0.96 }, show: { opacity: 1, y: 0, scale: 1 } }} whileTap={off ? undefined : { scale: 0.96 }}>
+                  <button type="button" data-testid={`tile-${tile.view}`} disabled={off}
+                    className={cn(
+                      'group flex w-full items-center justify-center gap-3 rounded-[24px] border text-lg font-bold transition-[border-color,background-color,transform] duration-200 hover:-translate-y-0.5 disabled:pointer-events-none disabled:opacity-40',
+                      primary ? 'h-28 flex-row border-transparent bg-mint text-void hover:bg-mint-hover' : 'h-32 flex-col border-white/10 bg-bento hover:border-mint/50 hover:bg-elevated',
+                    )}
+                    onClick={() => { void playSequence([tile.clip]); setView(tile.view === 'status' ? { name: 'status', caseId: caseId! } : { name: tile.view } as View); }}>
+                    <span className={cn('flex items-center justify-center rounded-2xl text-4xl transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110', primary ? 'size-16 bg-void/10' : 'size-14 bg-pill')}>{tile.icon}</span>
+                    {bi(tile.en, tile.ur)}
+                  </button>
+                </motion.div>
+              );
+            })}
+            <motion.a variants={{ hidden: { opacity: 0, y: 22, scale: 0.96 }, show: { opacity: 1, y: 0, scale: 1 } }} whileTap={{ scale: 0.96 }} href="/mock/phone" target="_blank" rel="noreferrer" className="group flex h-32 flex-col items-center justify-center gap-2 rounded-[24px] border border-white/10 bg-bento px-2 text-center text-base font-bold transition-[border-color,background-color,transform] duration-200 hover:-translate-y-0.5 hover:border-mint/50 hover:bg-elevated">
+              <span className="flex size-14 items-center justify-center rounded-2xl bg-pill text-4xl transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">📱</span>{t('home.mockPhone')}
+            </motion.a>
+          </motion.div>
           <OutboxList title={bi('Saved on this phone', 'اس فون میں محفوظ')} />
         </>
       )}
+      {view.name !== 'home' && view.name !== 'apply' && view.name !== 'status' && view.name !== 'proof' && view.name !== 'receipt' && (() => { const tl = TILES.find((x) => x.view === view.name); return tl ? <motion.p initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} className="display flex items-center gap-3 px-1 text-2xl font-extrabold"><span className="flex size-11 items-center justify-center rounded-2xl bg-pill text-2xl">{tl.icon}</span>{bi(tl.en, tl.ur)}</motion.p> : null; })()}
       {view.name === 'apply' && (
         caseId && !draftId
           ? <div className="space-y-3"><p>{bi('You already have an application.', 'آپ کی درخواست پہلے سے موجود ہے۔')}</p><Button size="xl" className="w-full" onClick={() => setView({ name: 'status', caseId })}>{bi('See my status', 'صورتحال دیکھیں')}</Button></div>

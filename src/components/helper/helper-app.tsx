@@ -1,4 +1,5 @@
 'use client';
+import { motion } from 'motion/react';
 import { Lock, Search } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { ApplyFlow, OutboxList, syncNow } from '@/components/apply/apply-flow';
@@ -64,7 +65,7 @@ export function HelperApp() {
 
   const fam = sel ? fams.find((f) => f.citizenId === sel.citizenId) ?? sel : null;
   const banner = fam && unlock ? (
-    <div className="sticky top-0 z-10 flex items-center gap-3 rounded-xl border-2 border-primary bg-card p-3 shadow" data-testid="family-banner">
+    <div className="sticky top-0 z-20 sm:top-[88px] flex items-center gap-3 rounded-[20px] border border-mint/60 bg-bento/95 p-3 shadow-[0_0_0_4px_rgb(163_247_181/0.12),0_20px_40px_-20px_rgb(0_0_0/0.8)] backdrop-blur" data-testid="family-banner">
       <span className="text-4xl" aria-hidden>{avatar(fam.avatarId)}</span>
       <div className="flex-1">
         <p className="font-bold">{fam.name}</p>
@@ -120,15 +121,15 @@ export function HelperApp() {
         <>
           <div className="relative"><Search className="absolute start-3 top-3 size-4 text-muted-foreground" /><Input className="ps-9" placeholder="Search by name" value={q} onChange={(e) => setQ(e.target.value)} /></div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4" data-testid="families">
-            {shown.map((f) => (
-              <button key={f.citizenId} type="button" onClick={() => { if (unlock) void lock('switch'); setSel(f); }}
-                className={`flex flex-col items-center gap-1 rounded-xl border p-3 text-center ${f.case?.flagged ? 'border-destructive bg-destructive/5' : 'border-border'}`} data-testid="family-card">
+            {shown.map((f, i) => (
+              <motion.button key={f.citizenId} type="button" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 16) * 0.03, duration: 0.4, ease: [0.22, 1, 0.36, 1] }} whileHover={{ y: -4 }} whileTap={{ scale: 0.97 }} onClick={() => { if (unlock) void lock('switch'); setSel(f); }}
+                className={`flex flex-col items-center gap-1 rounded-[20px] border p-3 text-center transition-colors hover:border-mint/50 ${f.case?.flagged ? 'border-destructive bg-destructive/10' : 'border-white/10 bg-bento'}`} data-testid="family-card">
                 <span className="text-4xl" aria-hidden>{avatar(f.avatarId)}</span>
                 <span className="text-sm font-semibold">{f.name}</span>
                 <span dir="ltr" className="font-mono text-xs text-muted-foreground">{f.cnic}</span>
                 {f.case && <Ticks tick={f.case.ticks} labels={{ saved: '', sent: f.case.status.replace(/_/g, ' '), opened: f.case.status.replace(/_/g, ' '), failed: '' }} />}
                 {f.case?.flagged && <span className="text-xs font-bold text-destructive">⚑ frozen</span>}
-              </button>
+              </motion.button>
             ))}
           </div>
         </>

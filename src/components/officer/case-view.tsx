@@ -92,7 +92,7 @@ export function OfficerCaseView({ caseId, meId }: { caseId: string; meId: string
               <p className="text-lg font-semibold" data-testid="lead">
                 {sd.stops[0] ? `${sd.stops[0].code}: ${sd.stops[0].reason}` : sd.outcome === 'AUTO_APPROVE' ? 'Eligible and confident — approved with a cooling-off hold' : `Confidence ${sd.pLegit !== null ? (sd.pLegit * 100).toFixed(1) : '—'}% vs bar ${sd.threshold !== null ? (sd.threshold * 100).toFixed(1) : '—'}%`}
               </p>
-              {sd.summary?.would_settle[0] && <p className="rounded bg-primary/10 p-2">Would settle it: {sd.summary.would_settle[0].text}</p>}
+              {sd.summary?.would_settle[0] && <p className="rounded-xl bg-primary/10 p-2">Would settle it: {sd.summary.would_settle[0].text}</p>}
               <p className="break-all font-mono text-xs text-muted-foreground">confidence {sd.pLegit !== null ? (sd.pLegit * 100).toFixed(2) : '—'}% · bar {sd.threshold !== null ? (sd.threshold * 100).toFixed(2) : '—'}% · input {sd.inputHash.slice(0, 16)}… · summary by {sd.summary?.source ?? '—'}</p>
             </CardContent>
           )}
@@ -123,7 +123,7 @@ export function OfficerCaseView({ caseId, meId }: { caseId: string; meId: string
           <CardHeader><CardTitle>Identity candidates</CardTitle></CardHeader>
           <CardContent className="space-y-2" data-testid="matches">
             {v.matches.map((m) => (
-              <div key={m.rank} className="rounded border border-border p-2 text-sm">
+              <div key={m.rank} className="rounded-xl border border-border p-2 text-sm">
                 <div className="flex flex-wrap justify-between gap-2"><span className="font-semibold">{String.fromCharCode(64 + m.rank)}. {m.record.name ?? ''} {m.record.relationName ? `w/o ${m.record.relationName}` : ''} · {m.record.district}</span><span className="font-mono">{m.scoreBits.toFixed(1)} bits · <Badge variant={m.zone === 'match' ? 'success' : m.zone === 'review' ? 'warning' : 'outline'}>{m.zone}</Badge></span></div>
                 <div className="mt-1 flex flex-wrap gap-2 text-xs">{Object.entries(m.fields).map(([k, f]) => <span key={k} className={f.weight >= 0 ? 'text-success' : 'text-destructive'}>{k}: {f.level} ({f.weight >= 0 ? '+' : ''}{f.weight.toFixed(1)})</span>)}</div>
               </div>
@@ -154,13 +154,13 @@ export function OfficerCaseView({ caseId, meId }: { caseId: string; meId: string
           <CardHeader><CardTitle>Documents</CardTitle></CardHeader>
           <CardContent className="space-y-2">
             {v.documents.map((d) => (
-              <div key={d.id} className="flex flex-wrap items-center justify-between gap-2 rounded border border-border p-2 text-sm">
+              <div key={d.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border p-2 text-sm">
                 <span>{d.docType} · sharpness {d.sharpness?.toFixed(2) ?? '—'} · QR {d.qrSigValid === null ? 'none' : d.qrSigValid ? '✓ signed' : '✗ invalid'} {d.injectionFlag && <Badge variant="destructive">instruction text</Badge>}{d.weakSignals?.notes?.map((n) => <Badge key={n} variant="outline" className="ms-1" title="Weak signal only: never used to decide">weak: {n}</Badge>)}</span>
                 <Button size="sm" variant="outline" onClick={async () => { const r = await api(`/api/v1/cases/${caseId}/documents/${d.id}`); setImg(r.status === 200 ? r.body.dataUrl : null); }}>View</Button>
               </div>
             ))}
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            {img && <img src={img} alt="document" className="max-h-[70vh] w-full cursor-zoom-out rounded border object-contain" onClick={() => setImg(null)} />}
+            {img && <img src={img} alt="document" className="max-h-[70vh] w-full cursor-zoom-out rounded-xl border object-contain" onClick={() => setImg(null)} />}
           </CardContent>
         </Card>
 
@@ -187,12 +187,12 @@ export function OfficerCaseView({ caseId, meId }: { caseId: string; meId: string
           <Card data-testid={`panel-${panel}`}>
             <CardContent className="space-y-2 pt-4">
               {(panel === 'approve' || panel === 'reject' || panel === 'close') && (
-                <select className="w-full rounded border border-border bg-card p-2 text-sm" value={form.reason} onChange={(e) => setForm({ ...form, reason: e.target.value })} data-testid="reason">
+                <select className="w-full rounded-xl border border-white/12 bg-white/5 transition-colors focus-visible:border-mint -2 text-sm" value={form.reason} onChange={(e) => setForm({ ...form, reason: e.target.value })} data-testid="reason">
                   <option value="">Reason code…</option>{(panel === 'approve' ? APPROVE : panel === 'reject' ? REJECT : CLOSE).map((r) => <option key={r} value={r}>{r.replace(/_/g, ' ')}</option>)}
                 </select>
               )}
-              {panel === 'proof' && <select className="w-full rounded border border-border bg-card p-2 text-sm" value={form.item} onChange={(e) => setForm({ ...form, item: e.target.value })}>{['cnic_front', 'cnic_back', 'death_certificate', 'income_declaration'].map((i) => <option key={i}>{i}</option>)}</select>}
-              <textarea className="w-full rounded border border-border bg-card p-2 text-sm" placeholder={panel === 'reject' || panel === 'escalate' || panel === 'freeze' ? 'Note (required)' : 'Note'} value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} data-testid="note" />
+              {panel === 'proof' && <select className="w-full rounded-xl border border-white/12 bg-white/5 transition-colors focus-visible:border-mint -2 text-sm" value={form.item} onChange={(e) => setForm({ ...form, item: e.target.value })}>{['cnic_front', 'cnic_back', 'death_certificate', 'income_declaration'].map((i) => <option key={i}>{i}</option>)}</select>}
+              <textarea className="w-full rounded-xl border border-white/12 bg-white/5 transition-colors focus-visible:border-mint -2 text-sm" placeholder={panel === 'reject' || panel === 'escalate' || panel === 'freeze' ? 'Note (required)' : 'Note'} value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} data-testid="note" />
               <Button className="w-full" data-testid="confirm" onClick={() => {
                 if (panel === 'approve') void act('decisions', { action: 'approve', reasonCode: form.reason || undefined, ...(form.note ? { note: form.note } : {}) }, true);
                 if (panel === 'reject') void act('decisions', { action: 'reject', reasonCode: form.reason || undefined, note: form.note }, true);
@@ -204,7 +204,7 @@ export function OfficerCaseView({ caseId, meId }: { caseId: string; meId: string
             </CardContent>
           </Card>
         )}
-        {msg && <p role="status" className="rounded bg-muted p-2 text-sm">{msg}</p>}
+        {msg && <p role="status" className="rounded-xl border border-mint/30 bg-mint/10 p-2.5 text-sm text-mint animate-in fade-in-0 slide-in-from-top-1">{msg}</p>}
         <Card>
           <CardHeader><CardTitle>Decisions</CardTitle></CardHeader>
           <CardContent className="space-y-1 text-xs">

@@ -83,7 +83,7 @@ export function RulesEditor({ meId }: { meId: string }) {
         ))}
         <Button size="sm" variant="secondary" disabled={busy} data-testid="new-draft" onClick={async () => { const r = await api('/api/v1/rules/drafts', { body: {} }); if (r.status === 201) await load(r.body.id); else setMsg({ ok: false, text: r.body.detail }); }}>+ New draft</Button>
       </div>
-      {msg && <p role="status" className={`rounded p-2 text-sm ${msg.ok ? 'bg-success/15' : 'bg-destructive/15'}`} data-testid="rules-msg">{msg.text}</p>}
+      {msg && <p role="status" className={`rounded-xl p-2 text-sm ${msg.ok ? 'bg-success/15' : 'bg-destructive/15'}`} data-testid="rules-msg">{msg.text}</p>}
 
       <Card>
         <CardHeader className="flex-row flex-wrap items-center justify-between gap-2 space-y-0">
@@ -93,9 +93,9 @@ export function RulesEditor({ meId }: { meId: string }) {
         </CardHeader>
         <CardContent className="space-y-3">
           {json !== null ? (
-            <textarea className="h-96 w-full rounded border border-border bg-card p-2 font-mono text-xs" value={json} readOnly={!editable} onChange={(e) => setJson(e.target.value)} data-testid="rules-json" />
+            <textarea className="h-96 w-full rounded-xl border border-white/12 bg-white/5 transition-colors focus-visible:border-mint -2 font-mono text-xs" value={json} readOnly={!editable} onChange={(e) => setJson(e.target.value)} data-testid="rules-json" />
           ) : draft.rules.map((r, ri) => (
-            <div key={r.id} className="rounded-lg border border-border p-3" data-rule={r.id}>
+            <div key={r.id} className="rounded-2xl border border-border p-3" data-rule={r.id}>
               <div className="mb-2 flex flex-wrap items-center gap-2 text-sm">
                 <span className="font-mono font-semibold">{r.id}</span>
                 <Badge variant="outline">{r.clause}</Badge>
@@ -104,8 +104,8 @@ export function RulesEditor({ meId }: { meId: string }) {
               </div>
               {(r.when.all ?? r.when.any ?? []).map((c, ci) => (
                 <div key={ci} className="grid gap-2 sm:grid-cols-[1fr_9rem_1fr]">
-                  <select disabled={!editable} className="h-9 rounded border border-border bg-card px-2 text-sm" value={c.fact} onChange={(e) => setCond(ri, ci, { fact: e.target.value })} aria-label="fact">{FACTS.map((f) => <option key={f}>{f}</option>)}</select>
-                  <select disabled={!editable} className="h-9 rounded border border-border bg-card px-2 text-sm" value={c.op} onChange={(e) => setCond(ri, ci, { op: e.target.value })} aria-label="operator" data-testid={`op-${r.id}`}>{OPS.map((o) => <option key={o}>{o}</option>)}</select>
+                  <select disabled={!editable} className="h-9 rounded-xl border border-white/12 bg-white/5 transition-colors focus-visible:border-mint -2 text-sm" value={c.fact} onChange={(e) => setCond(ri, ci, { fact: e.target.value })} aria-label="fact">{FACTS.map((f) => <option key={f}>{f}</option>)}</select>
+                  <select disabled={!editable} className="h-9 rounded-xl border border-white/12 bg-white/5 transition-colors focus-visible:border-mint -2 text-sm" value={c.op} onChange={(e) => setCond(ri, ci, { op: e.target.value })} aria-label="operator" data-testid={`op-${r.id}`}>{OPS.map((o) => <option key={o}>{o}</option>)}</select>
                   <Input disabled={!editable} value={showValue(c.value)} onChange={(e) => setCond(ri, ci, { value: parseValue(e.target.value) })} aria-label="value" data-testid={`value-${r.id}`} />
                 </div>
               ))}
@@ -121,7 +121,7 @@ export function RulesEditor({ meId }: { meId: string }) {
         <CardContent className="flex flex-wrap gap-2">
           <Input className="max-w-sm font-mono text-xs" placeholder="case id" value={previewCase} onChange={(e) => setPreviewCase(e.target.value.trim())} />
           <Button variant="outline" disabled={!previewCase} onClick={async () => { const r = await api(`/api/v1/rules/drafts/${draft.id}/preview`, { body: { caseId: previewCase } }); setPreview(r.body); }}>Preview</Button>
-          {preview !== null && <pre className="w-full overflow-x-auto rounded bg-muted p-2 text-xs">{JSON.stringify(preview, null, 1)}</pre>}
+          {preview !== null && <pre className="w-full overflow-x-auto rounded-xl bg-muted p-2 text-xs">{JSON.stringify(preview, null, 1)}</pre>}
         </CardContent>
       </Card>
 
@@ -129,7 +129,7 @@ export function RulesEditor({ meId }: { meId: string }) {
         <Card data-testid="rule-suggest">
           <CardHeader><CardTitle>Suggest from a policy notice (AI, review only)</CardTitle><CardDescription>Paste a notice. The model proposes rule changes; nothing is saved until you load them, check them and press Save. The Twin and publishing rules still apply.</CardDescription></CardHeader>
           <CardContent className="space-y-2">
-            <textarea className="h-28 w-full rounded border border-border bg-card p-2 text-sm" placeholder="e.g. From 1 January the age limit for widows rises to 65 (SRP-POL-2.1)…" value={notice} onChange={(e) => setNotice(e.target.value)} />
+            <textarea className="h-28 w-full rounded-xl border border-white/12 bg-white/5 transition-colors focus-visible:border-mint -2 text-sm" placeholder="e.g. From 1 January the age limit for widows rises to 65 (SRP-POL-2.1)…" value={notice} onChange={(e) => setNotice(e.target.value)} />
             <Button variant="outline" disabled={busy || notice.length < 20} onClick={async () => {
               setBusy(true);
               const r = await api(`/api/v1/rules/drafts/${draft.id}/suggest`, { body: { notice } });
@@ -137,7 +137,7 @@ export function RulesEditor({ meId }: { meId: string }) {
               if (r.status === 200) { setSuggestion(r.body); setMsg({ ok: true, text: 'Suggestion ready. Review it below.' }); } else { setSuggestion(null); setMsg({ ok: false, text: `${r.body.code}: ${r.body.detail}` }); }
             }}>Suggest changes</Button>
             {suggestion && (
-              <div className="space-y-1 rounded border border-border p-2 text-sm">
+              <div className="space-y-1 rounded-xl border border-border p-2 text-sm">
                 <p>{suggestion.summary}</p>
                 <p className="text-xs">Added: {suggestion.diff.added.join(', ') || '—'} · Changed: {suggestion.diff.changed.join(', ') || '—'} · Removed: {suggestion.diff.removed.join(', ') || '—'}</p>
                 {suggestion.quotes.map((q) => <p key={q} className="text-xs text-muted-foreground">“{q}”</p>)}
@@ -155,13 +155,13 @@ export function RulesEditor({ meId }: { meId: string }) {
             <Button disabled={busy} onClick={() => void act('twin', undefined, 'Twin run finished.')} data-testid="run-twin">Run the Twin</Button>
             {twin && (
               <div className="space-y-2 text-sm">
-                {!draft.twin?.current && <p className="rounded bg-warning p-2 text-warning-foreground">The draft changed after this run. Run the Twin again before publishing.</p>}
+                {!draft.twin?.current && <p className="rounded-xl bg-warning p-2 text-warning-foreground">The draft changed after this run. Run the Twin again before publishing.</p>}
                 <div className="flex flex-wrap gap-2">
                   <Badge variant="secondary">{twin.snapshots} snapshots</Badge><Badge variant="success">{twin.better} better</Badge><Badge variant="destructive">{twin.worse} worse</Badge><Badge variant="outline">{twin.same} unchanged</Badge>
                   <Badge variant={twin.inFlightHarm ? 'destructive' : 'success'} data-testid="harm">{twin.inFlightHarm} in-flight harmed</Badge>
                   <Badge variant="outline">payout change Rs {twin.payoutDelta.toLocaleString('en-US')}</Badge>
                 </div>
-                {twin.inFlightHarm > 0 && <p className="rounded bg-destructive/15 p-2">This version would make {twin.inFlightHarm} in-flight case(s) worse. Publishing needs a second admin (RULE-7); those cases will go to an officer with stop S11, never a silent rejection.</p>}
+                {twin.inFlightHarm > 0 && <p className="rounded-xl bg-destructive/15 p-2">This version would make {twin.inFlightHarm} in-flight case(s) worse. Publishing needs a second admin (RULE-7); those cases will go to an officer with stop S11, never a silent rejection.</p>}
                 <div className="overflow-x-auto"><table className="w-full text-xs"><thead><tr className="text-muted-foreground"><th className="p-1 text-start">Case (masked)</th><th className="p-1 text-start">District</th><th className="p-1 text-start">From</th><th className="p-1 text-start">To</th><th className="p-1 text-start">In flight</th></tr></thead>
                   <tbody>{twin.affected.slice(0, 50).map((a) => <tr key={a.caseId} className="border-t border-border"><td className="p-1">{a.name} <span className="font-mono text-muted-foreground">{a.caseId.slice(0, 8)}</span></td><td className="p-1">{a.district}</td><td className="p-1">{a.from}</td><td className={`p-1 ${a.direction === 'worse' ? 'text-destructive' : 'text-success'}`}>{a.to}</td><td className="p-1">{a.inFlight ? 'yes' : ''}</td></tr>)}</tbody></table></div>
                 <p className="text-xs text-muted-foreground">By district: {Object.entries(twin.byDistrict).map(([d, v]) => `${d} +${v.better}/−${v.worse}`).join(' · ') || '—'}</p>

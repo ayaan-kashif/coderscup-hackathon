@@ -6,6 +6,8 @@ import { CameraCapture } from '@/components/apply/camera';
 import { DISTRICT_ICONS } from '@/components/apply/question';
 import { syncNow } from '@/components/apply/apply-flow';
 import { SimulatedBadge } from '@/components/shell/simulated-badge';
+import { CountUp } from '@/components/motion/count-up';
+import { StepFrame } from '@/components/brand/step-frame';
 import { Button } from '@/components/ui/button';
 import { Keypad } from '@/components/voice/keypad';
 import { VoicePrompt, playSequence } from '@/components/voice/voice-prompt';
@@ -78,17 +80,18 @@ export function CaseStatusScreen({ caseId, trustPictureId, onProof, onReceipt }:
     paused_for_consent: ['Paused: you stopped sharing', 'رکی ہوئی: آپ نے اجازت روکی'], frozen: ['On hold while an officer checks', 'افسر کی جانچ تک رکی'], closed: ['Closed', 'بند'],
   };
   return (
-    <section className="space-y-4" data-testid="case-status" data-status={s.status}>
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">{bi(...(statusText[s.status] ?? [s.status, s.status]))}</h2>
-        <Ticks tick={s.ticks} labels={{ saved: bi('Saved on phone', 'فون میں محفوظ'), sent: bi('Reached the office', 'دفتر پہنچ گئی'), opened: bi('Officer opened it', 'افسر نے کھولی'), failed: '' }} />
-      </div>
-      <Button size="lg" variant="secondary" className="h-14 rounded-full" onClick={() => void playSequence(voiceFor(s))}><Volume2 className="!size-6" /> {bi('Hear the explanation', 'وضاحت سنیں')}</Button>
+    <StepFrame data-testid="case-status" data-status={s.status} title={bi(...(statusText[s.status] ?? [s.status, s.status]))}
+      voice={(
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Button size="lg" variant="secondary" className="h-14 rounded-full" onClick={() => void playSequence(voiceFor(s))}><Volume2 className="!size-6" /> {bi('Hear the explanation', 'وضاحت سنیں')}</Button>
+          <span className="rounded-full bg-void px-3 py-1.5"><Ticks tick={s.ticks} labels={{ saved: bi('Saved on phone', 'فون میں محفوظ'), sent: bi('Reached the office', 'دفتر پہنچ گئی'), opened: bi('Officer opened it', 'افسر نے کھولی'), failed: '' }} /></span>
+        </div>
+      )}>
       {s.pipeline?.step && !['done', 'hold'].includes(s.pipeline.step) && <p className="text-sm text-muted-foreground"><RefreshCw className="me-1 inline size-4 animate-spin" />{bi('Checking', 'جانچ')}: {s.pipeline.steps}/17</p>}
       {!!s.checks.length && (
         <ul className="grid gap-2">
           {s.checks.map((c) => (
-            <li key={c.code} className="flex items-center gap-3 rounded-lg border border-border p-2">
+            <li key={c.code} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-void/40 p-2.5">
               <CheckIcon state={c.state} />
               <span>{CHECK_LABEL[c.code] ? bi(...CHECK_LABEL[c.code]!) : bi('An officer is checking one thing', 'افسر ایک چیز دیکھ رہا ہے')}</span>
             </li>
@@ -101,9 +104,9 @@ export function CaseStatusScreen({ caseId, trustPictureId, onProof, onReceipt }:
       {s.payment && ['sent', 'confirmed_full', 'disputed'].includes(s.payment.status) && (
         <Button size="xl" className="w-full" onClick={() => onReceipt(s.payment!)} data-testid="open-receipt">💵 Rs {s.payment.amount.toLocaleString('en-US')}</Button>
       )}
-      {s.payment?.status === 'scheduled' && s.payment.holdUntil && <p className="rounded-lg bg-muted p-3 text-sm">{bi('Safety wait until', 'حفاظتی انتظار')} {new Date(s.payment.holdUntil).toLocaleTimeString()}</p>}
-      <p className="rounded-lg bg-muted p-3 font-medium">{bi('Nobody will ask you for money.', 'کوئی آپ سے پیسے نہیں مانگے گا۔')}</p>
-    </section>
+      {s.payment?.status === 'scheduled' && s.payment.holdUntil && <p className="rounded-2xl bg-muted p-3 text-sm">{bi('Safety wait until', 'حفاظتی انتظار')} {new Date(s.payment.holdUntil).toLocaleTimeString()}</p>}
+      <p className="rounded-2xl border border-mint/30 bg-mint/10 p-3 font-semibold text-mint">{bi('Nobody will ask you for money.', 'کوئی آپ سے پیسے نہیں مانگے گا۔')}</p>
+    </StepFrame>
   );
 }
 
@@ -154,9 +157,9 @@ export function ReceiptScreen({ payment, trustPictureId, onDone }: { payment: { 
   return (
     <section className="space-y-5 text-center" data-testid="receipt">
       <p className="text-muted-foreground">{bi('Money sent to your wallet', 'آپ کے والیٹ میں رقم بھیجی گئی')} <SimulatedBadge what="ledger" /></p>
-      <p dir="ltr" className="text-6xl font-black">Rs {payment.amount.toLocaleString('en-US')}</p>
+      <div className="canvas-violet iso-grid rounded-[24px] py-8"><CountUp to={payment.amount} prefix="Rs " className="display text-6xl font-black" /></div>
       <Button size="lg" variant="secondary" className="h-14 rounded-full" onClick={() => void playSequence(['payment_sent', ...amountClips(payment.amount)])}><Volume2 className="!size-6" /> {bi('Hear the amount', 'رقم سنیں')}</Button>
-      {msg ? <p className="rounded-lg bg-muted p-4 text-lg font-semibold" role="status">{msg}</p> : !less ? (
+      {msg ? <p className="rounded-2xl bg-muted p-4 text-lg font-semibold" role="status">{msg}</p> : !less ? (
         <div className="grid grid-cols-2 gap-3">
           <Button size="xl" className="h-24 flex-col" onClick={() => void send({ received: 'all' })} data-testid="received-all"><span className="text-3xl">✅</span>{bi('Received all', 'پوری رقم ملی')}</Button>
           <Button size="xl" variant="destructive" className="h-24 flex-col" onClick={() => { setLess(true); void playSequence(['how_much']); }} data-testid="received-less"><span className="text-3xl">⚠️</span>{bi('Received less', 'کم رقم ملی')}</Button>
@@ -194,9 +197,9 @@ export function RealScreen({ signedIn, initialText = '', initialSender = '' }: {
     else setErr(r.body.detail ?? String(r.status));
   };
   if (v) {
-    const color = v.verdict === 'fake' ? 'border-destructive bg-destructive/10' : v.verdict === 'genuine' ? 'border-success bg-success/10' : 'border-warning bg-warning/20';
+    const color = v.verdict === 'fake' ? 'border-destructive bg-destructive/10' : v.verdict === 'genuine' ? 'border-success bg-success/10' : 'border-warning bg-warning/10';
     return (
-      <section className={`space-y-3 rounded-xl border-4 p-4 ${color}`} data-testid="verdict" data-verdict={v.verdict}>
+      <section className={`space-y-3 rounded-[24px] border-2 p-5 animate-in zoom-in-95 fade-in-0 duration-500 ${color}`} data-testid="verdict" data-verdict={v.verdict}>
         <p className="text-3xl font-black">{v.verdict === 'fake' ? bi('FAKE', 'جعلی') : v.verdict === 'genuine' ? bi('Matches your record', 'ریکارڈ سے ملتا ہے') : bi('Not sure', 'یقین نہیں')}</p>
         <p className="text-lg font-semibold">{bi(v.action.en, v.action.ur)}</p>
         <ul className="space-y-1">{v.reasons.map((r) => <li key={r.code} className="flex gap-2"><CheckIcon state={r.result === 'contradiction' ? 'fail' : r.result === 'support' ? 'pass' : 'unclear'} /><span className="self-center">{bi(r.en, r.ur)}</span></li>)}</ul>
@@ -207,9 +210,9 @@ export function RealScreen({ signedIn, initialText = '', initialSender = '' }: {
   return (
     <section className="space-y-4" data-testid="real-screen">
       <VoicePrompt clip="real_paste" label={bi('Play again', 'دوبارہ سنیں')} />
-      <textarea className="min-h-32 w-full rounded-xl border border-border bg-card p-3 text-lg" placeholder={bi('Paste the message here', 'پیغام یہاں چسپاں کریں')} value={text} onChange={(e) => setText(e.target.value)} data-testid="real-text" />
-      <input className="w-full rounded-lg border border-border bg-card p-3" placeholder={bi('Sender (as shown on the phone)', 'بھیجنے والا')} value={sender} onChange={(e) => setSender(e.target.value)} data-testid="real-sender" />
-      <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border p-3">
+      <textarea className="min-h-32 w-full rounded-[20px] border border-white/12 bg-white/5 p-3 transition-colors focus-visible:border-mint text-lg" placeholder={bi('Paste the message here', 'پیغام یہاں چسپاں کریں')} value={text} onChange={(e) => setText(e.target.value)} data-testid="real-text" />
+      <input className="w-full rounded-2xl border border-white/12 bg-white/5 p-3 transition-colors focus-visible:border-mint" placeholder={bi('Sender (as shown on the phone)', 'بھیجنے والا')} value={sender} onChange={(e) => setSender(e.target.value)} data-testid="real-sender" />
+      <label className="flex cursor-pointer items-center justify-center gap-2 rounded-[20px] border-2 border-dashed border-white/20 p-3 transition-colors hover:border-mint/60 hover:bg-white/5">
         🖼️ {image ? bi('Screenshot added', 'اسکرین شاٹ شامل') : bi('Or add a screenshot', 'یا اسکرین شاٹ دیں')}
         <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
           const f = e.target.files?.[0];
@@ -226,7 +229,7 @@ export function RealScreen({ signedIn, initialText = '', initialSender = '' }: {
         <Button size="xl" variant={mine === false ? 'default' : 'outline'} onClick={() => setMine(false)}>👥 {bi('Someone else', 'کسی اور کو')}</Button>
       </div>
       <label className="block text-sm text-muted-foreground">{bi('Where did it arrive? (for the district scam map)', 'یہ کہاں آیا؟ (ضلعی نقشے کے لیے)')}
-        <select className="mt-1 block w-full rounded-lg border border-border bg-card p-3 text-base" value={district} onChange={(e) => setDistrict(e.target.value)} data-testid="real-district">
+        <select className="mt-1 block w-full rounded-2xl border border-white/12 bg-white/5 p-3 transition-colors focus-visible:border-mint text-base" value={district} onChange={(e) => setDistrict(e.target.value)} data-testid="real-district">
           <option value="">{bi('My district', 'میرا ضلع')}</option>
           {DISTRICT_ICONS.map((d) => <option key={d.code} value={d.code}>{d.icon} {bi(d.en, d.ur)}</option>)}
         </select>
@@ -262,17 +265,17 @@ export function DataScreen({ caseId }: { caseId: string | null }) {
         <VoicePrompt clip="data_who" label={bi('Play again', 'دوبارہ سنیں')} autoPlay={false} />
         <ul className="mt-2 space-y-2">
           {c?.consents.filter((x) => x.status === 'active').map((x) => (
-            <li key={x.id} className="flex items-center justify-between gap-2 rounded-lg border border-border p-3">
+            <li key={x.id} className="flex items-center justify-between gap-2 rounded-2xl border border-white/10 bg-void/40 p-3">
               <span>🏢 {bi(x.grantee.name ?? '', x.grantee.nameUr ?? x.grantee.name ?? '')} <span className="block text-xs text-muted-foreground">{x.dataCategories.join(', ')}</span></span>
               <Button variant="destructive" onClick={() => { setWithdrawing(x.id); void playSequence(['data_stop_warning']); }} data-testid="stop-sharing"><ShieldOff className="!size-5" /> {bi('Stop sharing', 'روکیں')}</Button>
             </li>
           ))}
-          {c?.helpers.map((h, i) => <li key={i} className="rounded-lg border border-border p-3">🤝 {h.name}</li>)}
-          {c?.processors.map((p) => <li key={p.id} className="rounded-lg border border-border p-3 text-sm">{bi(p.en, p.ur)} {p.simulated && <SimulatedBadge what="mock" />}<span className="block text-xs text-muted-foreground">{p.purpose}</span></li>)}
+          {c?.helpers.map((h, i) => <li key={i} className="rounded-2xl border border-white/10 bg-void/40 p-3">🤝 {h.name}</li>)}
+          {c?.processors.map((p) => <li key={p.id} className="rounded-2xl border border-white/10 bg-void/40 p-3 text-sm">{bi(p.en, p.ur)} {p.simulated && <SimulatedBadge what="mock" />}<span className="block text-xs text-muted-foreground">{p.purpose}</span></li>)}
         </ul>
       </div>
       {withdrawing && (
-        <div className="space-y-3 rounded-xl border-4 border-warning p-4" data-testid="withdraw-confirm">
+        <div className="space-y-3 rounded-[24px] border-2 border-warning bg-warning/10 p-5" data-testid="withdraw-confirm">
           <p className="font-semibold">{bi('Your application will pause until you share again.', 'جب تک آپ دوبارہ اجازت نہ دیں، درخواست رکی رہے گی۔')}</p>
           <Keypad value={pin} onChange={setPin} max={4} masked />
           <Button size="xl" variant="destructive" className="w-full" disabled={pin.length !== 4} onClick={async () => {
@@ -283,13 +286,13 @@ export function DataScreen({ caseId }: { caseId: string | null }) {
           }} data-testid="withdraw-pin-ok">{bi('Confirm with PIN', 'پن سے تصدیق')}</Button>
         </div>
       )}
-      {msg && <p role="status" className="rounded-lg bg-muted p-3">{msg}</p>}
+      {msg && <p role="status" className="rounded-2xl bg-muted p-3">{msg}</p>}
       {c && !c.consents.some((x) => x.status === 'active') && c.consents[0] && <ReGrant tenantId={c.consents[0].tenantId} onDone={() => setVersion((x) => x + 1)} />}
       <div>
         <h3 className="text-lg font-bold">{bi('Who looked at your data', 'آپ کی معلومات کس نے دیکھیں')}</h3>
         <ul className="mt-2 space-y-2" data-testid="access-log">
           {log.slice(0, 15).map((l, i) => (
-            <li key={i} className={`flex items-center justify-between gap-2 rounded-lg border p-2 text-sm ${l.outcome === 'denied' ? 'border-destructive' : 'border-border'}`}>
+            <li key={i} className={`flex items-center justify-between gap-2 rounded-2xl border p-2 text-sm ${l.outcome === 'denied' ? 'border-destructive' : 'border-border'}`}>
               <span>{bi(l.en, l.ur)} <span className="block text-xs text-muted-foreground">{new Date(l.ts).toLocaleString()}</span></span>
               <Button size="icon" variant="ghost" aria-label="play" onClick={() => say(l.en)}><Volume2 /></Button>
             </li>
@@ -310,7 +313,7 @@ function ReGrant({ tenantId, onDone }: { tenantId: string; onDone: () => void })
   const [pin, setPin] = useState('');
   const [msg, setMsg] = useState<string | null>(null);
   return (
-    <div className="space-y-3 rounded-xl border border-border p-4" data-testid="regrant">
+    <div className="space-y-3 rounded-[20px] border border-white/10 bg-void/40 p-4" data-testid="regrant">
       <VoicePrompt clip="consent_notice" label={bi('Play again', 'دوبارہ سنیں')} autoPlay={false} />
       <Keypad value={pin} onChange={setPin} max={4} masked />
       <Button size="xl" className="w-full" disabled={pin.length !== 4} onClick={async () => {
@@ -353,13 +356,13 @@ export function HelpScreen() {
   return (
     <section className="space-y-4" data-testid="help-screen">
       <VoicePrompt clip="help_ask" label={bi('Play again', 'دوبارہ سنیں')} />
-      <textarea className="min-h-24 w-full rounded-xl border border-border bg-card p-3 text-lg" value={q} onChange={(e) => setQ(e.target.value)} placeholder={bi('Am I eligible if my husband died abroad?', 'اگر شوہر بیرون ملک فوت ہوئے تو کیا میں اہل ہوں؟')} />
+      <textarea className="min-h-24 w-full rounded-[20px] border border-white/12 bg-white/5 p-3 transition-colors focus-visible:border-mint text-lg" value={q} onChange={(e) => setQ(e.target.value)} placeholder={bi('Am I eligible if my husband died abroad?', 'اگر شوہر بیرون ملک فوت ہوئے تو کیا میں اہل ہوں؟')} />
       <Button size="xl" className="w-full" disabled={q.length < 5} onClick={async () => {
         const r = await api('/api/v1/assist/policy', { body: { question: q } });
         if (r.status === 200) { setA(r.body); if (r.body.refused) void playSequence(['help_not_sure']); else void speakText(r.body.answer_ur); }
       }}><Mic className="!size-6" /> {bi('Ask', 'پوچھیں')}</Button>
       {a && (
-        <div className="space-y-2 rounded-xl border border-border p-4" data-testid="policy-answer">
+        <div className="space-y-2 rounded-[20px] border border-white/10 bg-void/40 p-4" data-testid="policy-answer">
           <div className="flex items-start gap-2">
             <p className="flex-1 text-lg font-semibold">{bi(a.answer_en, a.answer_ur)}</p>
             {!a.refused && <Button size="icon" variant="ghost" aria-label={bi('Play again', 'دوبارہ سنیں')} onClick={() => void speakText(a.answer_ur)}><Volume2 /></Button>}

@@ -48,13 +48,13 @@ type D2 = { messages: { text: string; sender: string; label: string; split: stri
 function scamMetrics() {
   const d = read<D2>('datasets/d2_messages.json');
   const test = d.messages.filter((m) => m.split === 'test');
-  let tp = 0, fp = 0, fn = 0, genuineFake = 0, notSure = 0;
+  let tp = 0, fp = 0, genuineFake = 0, notSure = 0;
   for (const m of test) {
     // the recipient checks a message sent to her (genuine ones carry the recipient; the ledger matches them)
     const own = !!m.recipient_cnic;
     const v = combineVerdict(extractClaims(m.text, m.sender), { officialSenders: d.official_senders, ledger: { checked: own, ownMessage: own, matched: own ? m.label === 'genuine' : null }, jev: null }).verdict;
     if (v === 'not_sure') notSure++;
-    if (m.label === 'scam') { if (v === 'fake') tp++; else fn++; } else if (v === 'fake') { fp++; if (m.label === 'genuine') genuineFake++; }
+    if (m.label === 'scam') { if (v === 'fake') tp++; } else if (v === 'fake') { fp++; if (m.label === 'genuine') genuineFake++; }
   }
   const scams = test.filter((m) => m.label === 'scam').length;
   const genuine = test.filter((m) => m.label === 'genuine').length;

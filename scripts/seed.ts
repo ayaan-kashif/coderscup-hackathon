@@ -35,6 +35,8 @@ async function main() {
   setDb(db);
   console.log('demo cases:', JSON.stringify(await seedDemoCases(db, ids)));
   console.log(`${reset ? 'demo reset' : 'seed'} done in ${((Date.now() - started) / 1000).toFixed(1)} s; tenants: ${Object.keys(ids.tenantIds).join(', ')}`);
+  // demo:reset budget (PRD §28): under 2 minutes, so a broken demo can be reset between judges
+  if (reset && Date.now() - started > 120_000) console.warn('WARNING: demo reset took over 2 minutes');
   await client.end();
 }
 

@@ -1,0 +1,11 @@
+{
+ "passed": 224,
+ "failed": 0,
+ "files": 17,
+ "at": "2026-11-21T07:05:36.179Z",
+ "suites": {
+  "golden": 31,
+  "unit": 28,
+  "integration": 165
+ }
+}

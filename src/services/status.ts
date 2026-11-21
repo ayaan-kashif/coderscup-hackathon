@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { sql } from 'drizzle-orm';
 import type { DbOrTx } from '@/db/client';
 import { rowsOf } from '@/db/rows';
@@ -9,6 +11,11 @@ import { breakerSnapshots } from './adapters';
 import { listChaos } from './config';
 
 type Health = 'ok' | 'degraded' | 'down';
+
+/** P3: the last full test-suite run (written by pnpm test:summary, committed with the release) */
+function lastTestRun(): { passed: number; failed: number; files: number; at: string; suites: Record<string, number> } | null {
+  try { return JSON.parse(fs.readFileSync(path.join(process.cwd(), 'data/test-summary.json'), 'utf8')); } catch { return null; }
+}
 
 export async function getSystemStatus(db: DbOrTx) {
   const checks: Record<string, { status: Health; detail?: unknown; ms?: number }> = {};
@@ -41,6 +48,13 @@ export async function getSystemStatus(db: DbOrTx) {
   }
   checks.auditChain = { status: chains.every((c) => c.intact) ? 'ok' : 'down', detail: { chains: chains.length, intact: chains.filter((c) => c.intact).length } };
 
+  // optional integrations: shown, never fatal (without them the documented fallbacks run)
+  const ai = !!(process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN);
+  checks.aiGateway = { status: ai ? 'ok' : 'degraded', detail: ai ? 'Vercel AI Gateway' : 'not configured: model steps take their fallbacks (a person decides)' };
+  checks.jobs = { status: process.env.INNGEST_EVENT_KEY ? 'ok' : 'degraded', detail: process.env.INNGEST_EVENT_KEY ? 'Inngest' : 'inline after the response (no scheduler)' };
+  checks.errorReporting = { status: process.env.SENTRY_DSN ? 'ok' : 'degraded', detail: process.env.SENTRY_DSN ? 'Sentry' : 'structured logs only' };
+  const tests = lastTestRun();
+
   const overall: Health = Object.values(checks).some((c) => c.status === 'down') ? 'down' : Object.values(checks).some((c) => c.status === 'degraded') ? 'degraded' : 'ok';
-  return { overall, checks, chains, demoMode: isDemoMode(), version: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? 'dev', time: new Date().toISOString() };
+  return { overall, checks, chains, tests, demoMode: isDemoMode(), version: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? 'dev', time: new Date().toISOString() };
 }

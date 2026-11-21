@@ -13,6 +13,14 @@ export const OFFICER_NAV: NavItem[] = [
   { href: '/o', label: 'Queue' }, { href: '/o/payouts', label: 'Payout changes' }, { href: '/o/scams', label: 'Scam desk' }, { href: '/o/complaints', label: 'Complaints & corrections' },
 ];
 
+export const ADMIN_NAV: NavItem[] = [
+  { href: '/a', label: 'Rules & Twin' }, { href: '/a/evaluation', label: 'Cost & evaluation' }, { href: '/a/break-it', label: 'Break It' }, { href: '/a/chaos', label: 'Chaos & config' }, { href: '/a/org', label: 'Organisation' },
+];
+
+export const AUDITOR_NAV: NavItem[] = [
+  { href: '/au', label: 'Decisions' }, { href: '/au/chain', label: 'Chain integrity' }, { href: '/au/access', label: 'Consent & access' },
+];
+
 export async function StaffShell({ actor, title, children, nav }: { actor: Actor; title: string; children: React.ReactNode; nav?: NavItem[] }) {
   const t = await getTranslations('staff');
   const db = getDb();

@@ -26,7 +26,7 @@ export default async function StatusPage() {
                   <span className="font-medium">{k}</span>
                   <span className="flex items-center gap-2">
                     {'ms' in v && v.ms !== undefined && <span className="text-muted-foreground">{v.ms} ms</span>}
-                    {k === 'rateLimiter' && <span className="text-muted-foreground">{String(v.detail)}</span>}
+                    {['rateLimiter', 'aiGateway', 'jobs', 'errorReporting'].includes(k) && <span className="text-muted-foreground">{String(v.detail)}</span>}
                     <Badge variant={variant(v.status)}>{v.status}</Badge>
                   </span>
                 </div>
@@ -48,6 +48,12 @@ export default async function StatusPage() {
               {s.chains.map((c) => (
                 <div key={c.chainId} className="flex justify-between"><span className="font-mono">{c.chainId}</span><span>{c.length} events · <Badge variant={c.intact ? 'success' : 'destructive'}>{c.intact ? 'intact' : `broken at ${c.brokenAt ?? 'tail'}`}</Badge></span></div>
               ))}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader><CardTitle>Last test run</CardTitle></CardHeader>
+            <CardContent className="text-sm" data-testid="test-summary">
+              {s.tests ? <p><Badge variant={s.tests.failed ? 'destructive' : 'success'}>{s.tests.passed} passed · {s.tests.failed} failed</Badge> in {s.tests.files} files · {new Date(s.tests.at).toLocaleString()} <span className="text-muted-foreground">{Object.entries(s.tests.suites).map(([k, n]) => `${k} ${n}`).join(' · ')}</span></p> : <p className="text-muted-foreground">No summary yet (pnpm test:summary).</p>}
             </CardContent>
           </Card>
           <p className="text-xs text-muted-foreground">version {s.version} · {s.time}</p>

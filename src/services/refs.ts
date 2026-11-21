@@ -2,7 +2,7 @@
  * Resource loaders for authorization: only tenant and citizen ids, never personal data before the verdict.
  * An unknown id returns null → 404 identical to another tenant's resource (TEN-2).
  */
-import { and, eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import type { DbOrTx } from '@/db/client';
 import { aiDecisions, apiKeys, cases, evalRuns, memberships, ruleSets, twinRuns, complaints, consents, correctionRequests, decisions, payments, payoutChanges, scamAlerts, scamReports } from '@/db/schema/all';
 import type { LoadedResource } from '@/lib/api/route';
@@ -70,9 +70,11 @@ export async function loadEvalRunRef(db: DbOrTx, id: string): Promise<LoadedReso
   const [r] = await db.select({ id: evalRuns.id, tenantId: evalRuns.tenantId }).from(evalRuns).where(eq(evalRuns.id, id)).limit(1);
   return r ? { ...r, citizenId: null } : null;
 }
+/** a staff user's membership — the caller's office first, so the policy decides role first, then tenant (404) */
 export async function loadUserRef(db: DbOrTx, id: string, tenantId: string | undefined): Promise<LoadedResource | null> {
-  if (!UUID.test(id) || !tenantId) return null;
-  const [r] = await db.select({ id: memberships.userId, tenantId: memberships.tenantId }).from(memberships).where(and(eq(memberships.userId, id), eq(memberships.tenantId, tenantId))).limit(1);
+  if (!UUID.test(id)) return null;
+  const [r] = await db.select({ id: memberships.userId, tenantId: memberships.tenantId }).from(memberships).where(eq(memberships.userId, id))
+    .orderBy(sql`case when ${memberships.tenantId} = ${tenantId ?? null} then 0 else 1 end`).limit(1);
   return r ? { ...r, citizenId: null } : null;
 }
 export async function loadApiKeyRef(db: DbOrTx, id: string): Promise<LoadedResource | null> {

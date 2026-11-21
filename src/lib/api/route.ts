@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/nextjs';
 import { NextResponse } from 'next/server';
 import { z, type ZodType } from 'zod';
 import type { Actor } from '@/auth/actor';
@@ -243,6 +244,8 @@ export function route<B = undefined, Q = undefined, P = undefined>(def: RouteDef
       const err = e instanceof ApiError ? e : new ApiError('INTERNAL', 'Unexpected error. Quote the request ID to staff.');
       if (!(e instanceof ApiError)) {
         log('error', 'unhandled', { requestId, op: def.operationId, error: e instanceof Error ? e.stack ?? e.message : String(e) });
+        // OBS-1: to Sentry with the request id and operation only (no body, no personal data); a no-op without SENTRY_DSN
+        Sentry.captureException(e, { tags: { requestId, op: def.operationId } });
         if (db) await writeAudit(db, { requestId, actorType: auditActorType(actor), actorId: actor?.id ?? 'anonymous', tenantId: actor?.tenantId ?? null, action: def.audit ? def.audit.action : def.operationId, resourceType: def.audit ? def.audit.resourceType : 'request', outcome: 'error', details: { code: 'INTERNAL' } }).catch(() => {});
       }
       return NextResponse.json(toProblem(err, requestId), { status: err.status, headers: { ...headers, ...err.headers, 'Content-Type': 'application/problem+json' } });

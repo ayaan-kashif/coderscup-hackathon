@@ -24,11 +24,16 @@
     "db:local": "tsx scripts/local-db.ts",
     "test:e2e": "playwright test",
     "stt:bakeoff": "tsx --conditions=react-server scripts/stt-bakeoff.ts",
-    "voice:generate": "tsx scripts/voice/generate-clips.ts"
+    "voice:generate": "tsx scripts/voice/generate-clips.ts",
+    "test:summary": "tsx scripts/test-summary.ts",
+    "warmup": "tsx scripts/warmup.ts",
+    "eval": "tsx --conditions=react-server scripts/eval.ts",
+    "demo:twice": "pnpm demo:reset && pnpm test:e2e && pnpm demo:reset && pnpm test:e2e"
   },
   "dependencies": {
     "@ai-sdk/elevenlabs": "^3.0.87",
     "@node-rs/argon2": "^2.2.2",
+    "@sentry/nextjs": "^11.15.0",
     "@upstash/ratelimit": "^2.2.1",
     "@upstash/redis": "^1.41.0",
     "ai": "7.0.178",

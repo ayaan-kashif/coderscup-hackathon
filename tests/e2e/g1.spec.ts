@@ -18,7 +18,7 @@ test('Urdu switches the layout to right-to-left', async ({ page }) => {
   await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
 });
 
-for (const [role, path, text] of [['officer', '/o', 'Review queue'], ['admin', '/a', 'Chaos panel'], ['auditor', '/au', 'Evidence chain'], ['helper', '/h', 'Families (']] as const) {
+for (const [role, path, text] of [['officer', '/o', 'Review queue'], ['admin', '/a', 'Rules & Twin'], ['auditor', '/au', 'Decision search'], ['helper', '/h', 'Families (']] as const) {
   test(`${role} signs in from the demo picker`, async ({ page }) => {
     await page.goto('/login');
     await page.getByTestId(`demo-${role}`).click();

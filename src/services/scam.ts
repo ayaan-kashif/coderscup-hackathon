@@ -225,7 +225,12 @@ export async function scamMap(db: DbOrTx, days = 7) {
     if (r.day === todayStr) d.today += Number(r.n);
     d.days.push({ day: r.day, count: Number(r.n) < 3 ? 'fewer than 3' : Number(r.n) });
   }
-  return Object.values(byDistrict).map((d) => ({ ...d, total: d.total < 3 ? 'fewer than 3' : d.total, today: d.today < 3 ? (d.today ? 'fewer than 3' : 0) : d.today }));
+  // SCAM-6 spike flag: today ≥ 3× the average of the previous 7 days and ≥ 5 reports
+  return Object.values(byDistrict).map((d) => {
+    const prev = d.days.filter((x) => x.day !== todayStr).reduce((a, x) => a + (typeof x.count === 'number' ? x.count : 1), 0) / 7;
+    const spike = d.today >= 5 && d.today >= 3 * prev;
+    return { ...d, spike, total: d.total < 3 ? 'fewer than 3' : d.total, today: d.today < 3 ? (d.today ? 'fewer than 3' : 0) : d.today };
+  });
 }
 
 export const hashMessage = (t: string) => hashJson(t);

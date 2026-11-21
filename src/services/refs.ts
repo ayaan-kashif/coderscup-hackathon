@@ -4,7 +4,7 @@
  */
 import { eq, sql } from 'drizzle-orm';
 import type { DbOrTx } from '@/db/client';
-import { aiDecisions, apiKeys, cases, evalRuns, memberships, ruleSets, twinRuns, complaints, consents, correctionRequests, decisions, payments, payoutChanges, scamAlerts, scamReports } from '@/db/schema/all';
+import { aiDecisions, apiKeys, duressAlarms, cases, evalRuns, memberships, ruleSets, twinRuns, complaints, consents, correctionRequests, decisions, payments, payoutChanges, scamAlerts, scamReports } from '@/db/schema/all';
 import type { LoadedResource } from '@/lib/api/route';
 
 const UUID = /^[0-9a-f-]{36}$/i;
@@ -81,4 +81,9 @@ export async function loadApiKeyRef(db: DbOrTx, id: string): Promise<LoadedResou
   if (!UUID.test(id)) return null;
   const [r] = await db.select({ id: apiKeys.id, tenantId: apiKeys.tenantId }).from(apiKeys).where(eq(apiKeys.id, id)).limit(1);
   return r ? { ...r, citizenId: null } : null;
+}
+export async function loadDuressAlarmRef(db: DbOrTx, id: string): Promise<LoadedResource | null> {
+  if (!UUID.test(id)) return null;
+  const [r] = await db.select({ id: duressAlarms.id, tenantId: duressAlarms.tenantId, citizenId: duressAlarms.citizenId }).from(duressAlarms).where(eq(duressAlarms.id, id)).limit(1);
+  return r ?? null;
 }

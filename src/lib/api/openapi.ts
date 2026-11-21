@@ -66,6 +66,8 @@ import * as rScamAlertsByIdApprove from '../../../app/api/v1/scam/alerts/[id]/ap
 import * as rScamAlertsByIdDismiss from '../../../app/api/v1/scam/alerts/[id]/dismiss/route';
 import * as rScamCheck from '../../../app/api/v1/scam/check/route';
 import * as rScamDesk from '../../../app/api/v1/scam/desk/route';
+import * as rScamDuress from '../../../app/api/v1/scam/duress/route';
+import * as rScamDuressByIdResolve from '../../../app/api/v1/scam/duress/[id]/resolve/route';
 import * as rScamMap from '../../../app/api/v1/scam/map/route';
 import * as rScamReportsByIdLabel from '../../../app/api/v1/scam/reports/[id]/label/route';
 import * as rAdminApiKeys from '../../../app/api/v1/admin/api-keys/route';
@@ -116,7 +118,7 @@ type Mod = Record<string, unknown>;
 export const ROUTE_MODULES: Record<string, Mod> = {
   health, status, me, login, logout, otpRequest, otpVerify, pinSet, pinVerify, demoTokens, cases, caseById, caseStatus,
   adminConfig, adminChaos, auditEvents, auditVerify,
-  rAiDecisions, rAiDecisionsById, rAssistIntent, rAssistPolicy, rCasesByIdAnswers, rCasesByIdAssign, rCasesByIdClose, rCasesByIdDecisions, rCasesByIdDocuments, rCasesByIdDocumentsDoc, rCasesByIdExplanation, rCasesByIdFreeze, rCasesByIdProof, rCasesByIdSubmit, rCasesByIdTimeline, rCasesByIdUnfreeze, rCasesByIdVoice, rComplaints, rComplaintsById, rComplaintsByIdResolve, rCorrections, rCorrectionsByIdApprove, rCorrectionsByIdReject, rDecisionsById, rDecisionsByIdReplay, rHelperActivity, rHelperFamilies, rHelperGrants, rHelperGrantsById, rMeAccessLog, rMeCases, rMeConsents, rMeConsentsByIdWithdraw, rMeCorrections, rMeNotifications, rPaymentsByIdReceipt, rPayoutChanges, rPayoutChangesByIdApprove, rPayoutChangesByIdBlock, rPayoutChangesByIdObject, rQueue, rScamAlerts, rScamAlertsByIdApprove, rScamAlertsByIdDismiss, rScamCheck, rScamDesk, rScamMap, rScamReportsByIdLabel,
+  rAiDecisions, rAiDecisionsById, rAssistIntent, rAssistPolicy, rCasesByIdAnswers, rCasesByIdAssign, rCasesByIdClose, rCasesByIdDecisions, rCasesByIdDocuments, rCasesByIdDocumentsDoc, rCasesByIdExplanation, rCasesByIdFreeze, rCasesByIdProof, rCasesByIdSubmit, rCasesByIdTimeline, rCasesByIdUnfreeze, rCasesByIdVoice, rComplaints, rComplaintsById, rComplaintsByIdResolve, rCorrections, rCorrectionsByIdApprove, rCorrectionsByIdReject, rDecisionsById, rDecisionsByIdReplay, rHelperActivity, rHelperFamilies, rHelperGrants, rHelperGrantsById, rMeAccessLog, rMeCases, rMeConsents, rMeConsentsByIdWithdraw, rMeCorrections, rMeNotifications, rPaymentsByIdReceipt, rPayoutChanges, rPayoutChangesByIdApprove, rPayoutChangesByIdBlock, rPayoutChangesByIdObject, rQueue, rScamAlerts, rScamAlertsByIdApprove, rScamAlertsByIdDismiss, rScamCheck, rScamDesk, rScamDuress, rScamDuressByIdResolve, rScamMap, rScamReportsByIdLabel,
   rAdminApiKeys, rAdminApiKeysByIdRevoke, rAdminUsers, rAdminUsersByIdRevokeSessions, rAdminWebhooks, rAdminWebhooksById, rAdminWebhooksDeliveries, rAdminWebhooksDeliveriesByIdReplay, rAuditAccess, rAuditBreakGlass, rDecisions, rEvalBreakIt, rEvalCostPreview, rEvalMetrics, rEvalRuns, rEvalRunsById, rRules, rRulesDrafts, rRulesDraftsById, rRulesDraftsByIdApprove, rRulesDraftsByIdPreview, rRulesDraftsByIdPublish, rRulesDraftsByIdTwin, rTwinRunsById,
   rAuditAnchors, rAdminRetention, rAdminOutbox, rAdminPlan, rAdminAnalytics, rAdminPolicyEmbed, rVoiceTts, rAuthMfaVerify, rMeMfaSetup, rMeMfaConfirm, rAuthSwitchTenant, rMeTenants, rMeExport, rRulesDraftsByIdSuggest,
 };

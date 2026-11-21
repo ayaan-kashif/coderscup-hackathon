@@ -14,11 +14,12 @@ import 'server-only';
  * freeze to an ordinary "an officer will decide" state (`citizenFacingStatus`), and the audit event is written
  * under a system actor so it never appears in the helper's own activity list or the citizen's access log.
  */
-import { and, desc, eq, inArray, isNull, notInArray } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNull, notInArray, sql } from 'drizzle-orm';
 import { hashSecret, verifySecret } from '@/auth/crypto';
 import type { DbOrTx } from '@/db/client';
-import { cases, citizens, duressAlarms, helperGrants, payments, payoutChanges, payoutDestinations, users } from '@/db/schema/all';
+import { cases, citizens, duressAlarms, helperAssignments, helperGrants, payments, payoutChanges, payoutDestinations, users } from '@/db/schema/all';
 import { writeAudit } from '@/lib/audit';
+import { ApiError } from '@/lib/errors';
 import { sha256Hex } from '@/lib/hash';
 import { log } from '@/lib/log';
 import { smsGateway } from './adapters';
@@ -156,3 +157,59 @@ export async function triggerDuress(db: DbOrTx, o: {
 export const duressSession = (c: { requestId: string; ip: string; req: Request; actor: { id: string; role: string | null } | null }, deviceId?: string | null): DuressSession => ({
   requestId: c.requestId, actorId: c.actor?.id ?? 'anonymous', actorRole: c.actor?.role ?? null, ip: c.ip, userAgent: c.req.headers.get('user-agent'), deviceId: deviceId ?? null,
 });
+
+// ───────────────────────── officer side (Scam Desk) ─────────────────────────
+
+export type DuressResolution = 'confirm_block' | 'escalate' | 'mark_safe';
+
+/** O4 Scam Desk: duress alarms for this office, newest first (open ones first) */
+export async function listDuressAlarms(db: DbOrTx, tenantId: string) {
+  const rows = await db.select({ a: duressAlarms, name: citizens.nameDisplay, avatarId: citizens.avatarId, caseStatus: cases.status })
+    .from(duressAlarms).innerJoin(citizens, eq(citizens.id, duressAlarms.citizenId)).leftJoin(cases, eq(cases.id, duressAlarms.caseId))
+    .where(eq(duressAlarms.tenantId, tenantId)).orderBy(desc(duressAlarms.createdAt)).limit(50);
+  const helperIds = [...new Set(rows.map((r) => r.a.helperUserId).filter(Boolean) as string[])];
+  const helpers = helperIds.length ? await db.select({ id: users.id, name: users.displayName }).from(users).where(inArray(users.id, helperIds)) : [];
+  const items = rows.map(({ a, name, avatarId, caseStatus }) => ({
+    id: a.id, type: a.type, severity: a.severity, status: a.status, trigger: a.trigger, createdAt: a.createdAt,
+    citizen: { id: a.citizenId, name, avatarId }, caseId: a.caseId, caseStatus, payoutChangeId: a.payoutChangeId,
+    attempted: a.attempted as { payoutChangeIds: string[]; oldLast4: string | null; newLast4: string | null } | null,
+    helper: a.helperUserId ? { id: a.helperUserId, name: helpers.find((h) => h.id === a.helperUserId)?.name ?? null } : null,
+    helperGrantIds: a.helperGrantIds, frozenCaseIds: a.frozenCaseIds,
+    session: a.session as DuressSession & { helperUserId: string | null },
+    resolvedAt: a.resolvedAt, resolutionNote: a.resolutionNote,
+  }));
+  return items.sort((x, y) => Number(y.status === 'open') - Number(x.status === 'open'));
+}
+
+/**
+ * The three officer actions. Confirm block: the held payout change is rejected for good, the case stays frozen.
+ * Escalate: the helper's assignment to this family is revoked (flagged for investigation), money stays held.
+ * Mark safe (after calling her back alone): duress-frozen cases return to an officer's review and the held payout
+ * change goes back to normal approval — never straight to payment.
+ */
+export async function resolveDuressAlarm(db: DbOrTx, id: string, officerId: string, action: DuressResolution, note: string) {
+  const [a] = await db.select().from(duressAlarms).where(eq(duressAlarms.id, id)).for('update').limit(1);
+  if (!a) throw new ApiError('NOT_FOUND');
+  if (a.status !== 'open' && !(a.status === 'escalated' && action !== 'escalate')) throw new ApiError('CASE_STATE', `This alarm is already ${a.status.replace('_', ' ')}.`);
+  const changeIds = ((a.attempted as { payoutChangeIds?: string[] } | null)?.payoutChangeIds ?? (a.payoutChangeId ? [a.payoutChangeId] : []));
+  const effects: Record<string, unknown> = {};
+  if (action === 'confirm_block' && changeIds.length) {
+    const r = await db.update(payoutChanges).set({ status: 'rejected', approvedBy: officerId }).where(and(inArray(payoutChanges.id, changeIds), eq(payoutChanges.status, 'duress_hold'))).returning({ id: payoutChanges.id });
+    effects.rejectedPayoutChangeIds = r.map((x) => x.id);
+  }
+  if (action === 'escalate' && a.helperUserId) {
+    const r = await db.update(helperAssignments).set({ status: 'revoked' }).where(and(eq(helperAssignments.helperUserId, a.helperUserId), eq(helperAssignments.citizenId, a.citizenId), inArray(helperAssignments.status, ['pending', 'active']))).returning({ id: helperAssignments.id });
+    effects.revokedAssignmentIds = r.map((x) => x.id);
+  }
+  if (action === 'mark_safe') {
+    const r = await db.update(cases).set({ status: 'in_review', frozenReason: null, updatedAt: new Date() })
+      .where(and(eq(cases.citizenId, a.citizenId), eq(cases.status, 'frozen'), sql`${cases.frozenReason} like ${`${DURESS_FREEZE_MARK}%`}`)).returning({ id: cases.id, tenantId: cases.tenantId });
+    for (const k of r) await writeAudit(db, { actorType: 'user', actorId: officerId, tenantId: k.tenantId, subjectCitizenId: a.citizenId, action: 'case.unfreeze', resourceType: 'case', resourceId: k.id, outcome: 'allowed', details: { reason: 'duress alarm marked safe', alarmId: a.id } });
+    const c = changeIds.length ? await db.update(payoutChanges).set({ status: 'pending_officer' }).where(and(inArray(payoutChanges.id, changeIds), eq(payoutChanges.status, 'duress_hold'))).returning({ id: payoutChanges.id }) : [];
+    effects.unfrozenCaseIds = r.map((x) => x.id);
+    effects.releasedPayoutChangeIds = c.map((x) => x.id);
+  }
+  const status = action === 'confirm_block' ? 'confirmed_block' : action === 'escalate' ? 'escalated' : 'marked_safe';
+  await db.update(duressAlarms).set({ status, resolvedBy: officerId, resolvedAt: new Date(), resolutionNote: note }).where(eq(duressAlarms.id, id));
+  return { alarm: a, status, effects };
+}

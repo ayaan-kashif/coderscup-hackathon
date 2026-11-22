@@ -1,5 +1,6 @@
 import { getDb } from '@/db/client';
 import { PageFrame } from '@/components/shell/page-frame';
+import { PublicHeatMap } from '@/components/officer/public-heat-map';
 import { SimulatedBadge } from '@/components/shell/simulated-badge';
 import { scamMap } from '@/services/scam';
 
@@ -18,6 +19,7 @@ export default async function ScamMapPage() {
     <PageFrame width="max-w-5xl" title={<>Scam Map <SimulatedBadge what="Saaya programme" /></>}>
       <p className="text-muted-foreground">Confirmed fake messages reported in the last 7 days. Districts with fewer than 3 reports show no exact count. Nothing here identifies a person.</p>
       <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        <PublicHeatMap fallback={
         <svg viewBox="0 0 100 100" className="w-full rounded-3xl border border-white/10 bg-bento" role="img" aria-label="district map">
           {Object.entries(POS).map(([code, [x, y]]) => {
             const d = rows.find((r) => r.code === code);
@@ -30,6 +32,7 @@ export default async function ScamMapPage() {
             );
           })}
         </svg>
+        } />
         <div className="overflow-x-auto">
           <table className="w-full text-sm" data-testid="scam-map-table">
             <thead><tr className="text-muted-foreground"><th className="p-2 text-start">District</th><th className="p-2 text-start">Today</th><th className="p-2 text-start">7 days</th><th className="p-2 text-start">Most common</th><th className="p-2 text-start">Spike</th></tr></thead>

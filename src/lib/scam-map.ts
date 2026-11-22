@@ -21,6 +21,8 @@ export type MapDistrict = {
   series: { day: string; count: number | null }[];
   byType: Record<string, number | null>;
   spike: boolean;
+  /** most common type in the period; null under the threshold */
+  topType: string | null;
   alert: { id: string; status: string } | null;
 };
 

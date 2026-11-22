@@ -200,3 +200,11 @@ details > summary { cursor: pointer; }
 @keyframes grow-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 .grow-x { transform-origin: left; animation: grow-x 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
 [dir='rtl'] .grow-x { transform-origin: right; }
+
+/* Scam heat map: labels appear when zoomed in; the popup follows the dark theme */
+.scam-heat .heat-label { display: none; }
+.scam-heat[data-labels='on'] .heat-label { display: block; }
+.scam-popup .maplibregl-popup-content { background: var(--bento); color: #fff; border: 1px solid rgb(255 255 255 / 0.12); border-radius: 14px; padding: 10px 12px; box-shadow: 0 8px 30px rgb(0 0 0 / 0.5); }
+.scam-popup .maplibregl-popup-tip { border-top-color: var(--bento); border-bottom-color: var(--bento); }
+.scam-heat .maplibregl-ctrl-attrib { background: rgb(13 13 17 / 0.75); color: rgb(255 255 255 / 0.7); }
+.scam-heat .maplibregl-ctrl-attrib a { color: rgb(255 255 255 / 0.85); }

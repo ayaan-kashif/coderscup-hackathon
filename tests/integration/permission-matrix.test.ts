@@ -194,7 +194,7 @@ function expected(action: Action, who: Who, otherTenant: boolean, owner: 'zarina
 
 const GUARD_CODES = new Set(['FORBIDDEN_ROLE', 'GRANT_REQUIRED', 'CONSENT_WITHDRAWN', 'SCOPE_MISSING', 'UNAUTHENTICATED']);
 /** handler-level narrowing on top of the matrix (documented on each route) */
-const HANDLER_NARROWED = new Set(['auditEvents', 'searchDecisions', 'getConsentAndAccess', 'getDocumentImage', 'getCaseExplanation']);
+const HANDLER_NARROWED = new Set(['auditEvents', 'searchDecisions', 'getConsentAndAccess', 'listDataReads', 'getDocumentImage', 'getCaseExplanation']);
 
 function routes() {
   const out: { op: string; method: string; handler: Handler; spec: Spec }[] = [];

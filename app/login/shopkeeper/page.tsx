@@ -2,7 +2,8 @@ import { getLocale } from 'next-intl/server';
 import { redirect } from 'next/navigation';
 import { getPageActor } from '@/auth/session';
 import { PageFrame } from '@/components/shell/page-frame';
-import { ShopLoginForm, safeNext } from '@/components/shop/auth-forms';
+import { ShopLoginForm } from '@/components/shop/auth-forms';
+import { safeNext } from '@/lib/shop-next';
 
 export const dynamic = 'force-dynamic';
 

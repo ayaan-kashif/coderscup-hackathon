@@ -79,6 +79,7 @@ No external database or API keys required: every service falls back gracefully.
 | `SENTRY_DSN` | Optional | Zero-PII error tracking and performance monitoring. *Fallback: standard structured console logs.* |
 | `DEMO_MODE` | Optional | Enables `/api/v1/demo/tokens` and instant role-picker on `/`. Set to `false` for live deployments. |
 | `DEMO_ACCESS_CODE` | Optional | A private code that unlocks demo sign-in (the role picker and `/api/v1/demo/tokens`). On Vercel, demo sign-in stays closed unless this is set, so a public link cannot open every role. Share the code only with judges. |
+| `SHOPKEEPER_DEMO_PASSWORD` | Optional | Password of the demo shopkeeper `akram.hyd` (Akram General Store, Hyderabad), 8+ characters. It is hashed (argon2id) when the database is seeded. Without it the demo shopkeeper is not created; sign-up at `/signup/shopkeeper` still works. |
 | `OTP_PROVIDER` | Optional | `mock` (default, empty): sign-in codes only on the on-screen mock phone. `baileys`: real Pakistani numbers get the code on WhatsApp through the gateway in `wa-gateway/`; fictional +92 00000 numbers still use the mock phone. Server-only. |
 | `WA_GATEWAY_URL`, `WA_GATEWAY_SECRET` | With `OTP_PROVIDER=baileys` | Where the gateway is reachable (its tunnel address) and the shared secret (24+ characters). Server-only: never a `NEXT_PUBLIC_` variable. |
 | `DEMO_STAFF_PASSWORD` | Optional | Password for demo staff accounts (`<set DEMO_STAFF_PASSWORD in .env.local>`). |
@@ -88,8 +89,23 @@ No external database or API keys required: every service falls back gracefully.
 
 Every item of the brief, where it is, and how to try it. Everything is synthetic or a labelled mock.
 
-### The 5 roles (the brief asks for 3)
-Citizen, community helper, department officer, admin, auditor. **Try:** `/login` → pick a role.
+### The 6 roles (the brief asks for 3)
+Citizen, community helper, department officer, admin, auditor, and **shopkeeper**. **Try:** `/login` → pick a role; shopkeepers have their own door at `/login/shopkeeper`.
+
+### The shopkeeper
+The brief's second person keeps getting fake "relief payment" messages. A shopkeeper can read, so he signs up with a **username and a password** (`/signup/shopkeeper`: shop name, username, password twice, district, an optional made-up email ending in `.test`, and a tick box "This is a prototype: I am using made-up details"). Nothing is ever emailed, and passwords are stored only as argon2id hashes.
+He can do four things and nothing else (every other API answers him 403, and every other portal page shows a 403): check a message, report a scam, read his own checks, and read the **approved** scam alerts for his district.
+
+**Try it:**
+1. Sign in at `/login/shopkeeper` as `akram.hyd` (Akram General Store, Hyderabad). The password is the `SHOPKEEPER_DEMO_PASSWORD` you set in the environment; it is hashed when you seed and never shown anywhere.
+2. Open the mock phone (`/mock/phone`) and press **Receive the demo scam SMS**.
+3. Press **Is this real?** under the message. The check opens on `/shopkeeper` with the text and sender filled in (signed out, it goes to the shopkeeper sign-in first and keeps the message).
+4. Choose **A customer** and **Check**: the card says **FAKE**, with "asks for a fee" among the reasons, read aloud, and no ledger check. **Tell your customer** plays a short Urdu voice note.
+5. Press **Report this scam**. It now counts for Hyderabad: open `/o/scams` as an officer (or `/map`) and Hyderabad rises. The fifth fake of the day drafts a district alert.
+6. As the officer, **Approve & send** the alert. Back on `/shopkeeper`, it appears under **Alerts in my district**. His **My checks** list shows only his own checks.
+7. **Delete my shop account** (password and confirmation) removes his profile, membership and sessions and leaves his past checks as anonymous reports.
+
+A message sent *to him* is checked against an empty ledger (a shop gets no programme payments), so any payment it claims is "no such payment for you". A message for *a customer* never checks a ledger. The verdict rules (F12) are unchanged; a "not sure" message goes to the Scam desk. Sign-up is limited to 3 per hour per IP, and sign-in to 5 tries per 15 minutes per username and 20 per hour per IP.
 
 ### The 7 core platform features
 | Feature | Try |

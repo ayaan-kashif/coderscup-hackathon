@@ -67,6 +67,7 @@ jobs:
             echo "API_KEY_PEPPER=$(openssl rand -hex 32)"
             echo "DEMO_STAFF_PASSWORD=ci-$(openssl rand -hex 12)"
             echo "DEMO_CITIZEN_PIN=$(shuf -i 1000-9999 -n 1)"
+            echo "SHOPKEEPER_DEMO_PASSWORD=ci-shop-$(openssl rand -hex 12)"
           } >> "$GITHUB_ENV"
       - run: pnpm db:local &
       - run: npx wait-on tcp:127.0.0.1:54329 --timeout 60000

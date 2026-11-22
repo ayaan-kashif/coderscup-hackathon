@@ -3,7 +3,8 @@ import { redirect } from 'next/navigation';
 import { getPageActor } from '@/auth/session';
 import { getDb } from '@/db/client';
 import { PageFrame } from '@/components/shell/page-frame';
-import { ShopSignupForm, safeNext } from '@/components/shop/auth-forms';
+import { ShopSignupForm } from '@/components/shop/auth-forms';
+import { safeNext } from '@/lib/shop-next';
 import { programmeDistricts } from '@/services/shop';
 
 export const dynamic = 'force-dynamic';

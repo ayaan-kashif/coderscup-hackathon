@@ -11,10 +11,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useBi } from '@/components/voice/voice-lib';
+import { safeNext } from '@/lib/shop-next';
 
 type Msg = { en: string; ur: string };
-/** only a path on the shopkeeper page may be a "next" (no open redirect) */
-export const safeNext = (n?: string | null) => (n && /^\/shopkeeper(\?|$)/.test(n) ? n : '/shopkeeper');
 
 function PasswordInput({ id, value, onChange, autoComplete, invalid }: { id: string; value: string; onChange: (v: string) => void; autoComplete: string; invalid?: boolean }) {
   const bi = useBi();

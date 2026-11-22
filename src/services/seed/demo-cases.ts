@@ -62,6 +62,40 @@ export async function seedDemoCases(db: DbOrTx, ids: Ids) {
     });
   }
   out.scamReports = rows.length;
+
+  // ---- Scam Map pattern (synthetic): confirmed fakes over the last 7 days in the other districts, a mix of types and
+  // sizes with some under 3. Hyderabad is left exactly as above. Per district: reports per day, oldest first (today last).
+  // No district here reaches 5 today, so only Hyderabad can spike.
+  const PATTERN: Record<string, { perDay: number[]; types: string[] }> = {
+    KHS: { perDay: [1, 2, 3, 2, 2, 3, 3], types: ['fee_before_payment', 'fake_approval_link', 'asks_pin_code_cnic'] },
+    LHR: { perDay: [2, 3, 2, 3, 4, 3, 3], types: ['impersonation_call', 'fee_before_payment', 'lottery_prize'] },
+    FSD: { perDay: [1, 1, 2, 1, 2, 1, 2], types: ['fake_registration_drive', 'fee_before_payment'] },
+    MUL: { perDay: [0, 1, 1, 1, 0, 1, 1], types: ['fake_approval_link', 'asks_pin_code_cnic'] },
+    SKR: { perDay: [0, 1, 0, 1, 1, 1, 1], types: ['lottery_prize', 'fee_before_payment'] },
+    TTA: { perDay: [0, 0, 1, 0, 1, 1, 1], types: ['fake_registration_drive'] },
+    BWP: { perDay: [0, 0, 1, 0, 0, 0, 1], types: ['impersonation_call'] },
+    BDN: { perDay: [0, 0, 0, 1, 0, 0, 1], types: ['fee_before_payment'] },
+    RJP: { perDay: [0, 0, 0, 0, 0, 1, 0], types: ['asks_pin_code_cnic'] },
+    THP: { perDay: [0, 0, 0, 0, 0, 0, 1], types: ['lottery_prize'] },
+  };
+  const dists = await db.select({ id: districts.id, code: districts.code, tenantId: districts.tenantId }).from(districts);
+  let mapRows = 0;
+  for (const d of dists) {
+    const p = PATTERN[d.code];
+    if (!p || !d.tenantId) continue;
+    let k = 0;
+    for (let i = 0; i < 7; i++) {
+      for (let j = 0; j < p.perDay[i]!; j++, k++) {
+        const at = new Date(now - (6 - i) * 86_400_000 - (j + 1) * 20 * 60_000);
+        await db.insert(scamReports).values({
+          tenantId: d.tenantId, districtId: d.id, messageHash: `seed-map-${d.code}-${k}`, messageText: '(synthetic seed report for the Scam Map)',
+          channel: 'text', verdict: 'fake', scamType: p.types[k % p.types.length]!, extractedClaims: { synthetic: true }, createdAt: at,
+        });
+        mapRows++;
+      }
+    }
+  }
+  out.scamMapReports = mapRows;
   return out;
 }
 

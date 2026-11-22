@@ -22,6 +22,7 @@ import { rowsOf } from '@/db/rows';
 import { citizens, districts, scamAlerts, scamReports } from '@/db/schema/all';
 import { ApiError } from '@/lib/errors';
 import { hashJson, sha256Hex } from '@/lib/hash';
+import { isSpike, mask, MIN_COUNT, SCAM_TYPES } from '@/lib/scam-map';
 import { effectiveConfig } from './config';
 import { paymentLedger } from './adapters';
 
@@ -210,26 +211,62 @@ export async function maybeDraftAlert(db: DbOrTx, districtId: string, tenantId: 
   return a!.id;
 }
 
-/** SCAM-5: confirmed scams by district and day; districts under 3 reports show no exact count */
-export async function scamMap(db: DbOrTx, days = 7) {
-  const rows = rowsOf<{ code: string; name: string; day: string; n: number; type: string | null }>(await db.execute(sql`
-    select d.code, d.name, to_char(date_trunc('day', r.created_at), 'YYYY-MM-DD') as day, count(*)::int as n, mode() within group (order by r.scam_type) as type
-    from scam_reports r join districts d on d.id = r.district_id
-    where (r.verdict = 'fake' or r.officer_label = 'fake') and r.created_at >= now() - make_interval(days => ${days})
-    group by d.code, d.name, day order by day desc, d.code`));
-  const byDistrict: Record<string, { code: string; name: string; total: number; today: number; days: { day: string; count: number | string }[]; topType: string | null }> = {};
+/**
+ * SCAM-5: confirmed scams by district and day. Totals only; the server masks every count under 3, so the browser never
+ * receives the real number. Legacy fields (total, today, days, topType, spike) are kept for older callers.
+ * The spike flag always looks at every scam type, whatever type filter is chosen (same rule as maybeDraftAlert).
+ */
+export async function scamMap(db: DbOrTx, days: number = 7, opts: { type?: string; tenantId?: string | null; withAlerts?: boolean } = {}) {
+  const span = Math.max(days, 8); // the spike rule needs today plus the 7 days before it
+  const rows = rowsOf<{ code: string; name: string; lat: number | null; lng: number | null; id: string; day: string | null; type: string | null; n: number }>(await db.execute(sql`
+    select d.id, d.code, d.name, d.lat, d.lng,
+      to_char((r.created_at at time zone 'UTC')::date, 'YYYY-MM-DD') as day, r.scam_type as type, count(r.id)::int as n
+    from districts d
+    left join scam_reports r on r.district_id = d.id and (r.verdict = 'fake' or r.officer_label = 'fake')
+      and r.created_at >= (date_trunc('day', now() at time zone 'UTC') - make_interval(days => ${span - 1})) at time zone 'UTC'
+    ${opts.tenantId ? sql`where d.tenant_id = ${opts.tenantId}` : sql``}
+    group by d.id, d.code, d.name, d.lat, d.lng, day, type order by d.code, day`));
   const todayStr = new Date().toISOString().slice(0, 10);
-  for (const r of rows) {
-    const d = (byDistrict[r.code] ??= { code: r.code, name: r.name, total: 0, today: 0, days: [], topType: r.type });
-    d.total += Number(r.n);
-    if (r.day === todayStr) d.today += Number(r.n);
-    d.days.push({ day: r.day, count: Number(r.n) < 3 ? 'fewer than 3' : Number(r.n) });
+  const dayList = Array.from({ length: span }, (_, i) => new Date(Date.now() - (span - 1 - i) * 86_400_000).toISOString().slice(0, 10));
+  const periodDays = dayList.slice(-days);
+  const prevDays = dayList.slice(-8, -1); // the 7 days before today
+  const wantType = opts.type && opts.type !== 'all' ? opts.type : null;
+
+  const drafts = new Map<string, { id: string; status: string }>();
+  if (opts.withAlerts && opts.tenantId) {
+    const al = await db.select({ id: scamAlerts.id, districtId: scamAlerts.districtId, status: scamAlerts.status }).from(scamAlerts)
+      .where(and(eq(scamAlerts.tenantId, opts.tenantId), eq(scamAlerts.status, 'draft'))).orderBy(scamAlerts.createdAt);
+    for (const a of al) drafts.set(a.districtId, { id: a.id, status: a.status });
   }
-  // SCAM-6 spike flag: today ≥ 3× the average of the previous 7 days and ≥ 5 reports
-  return Object.values(byDistrict).map((d) => {
-    const prev = d.days.filter((x) => x.day !== todayStr).reduce((a, x) => a + (typeof x.count === 'number' ? x.count : 1), 0) / 7;
-    const spike = d.today >= 5 && d.today >= 3 * prev;
-    return { ...d, spike, total: d.total < 3 ? 'fewer than 3' : d.total, today: d.today < 3 ? (d.today ? 'fewer than 3' : 0) : d.today };
+
+  const by = new Map<string, { code: string; name: string; lat: number | null; lng: number | null; id: string; perDay: Map<string, number>; perDayAll: Map<string, number>; perType: Map<string, number> }>();
+  for (const r of rows) {
+    const d = by.get(r.code) ?? { code: r.code, name: r.name, lat: r.lat, lng: r.lng, id: r.id, perDay: new Map(), perDayAll: new Map(), perType: new Map() };
+    by.set(r.code, d);
+    if (!r.day || !r.n) continue;
+    d.perDayAll.set(r.day, (d.perDayAll.get(r.day) ?? 0) + r.n);
+    if (wantType && r.type !== wantType) continue;
+    d.perDay.set(r.day, (d.perDay.get(r.day) ?? 0) + r.n);
+    if (periodDays.includes(r.day)) d.perType.set(r.type ?? 'other', (d.perType.get(r.type ?? 'other') ?? 0) + r.n);
+  }
+
+  return [...by.values()].map((d) => {
+    const total = periodDays.reduce((a, x) => a + (d.perDay.get(x) ?? 0), 0);
+    const today = d.perDay.get(todayStr) ?? 0;
+    const spike = isSpike(d.perDayAll.get(todayStr) ?? 0, prevDays.reduce((a, x) => a + (d.perDayAll.get(x) ?? 0), 0));
+    const top = [...d.perType.entries()].sort((a, b) => b[1] - a[1])[0];
+    const exact = total >= MIN_COUNT;
+    return {
+      // legacy shape (kept): masked strings, newest day first, only days with reports
+      code: d.code, name: d.name, spike, topType: exact && top ? top[0] : null,
+      total: exact ? total : 'fewer than 3', today: today < MIN_COUNT ? (today ? 'fewer than 3' : 0) : today,
+      days: periodDays.filter((x) => d.perDay.get(x)).reverse().map((x) => ({ day: x, count: mask(d.perDay.get(x)!) ?? 'fewer than 3' })),
+      // heat map shape
+      lat: d.lat, lng: d.lng, count: mask(total), underThreshold: !exact, countToday: mask(today),
+      series: periodDays.map((x) => ({ day: x, count: exact ? mask(d.perDay.get(x) ?? 0) : null })),
+      byType: Object.fromEntries(SCAM_TYPES.map((t) => [t, exact ? mask(d.perType.get(t) ?? 0) : null])),
+      alert: drafts.get(d.id) ?? null,
+    };
   });
 }
 

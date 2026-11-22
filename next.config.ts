@@ -2,6 +2,8 @@ import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
 const isDev = process.env.NODE_ENV !== 'production';
+/** OpenStreetMap raster tiles for the Scam Map */
+const TILES = 'https://tile.openstreetmap.org';
 
 const securityHeaders = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
@@ -17,11 +19,11 @@ const securityHeaders = [
       "default-src 'self'",
       `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval'" : ''} https://cdn.jsdelivr.net`.trim(),
       "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com",
-      "img-src 'self' data: blob:",
+      `img-src 'self' data: blob: ${TILES}`,
       "media-src 'self' blob: data:",
       "font-src 'self' data: https://cdn.jsdelivr.net https://fonts.gstatic.com https://fonts.scalar.com",
-      `connect-src 'self' ${isDev ? 'ws: http:' : ''}`.trim(),
-      "worker-src 'self'",
+      `connect-src 'self' ${TILES} ${isDev ? 'ws: http:' : ''}`.trim(),
+      "worker-src 'self' blob:", // maplibre runs its workers from blob URLs
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",

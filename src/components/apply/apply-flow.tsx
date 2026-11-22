@@ -2,7 +2,7 @@
 import { StepFrame } from '@/components/brand/step-frame';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Send } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Ticks } from '@/components/citizen/ticks';
 import { Button } from '@/components/ui/button';
 import { VoicePrompt, playSequence } from '@/components/voice/voice-prompt';
@@ -26,14 +26,19 @@ export const syncNow = () => (navigator.onLine ? syncOnce(outboxDb(), deps()) : 
  * Every answer and photo goes to the IndexedDB outbox FIRST (one grey tick), then syncs (OFF-2).
  * A case created offline is referenced by its outbox entry until the server id is known.
  */
-export function ApplyFlow({ mode, citizenId, existingCaseId, onSubmitted, banner }: {
+export function ApplyFlow({ mode, citizenId, existingCaseId, onSubmitted, banner, prefill }: {
   mode: 'citizen' | 'helper'; citizenId?: string; existingCaseId?: string | null; onSubmitted: (ref: { caseId: string | null; createRef: string | null }) => void; banner?: React.ReactNode;
+  /** answers she already gave in "About you": saved to the case and not asked again (she can still change them from the review screen) */
+  prefill?: Record<string, AnswerValue>;
 }) {
   const bi = useBi();
   const storeKey = `amanat_draft_${mode}_${citizenId ?? 'me'}`;
   const [createRef, setCreateRef] = useState<string | null>(null);
-  const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, AnswerValue>>({});
+  const skip = useMemo(() => new Set(Object.keys(prefill ?? {})), [prefill]);
+  const openFrom = (from: number, dir: 1 | -1) => { let n = from; while (n >= 0 && n < QUESTION_DEFS.length && skip.has(QUESTION_DEFS[n]!.key)) n += dir; return n < 0 ? 0 : n; };
+  const [step, setStep] = useState(() => openFrom(0, 1));
+  const [answers, setAnswers] = useState<Record<string, AnswerValue>>(prefill ?? {});
+  const prefilled = useRef(false);
   const [photos, setPhotos] = useState<Record<string, Captured>>({});
   const createEntry = useLiveQuery(() => (createRef ? outboxDb().outbox.get(createRef) : undefined), [createRef]);
   const caseId = existingCaseId ?? (createEntry?.serverId || null);
@@ -58,6 +63,13 @@ export function ApplyFlow({ mode, citizenId, existingCaseId, onSubmitted, banner
   const link = useMemo(() => (existingCaseId ? { caseId: existingCaseId } : createRef ? { caseRef: createRef } : null), [existingCaseId, createRef]);
   const total = QUESTION_DEFS.length + PHOTOS.length + 1;
 
+  // her "About you" answers go into this case once, like any other answer (outbox first, then sync)
+  useEffect(() => {
+    if (!link || !prefill || prefilled.current) return;
+    prefilled.current = true;
+    void enqueue(outboxDb(), 'case.answers', { answers: Object.values(prefill).map((a) => ({ question: a.question, value: a.value, via: a.via })) }, Date.now(), { ...link, label: bi('Your details', 'آپ کی تفصیلات') }).then(() => syncNow());
+  }, [link, prefill, bi]);
+
   const save = async (a: AnswerValue | null) => {
     if (a && link) {
       setAnswers((s) => ({ ...s, [a.question]: a }));
@@ -65,7 +77,7 @@ export function ApplyFlow({ mode, citizenId, existingCaseId, onSubmitted, banner
       void playSequence(['saved_on_phone']);
       void syncNow();
     }
-    setStep((s) => s + 1);
+    setStep((s) => openFrom(s + 1, 1));
   };
 
   const savePhoto = async (docType: string, c: Captured, label: string) => {
@@ -85,7 +97,7 @@ export function ApplyFlow({ mode, citizenId, existingCaseId, onSubmitted, banner
       {banner}
       {qi < QUESTION_DEFS.length && (
         <QuestionScreen key={QUESTION_DEFS[qi]!.key} q={QUESTION_DEFS[qi]!} caseId={caseId} initial={answers[QUESTION_DEFS[qi]!.key]} step={step + 1} total={total}
-          onAnswer={(a) => void save(a)} onBack={() => setStep((s) => Math.max(0, s - 1))} />
+          onAnswer={(a) => void save(a)} onBack={() => setStep((s) => { const p = openFrom(s - 1, -1); return skip.has(QUESTION_DEFS[p]?.key ?? '') ? s : p; })} />
       )}
       {pi >= 0 && pi < PHOTOS.length && (
         <CameraCapture key={PHOTOS[pi]!.docType} prompt={PHOTOS[pi]!.prompt} title={`${step + 1} / ${total} · ${bi(PHOTOS[pi]!.en, PHOTOS[pi]!.ur)}`}

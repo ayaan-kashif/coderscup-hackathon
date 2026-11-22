@@ -16,7 +16,7 @@ export type OnboardingStep = 'trust' | 'consent' | 'name' | 'dob' | 'district' |
 export const PLACEHOLDER_NAME = 'Citizen';
 
 export async function onboardingState(db: DbOrTx, citizenId: string) {
-  const [c] = await db.select({ trust: citizens.trustPictureId, nameNorm: citizens.nameNorm, name: citizens.nameDisplay, dob: citizens.dob, districtId: citizens.districtId }).from(citizens).where(eq(citizens.id, citizenId)).limit(1);
+  const [c] = await db.select({ trust: citizens.trustPictureId, nameNorm: citizens.nameNorm, name: citizens.nameDisplay, dob: citizens.dob, districtId: citizens.districtId, onboardedAt: citizens.onboardedAt }).from(citizens).where(eq(citizens.id, citizenId)).limit(1);
   if (!c) throw new ApiError('NOT_FOUND');
   const mine = await db.select({ tenantId: consents.tenantId, status: consents.status }).from(consents).where(eq(consents.citizenId, citizenId));
   const hasAnyConsent = mine.length > 0;
@@ -24,7 +24,8 @@ export async function onboardingState(db: DbOrTx, citizenId: string) {
   // she can only pick a district served by an office she agreed to share with
   const tenantIds = [...new Set(mine.filter((m) => m.status === 'active').map((m) => m.tenantId))];
   const ds = tenantIds.length ? await db.select({ code: districts.code, name: districts.name, nameUr: districts.nameUr }).from(districts).where(inArray(districts.tenantId, tenantIds)).orderBy(districts.name) : [];
-  return { step, districts: ds, profile: { name: c.nameNorm ? c.name : null, dob: c.dob, districtSet: !!c.districtId } };
+  const districtCode = c.districtId ? (await db.select({ code: districts.code }).from(districts).where(eq(districts.id, c.districtId)).limit(1))[0]?.code ?? null : null;
+  return { step, districts: ds, profile: { name: c.nameNorm ? c.name : null, dob: c.dob, districtSet: !!c.districtId, districtCode, onboarded: !!c.onboardedAt } };
 }
 
 export const profileBody = z.object({
@@ -59,6 +60,9 @@ export async function saveProfile(db: DbOrTx, p: { citizenId: string; userId: st
     set.districtId = d!.id;
   }
   if (Object.keys(set).length) await db.update(citizens).set(set).where(eq(citizens.id, p.citizenId));
+  // the last answer given completes "About you"; from then on the apply flow starts with these answers filled in
+  const [now] = await db.select({ nameNorm: citizens.nameNorm, dob: citizens.dob, districtId: citizens.districtId, onboardedAt: citizens.onboardedAt }).from(citizens).where(eq(citizens.id, p.citizenId)).limit(1);
+  if (now && !now.onboardedAt && now.nameNorm && now.dob && now.districtId) await db.update(citizens).set({ onboardedAt: new Date() }).where(eq(citizens.id, p.citizenId));
   if (b.fullName) await db.update(users).set({ displayName: b.fullName }).where(eq(users.id, p.userId));
 }
 

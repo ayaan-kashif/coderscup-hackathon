@@ -62,6 +62,8 @@ export const citizens = pgTable('citizens', {
   pinHash: text('pin_hash'),
   /** Silent Duress PIN: hash of the reversed PIN (same Argon2id scheme). Entering it looks like a normal sign-in but locks the money down. */
   duressPinHash: text('duress_pin_hash'),
+  /** set when she finishes "About you" (name, date of birth, district); seeded personas never have it, so their apply flow is unchanged */
+  onboardedAt: ts('onboarded_at'),
   pinFailedAttempts: integer('pin_failed_attempts').notNull().default(0),
   pinLockedUntil: ts('pin_locked_until'),
   createdAt: createdAt(),

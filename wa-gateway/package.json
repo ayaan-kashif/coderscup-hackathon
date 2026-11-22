@@ -9,7 +9,8 @@
   },
   "scripts": {
     "start": "tsx --env-file-if-exists=.env src/index.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "fake": "tsx src/fake.ts"
   },
   "dependencies": {
     "@whiskeysockets/baileys": "7.0.0-rc14",

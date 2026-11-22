@@ -125,13 +125,13 @@ describe('WhatsApp codes through the gateway', () => {
     const n = (await t.db.select({ n: count() }).from(users).where(eq(users.phoneHash, piiLookupHash(B))))[0]!.n;
     expect(n).toBe(0);
     const ch = await call(otpChannels.GET, '/api/v1/auth/otp/channels', { ip: ip() });
-    expect(ch.body).toEqual({ whatsapp: false });
+    expect(ch.body).toEqual({ enabled: true, whatsapp: false });
   });
 
   it('GET /otp/channels says whatsapp:true when the gateway is connected, and false when OTP_PROVIDER is off', async () => {
-    expect((await call(otpChannels.GET, '/api/v1/auth/otp/channels', { ip: ip() })).body).toEqual({ whatsapp: true });
+    expect((await call(otpChannels.GET, '/api/v1/auth/otp/channels', { ip: ip() })).body).toEqual({ enabled: true, whatsapp: true });
     process.env.OTP_PROVIDER = 'mock';
-    expect((await call(otpChannels.GET, '/api/v1/auth/otp/channels', { ip: ip() })).body).toEqual({ whatsapp: false });
+    expect((await call(otpChannels.GET, '/api/v1/auth/otp/channels', { ip: ip() })).body).toEqual({ enabled: false, whatsapp: false });
   });
 
   it('not on WhatsApp: 422, and the code is rolled back with it', async () => {

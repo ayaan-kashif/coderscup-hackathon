@@ -1600,6 +1600,26 @@
       "precache": false,
       "bytes": 22032,
       "model": "edge-tts/ur-PK-UzmaNeural"
+    },
+    {
+      "key": "q_dob",
+      "file": "/voice/ur/q_dob.mp3",
+      "text_ur": "آپ کی تاریخ پیدائش کیا ہے؟ دن، مہینہ اور سال لکھیں۔",
+      "text_roman": "Aap ki tareekh paidaish kya hai? Din, mahina aur saal likhein.",
+      "placeholder": false,
+      "precache": false,
+      "bytes": 33552,
+      "model": "edge-tts/ur-PK-UzmaNeural"
+    },
+    {
+      "key": "prototype_notice",
+      "file": "/voice/ur/prototype_notice.mp3",
+      "text_ur": "یہ ایک تجرباتی نمونہ ہے۔ صرف فرضی تفصیلات لکھیں۔ اصلی شناختی کارڈ نمبر، بینک نمبر یا پتہ نہ لکھیں۔",
+      "text_roman": "Yeh aik tajarbati namoona hai. Sirf farzi tafseelat likhein. Asli shanakhti card number, bank number ya pata na likhein.",
+      "placeholder": false,
+      "precache": false,
+      "bytes": 59616,
+      "model": "edge-tts/ur-PK-UzmaNeural"
     }
   ]
 }

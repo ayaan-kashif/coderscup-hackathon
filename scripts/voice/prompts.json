@@ -876,6 +876,18 @@
       "text_ur": "اپنا نیا والیٹ نمبر دس ہندسوں میں لکھیں۔",
       "text_roman": "Apna naya wallet number das hindson mein likhein.",
       "precache": false
+    },
+    {
+      "key": "q_dob",
+      "precache": false,
+      "text_ur": "آپ کی تاریخ پیدائش کیا ہے؟ دن، مہینہ اور سال لکھیں۔",
+      "text_roman": "Aap ki tareekh paidaish kya hai? Din, mahina aur saal likhein."
+    },
+    {
+      "key": "prototype_notice",
+      "precache": false,
+      "text_ur": "یہ ایک تجرباتی نمونہ ہے۔ صرف فرضی تفصیلات لکھیں۔ اصلی شناختی کارڈ نمبر، بینک نمبر یا پتہ نہ لکھیں۔",
+      "text_roman": "Yeh aik tajarbati namoona hai. Sirf farzi tafseelat likhein. Asli shanakhti card number, bank number ya pata na likhein."
     }
   ]
 }

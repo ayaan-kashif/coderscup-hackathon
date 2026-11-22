@@ -76,8 +76,9 @@ export const MATRIX: Record<Action, Partial<Record<Role | 'api_key', Rule>>> = {
   'scam.check': { citizen: { scope: 'any' }, helper: { scope: 'any' }, officer: { scope: 'any' }, admin: { scope: 'any' }, api_key: { scope: 'any', apiScope: 'scam:check' } },
   'scam.alert.approve': { officer: T() },
   /** answers, documents, voice, submit, proof: her own case, or a helper under a live grant (HELP-4) */
-  'case.write': { citizen: { scope: 'own' }, helper: { scope: 'grant' }, api_key: T({ apiScope: 'cases:write' }) },
-  'case.status': { citizen: { scope: 'own' }, helper: { scope: 'grant' } },
+  // a helper acts under the family's unlock AND only while that family's consent to the office is active (CONS-4)
+  'case.write': { citizen: { scope: 'own' }, helper: { scope: 'grant', consent: ELIGIBILITY }, api_key: T({ apiScope: 'cases:write' }) },
+  'case.status': { citizen: { scope: 'own' }, helper: { scope: 'grant', consent: ELIGIBILITY } },
   'case.explain': {
     citizen: { scope: 'own', view: 'citizen' },
     helper: { scope: 'grant', view: 'citizen' },

@@ -40,7 +40,7 @@ export const grantBody = z.object({
   pin: z.string().regex(/^\d{4}$/),
 });
 
-export type ShareCategory = (typeof NARROWABLE_CATEGORIES)[number];
+export type ShareCategory = (typeof NARROWABLE_CATEGORIES)[number] | 'case';
 
 /**
  * CONS-3: is this category of her data shared with this office right now? Decided by the same database function the

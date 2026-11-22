@@ -1,4 +1,5 @@
 import 'server-only';
+import { categoryShared } from '../consent';
 /**
  * The steps of case.process (PRD §22.1). Each step reads and writes the database and returns a small JSON result,
  * so Inngest can memoise it and an inline run can do the same in memory. Every failure path ends with a person.
@@ -244,6 +245,10 @@ async function districtCode(db: DbOrTx, districtId: string) {
 
 export async function stepIdentity(db: DbOrTx, caseId: string) {
   const c = await must(db, caseId);
+  if (c.citizenId && !(await categoryShared(db, c.citizenId, c.tenantId, 'identity'))) {
+    await writeAudit(db, { ...AGENT, actorId: 'agent:verification', tenantId: c.tenantId, subjectCitizenId: c.citizenId, action: 'tool.identity.search', resourceType: 'case', resourceId: caseId, outcome: 'denied', details: { reason: 'identity category not shared' } });
+    return { available: false, zone: null, ambiguous: false, candidates: 0 };
+  }
   const a = await applicantFields(db, c);
   const weights = await latestArtifact<MatcherWeights>(db, 'matcher');
   let candidates;

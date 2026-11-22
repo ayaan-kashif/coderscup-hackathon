@@ -1,4 +1,5 @@
 import 'server-only';
+import { requireCategory } from './consent';
 /**
  * F11 / PAY-2..3: a payout-destination change needs the citizen's PIN, an officer's approval, a cooling-off period
  * (2 minutes in the demo, 72 hours in product) and a notice to the old number with a press-9 objection.
@@ -24,6 +25,7 @@ export const objectionToken = (changeId: string) => hmacHex(secret(), `payout-ob
 export const objectionRef = (changeId: string) => `PC-${changeId}:${objectionToken(changeId)}`;
 
 export async function requestPayoutChange(db: DbOrTx, citizenId: string, tenantId: string, walletNo: string, requestedBy: string) {
+  await requireCategory(db, citizenId, tenantId, 'payments', 'payout details');
   const [old] = await db.select().from(payoutDestinations).where(and(eq(payoutDestinations.citizenId, citizenId), eq(payoutDestinations.status, 'active'))).orderBy(desc(payoutDestinations.createdAt)).limit(1);
   const hash = piiLookupHash(walletNo);
   if (old && old.walletHash === hash) throw new ApiError('VALIDATION_FAILED', 'That is already your payout number.');

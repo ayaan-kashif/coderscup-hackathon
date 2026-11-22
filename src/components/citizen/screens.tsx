@@ -274,6 +274,7 @@ export function DataScreen({ caseId }: { caseId: string | null }) {
           {c?.processors.map((p) => <li key={p.id} className="rounded-2xl border border-white/10 bg-void/40 p-3 text-sm">{bi(p.en, p.ur)} {p.simulated && <SimulatedBadge what="mock" />}<span className="block text-xs text-muted-foreground">{p.purpose}</span></li>)}
         </ul>
       </div>
+      {c?.consents.filter((x) => x.status === 'active' && x.grantee.type === 'office').map((x) => <ShareChoices key={x.id} tenantId={x.tenantId} current={x.dataCategories} onDone={() => setVersion((v) => v + 1)} />)}
       {withdrawing && (
         <div className="space-y-3 rounded-[24px] border-2 border-warning bg-warning/10 p-5" data-testid="withdraw-confirm">
           <p className="font-semibold">{bi('Your application will pause until you share again.', 'جب تک آپ دوبارہ اجازت نہ دیں، درخواست رکی رہے گی۔')}</p>
@@ -305,6 +306,50 @@ export function DataScreen({ caseId }: { caseId: string | null }) {
         <a href="/api/v1/me/export" download>{bi('Download my data', 'اپنی معلومات ڈاؤن لوڈ کریں')}</a>
       </Button>
     </section>
+  );
+}
+
+const SHARE_CHOICES: { key: string; en: string; ur: string; icon: string }[] = [
+  { key: 'identity', en: 'Identity check', ur: 'شناخت کی جانچ', icon: '🪪' },
+  { key: 'documents', en: 'Photos of documents', ur: 'دستاویزات کی تصاویر', icon: '📄' },
+  { key: 'payments', en: 'Payout details', ur: 'ادائیگی کی تفصیل', icon: '💵' },
+  { key: 'contact', en: 'SMS and voice calls', ur: 'ایس ایم ایس اور فون', icon: '📱' },
+  { key: 'voice', en: 'My voice answers', ur: 'میرے آواز کے جوابات', icon: '🎙️' },
+];
+
+/** CONS-3: switch single kinds of data on or off with her PIN (the server enforces each one where the data is used) */
+function ShareChoices({ tenantId, current, onDone }: { tenantId: string; current: string[]; onDone: () => void }) {
+  const bi = useBi();
+  const [chosen, setChosen] = useState<string[]>(() => SHARE_CHOICES.map((c) => c.key).filter((k) => current.includes(k)));
+  const [pin, setPin] = useState('');
+  const [msg, setMsg] = useState<string | null>(null);
+  const changed = chosen.slice().sort().join() !== SHARE_CHOICES.map((c) => c.key).filter((k) => current.includes(k)).sort().join();
+  return (
+    <div className="space-y-3 rounded-[24px] border border-white/10 bg-void/40 p-4" data-testid="share-choices">
+      <h3 className="text-lg font-bold">{bi('What you share', 'آپ کیا شیئر کرتی ہیں')}</h3>
+      <ul className="space-y-2">
+        {SHARE_CHOICES.map((c) => (
+          <li key={c.key}>
+            <label className="flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-white/10 p-3">
+              <span className="text-lg">{c.icon} {bi(c.en, c.ur)}</span>
+              <input type="checkbox" className="size-7" data-testid={`share-${c.key}`} checked={chosen.includes(c.key)} onChange={(e) => setChosen(e.target.checked ? [...chosen, c.key] : chosen.filter((k) => k !== c.key))} />
+            </label>
+          </li>
+        ))}
+      </ul>
+      {changed && (
+        <>
+          <Keypad value={pin} onChange={setPin} max={4} masked />
+          <Button size="xl" className="w-full" disabled={pin.length !== 4 || chosen.length === 0} data-testid="share-save" onClick={async () => {
+            const r = await api('/api/v1/me/consents', { body: { tenantId, dataCategories: chosen, pin } });
+            setPin('');
+            if (r.status === 201) { setMsg(bi('Saved.', 'محفوظ ہو گیا۔')); onDone(); } else setMsg(r.body.detail ?? String(r.status));
+          }}>{bi('Save with PIN', 'پن سے محفوظ کریں')}</Button>
+          {chosen.length === 0 && <p className="text-sm text-muted-foreground">{bi('To stop everything, use "Stop sharing" below.', 'سب کچھ بند کرنے کے لیے نیچے "شیئرنگ بند کریں" استعمال کریں۔')}</p>}
+        </>
+      )}
+      {msg && <p role="status" className="text-sm">{msg}</p>}
+    </div>
   );
 }
 

@@ -78,7 +78,7 @@ export function MockPhone({ initialPhone }: { initialPhone: string }) {
                 {code && <Button size="sm" variant="outline" className="mt-2" onClick={() => playSequence(code.split('').map((d) => `digit_${d}`))}><Volume2 /> Read code aloud</Button>}
                 {objection && <Button size="sm" variant="destructive" className="mt-2" data-testid="press-9" onClick={() => void press9(m)}>9 — this isn&apos;t me</Button>}
                 {m.kind !== 'otp' && m.kind !== 'ivr' && !m.fromSender.startsWith('me ') && !m.fromSender.startsWith('SAAYA') && (
-                  <a className="mt-2 inline-flex items-center gap-1 text-xs underline" href={`/c?check=${encodeURIComponent(m.body)}&from=${encodeURIComponent(m.fromSender)}`}>
+                  <a className="mt-2 inline-flex items-center gap-1 text-xs underline" href={`/check?text=${encodeURIComponent(m.body)}&from=${encodeURIComponent(m.fromSender)}`}>
                     <ShieldQuestion className="size-3" /> Is this real?
                   </a>
                 )}

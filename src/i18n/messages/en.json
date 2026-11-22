@@ -15,13 +15,16 @@
     "staff": "Staff sign-in (officer, admin, auditor)",
     "mockPhone": "Mock phone (SMS inbox)",
     "status": "System status",
-    "docs": "API docs"
+    "docs": "API docs",
+    "shopkeeper": "Shopkeeper: check messages and get scam alerts"
   },
   "login": {
     "title": "Staff sign-in",
     "email": "Email",
     "password": "Password",
-    "submit": "Sign in"
+    "submit": "Sign in",
+    "shopTitle": "Shopkeeper",
+    "shopBody": "Check messages and get scam alerts for your district. Sign in with your username."
   },
   "citizen": {
     "phoneTitle": "Your phone number",
@@ -152,6 +155,7 @@
     "ctaTitle": "See it work end to end",
     "ctaBody": "Citizens apply with a phone code and PIN. Staff sign in with their own email and password.",
     "ctaStaff": "Staff sign-in",
-    "footer": "Prototype for Coder's Cup '26. Every person, document and government system here is synthetic or a labelled mock."
+    "footer": "Prototype for Coder's Cup '26. Every person, document and government system here is synthetic or a labelled mock.",
+    "roleShopD": "Paste a message a customer shows you: Fake, Genuine or Not sure, with reasons, and the alerts for your district."
   }
 }

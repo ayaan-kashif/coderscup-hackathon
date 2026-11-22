@@ -1620,6 +1620,26 @@
       "precache": false,
       "bytes": 59616,
       "model": "edge-tts/ur-PK-UzmaNeural"
+    },
+    {
+      "key": "tell_customer",
+      "file": "/voice/ur/tell_customer.mp3",
+      "text_ur": "یہ پیغام جعلی ہے۔ سایہ پروگرام کبھی کوئی فیس نہیں مانگتا۔ کسی کو پیسے، پن یا کوڈ نہ دیں۔",
+      "text_roman": "Yeh paighaam jaali hai. Saaya programme kabhi koi fee nahin maangta. Kisi ko paise, PIN ya code na dein.",
+      "placeholder": false,
+      "precache": false,
+      "bytes": 53712,
+      "model": "edge-tts/ur-PK-UzmaNeural"
+    },
+    {
+      "key": "shop_reported",
+      "file": "/voice/ur/shop_reported.mp3",
+      "text_ur": "شکریہ۔ یہ دھوکا آپ کے ضلع کے نقشے میں شامل ہو گیا ہے۔",
+      "text_roman": "Shukriya. Yeh dhoka aap ke zila ke naqshe mein shaamil ho gaya hai.",
+      "placeholder": false,
+      "precache": false,
+      "bytes": 34416,
+      "model": "edge-tts/ur-PK-UzmaNeural"
     }
   ]
 }

@@ -888,6 +888,18 @@
       "precache": false,
       "text_ur": "یہ ایک تجرباتی نمونہ ہے۔ صرف فرضی تفصیلات لکھیں۔ اصلی شناختی کارڈ نمبر، بینک نمبر یا پتہ نہ لکھیں۔",
       "text_roman": "Yeh aik tajarbati namoona hai. Sirf farzi tafseelat likhein. Asli shanakhti card number, bank number ya pata na likhein."
+    },
+    {
+      "key": "tell_customer",
+      "precache": false,
+      "text_ur": "یہ پیغام جعلی ہے۔ سایہ پروگرام کبھی کوئی فیس نہیں مانگتا۔ کسی کو پیسے، پن یا کوڈ نہ دیں۔",
+      "text_roman": "Yeh paighaam jaali hai. Saaya programme kabhi koi fee nahin maangta. Kisi ko paise, PIN ya code na dein."
+    },
+    {
+      "key": "shop_reported",
+      "precache": false,
+      "text_ur": "شکریہ۔ یہ دھوکا آپ کے ضلع کے نقشے میں شامل ہو گیا ہے۔",
+      "text_roman": "Shukriya. Yeh dhoka aap ke zila ke naqshe mein shaamil ho gaya hai."
     }
   ]
 }

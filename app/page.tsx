@@ -1,4 +1,4 @@
-import { ArrowUpRight, BookOpenCheck, Gift, HandHeart, Landmark, MessageSquareText, Mic, ScanText, ShieldCheck, SlidersHorizontal, Smartphone, Wifi, Link2, Siren, UserCheck, Scale, Cpu } from 'lucide-react';
+import { ArrowUpRight, Store, BookOpenCheck, Gift, HandHeart, Landmark, MessageSquareText, Mic, ScanText, ShieldCheck, SlidersHorizontal, Smartphone, Wifi, Link2, Siren, UserCheck, Scale, Cpu } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { HeroParallax } from '@/components/brand/hero-parallax';
@@ -126,6 +126,7 @@ export default function Home() {
               {[
                 { href: '/login?role=helper', Icon: HandHeart, title: t('helper'), body: l('roleHelperD') },
                 { href: '/login', Icon: BookOpenCheck, title: t('staff'), body: l('roleStaffD') },
+                { href: '/login/shopkeeper', Icon: Store, title: t('shopkeeper'), body: l('roleShopD') },
               ].map(({ href, Icon, title, body }) => (
                 <StaggerItem key={href}>
                   <Link href={href} className="group flex h-full flex-col justify-between gap-4 rounded-[28px] border border-white/[0.08] bg-bento p-6 transition-[border-color,transform] duration-300 hover:-translate-y-1 hover:border-mint/40">

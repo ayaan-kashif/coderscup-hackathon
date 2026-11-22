@@ -19,3 +19,8 @@ playwright-report/
 
 # private sign-in list (emails, no secrets)
 STAFF-LOGINS.txt
+
+# WhatsApp gateway: ./auth is a LIVE WhatsApp login (never commit it)
+wa-gateway/auth/
+wa-gateway/node_modules/
+wa-gateway/.env

@@ -5,7 +5,7 @@ import nextTs from 'eslint-config-next/typescript';
 export default defineConfig([
   ...nextVitals,
   ...nextTs,
-  globalIgnores(['.next/**', 'node_modules/**', 'ml/**', 'coverage/**', 'public/sw.js', 'next-env.d.ts', 'src/db/migrations/**']),
+  globalIgnores(['.next/**', 'node_modules/**', 'ml/**', 'coverage/**', 'public/sw.js', 'next-env.d.ts', 'src/db/migrations/**', 'wa-gateway/node_modules/**', 'wa-gateway/auth/**']),
   {
     files: ['src/domain/**/*.ts'],
     rules: {

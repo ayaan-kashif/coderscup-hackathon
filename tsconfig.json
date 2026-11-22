@@ -19,5 +19,5 @@
     "paths": { "@/*": ["./src/*"], "@data/*": ["./data/*"] }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
-  "exclude": ["node_modules", "ml/.venv"]
+  "exclude": ["node_modules", "ml/.venv", "wa-gateway/node_modules", "wa-gateway/src/whatsapp.ts", "wa-gateway/src/index.ts"]
 }

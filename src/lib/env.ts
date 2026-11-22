@@ -10,6 +10,8 @@ const schema = z.object({
   UPSTASH_REDIS_REST_URL: z.string().optional(),
   UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
   DEMO_MODE: z.string().optional(),
+  /** when set, demo sign-in needs this code (judges get it privately); on Vercel, demo sign-in stays off without it */
+  DEMO_ACCESS_CODE: z.string().optional(),
   DEMO_STAFF_PASSWORD: z.string().optional(),
   DEMO_CITIZEN_PIN: z.string().optional(),
   MOCK_BASE_URL: z.string().optional(),
@@ -36,3 +38,9 @@ export function requireEnv<K extends keyof Env>(key: K): NonNullable<Env[K]> {
 }
 
 export const isDemoMode = () => env().DEMO_MODE === 'true';
+export const demoAccessCode = () => env().DEMO_ACCESS_CODE?.trim() || null;
+/**
+ * Demo sign-in (the role picker and POST /api/v1/demo/tokens) is available when DEMO_MODE=true AND either an access code is
+ * set or this is not a Vercel deployment (local runs and CI). A public deployment with DEMO_MODE=true but no code stays closed.
+ */
+export const demoSignInAvailable = () => isDemoMode() && (!!demoAccessCode() || !process.env.VERCEL);

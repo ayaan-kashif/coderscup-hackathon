@@ -8,16 +8,15 @@ import { Label } from '@/components/ui/label';
 
 const HOME: Record<string, string> = { citizen: '/c', helper: '/h', officer: '/o', admin: '/a', auditor: '/au' };
 
-type Account = { email: string; role: string; tenant: string };
-
-export function LoginForm({ demo, next, accounts, labels }: { demo: boolean; next?: string; accounts: Account[]; labels: Record<'email' | 'password' | 'submit' | 'demo' | 'demoHint', string> }) {
+export function LoginForm({ demo, needsCode = false, next, labels }: { demo: boolean; needsCode?: boolean; next?: string; labels: Record<'email' | 'password' | 'submit' | 'demo' | 'demoHint', string> }) {
   const router = useRouter();
-  const [email, setEmail] = useState('officer.imran@sindh.amanat.test');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [challenge, setChallenge] = useState<string | null>(null);
   const [code, setCode] = useState('');
+  const [accessCode, setAccessCode] = useState('');
 
   const go = (role: string) => router.push(next ?? HOME[role] ?? '/');
 
@@ -43,7 +42,7 @@ export function LoginForm({ demo, next, accounts, labels }: { demo: boolean; nex
 
   const demoLogin = async (role: string, account?: string) => {
     setBusy(true);
-    const r = await fetch('/api/v1/demo/tokens', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ role, ...(account ? { email: account } : {}) }) });
+    const r = await fetch('/api/v1/demo/tokens', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ role, ...(account ? { email: account } : {}), ...(needsCode ? { accessCode } : {}) }) });
     const b = await r.json().catch(() => ({}));
     setBusy(false);
     if (r.ok) router.push(HOME[role] ?? '/'); else setError(`${b.code}: ${b.detail}`);
@@ -70,13 +69,16 @@ export function LoginForm({ demo, next, accounts, labels }: { demo: boolean; nex
         <Card>
           <CardHeader><CardTitle>{labels.demo}</CardTitle><CardDescription>{labels.demoHint}</CardDescription></CardHeader>
           <CardContent className="grid gap-2">
+            {needsCode && (
+              <div className="space-y-2"><Label htmlFor="demo-code">Demo access code</Label><Input id="demo-code" type="password" autoComplete="off" value={accessCode} onChange={(e) => setAccessCode(e.target.value)} data-testid="demo-code" /></div>
+            )}
             {(['officer', 'admin', 'auditor', 'helper', 'citizen'] as const).map((role) => (
-              <Button key={role} variant="outline" disabled={busy} onClick={() => demoLogin(role)} data-testid={`demo-${role}`}>
-                {role} {role === 'citizen' ? '(Zarina, +920000000001)' : `(${accounts.find((a) => a.role === role && a.tenant === 'sindh')?.email})`}
+              <Button key={role} variant="outline" disabled={busy || (needsCode && !accessCode)} onClick={() => demoLogin(role)} data-testid={`demo-${role}`}>
+                Open as {role}
               </Button>
             ))}
-            <Button variant="ghost" disabled={busy} onClick={() => demoLogin('officer', 'officer.bilal@punjab.amanat.test')}>officer — Punjab tenant</Button>
-            <Button variant="ghost" disabled={busy} onClick={() => demoLogin('admin', 'admin.breakit@sandbox.amanat.test')}>admin — sandbox tenant</Button>
+            <Button variant="ghost" disabled={busy || (needsCode && !accessCode)} onClick={() => demoLogin('officer', 'officer.bilal@punjab.amanat.test')}>officer — Punjab office</Button>
+            <Button variant="ghost" disabled={busy || (needsCode && !accessCode)} onClick={() => demoLogin('admin', 'admin.breakit@sandbox.amanat.test')}>admin — sandbox office</Button>
           </CardContent>
         </Card>
       )}

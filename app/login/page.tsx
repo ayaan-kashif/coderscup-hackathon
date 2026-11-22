@@ -1,8 +1,7 @@
 import { PageFrame } from '@/components/shell/page-frame';
 import { getTranslations } from 'next-intl/server';
 import { LoginForm } from '@/components/staff/login-form';
-import { isDemoMode } from '@/lib/env';
-import { DEMO_STAFF } from '@/services/seed/demo-accounts';
+import { demoAccessCode, demoSignInAvailable } from '@/lib/env';
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; role?: string }> }) {
   const t = await getTranslations('login');
@@ -10,9 +9,9 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   return (
     <PageFrame title={t('title')} width="max-w-xl">
       <LoginForm
-        demo={isDemoMode()}
+        demo={demoSignInAvailable()}
+        needsCode={!!demoAccessCode()}
         next={sp.next?.startsWith('/') ? sp.next : undefined}
-        accounts={DEMO_STAFF.map((s) => ({ email: s.email, role: s.role, tenant: s.tenant }))}
         labels={{ email: t('email'), password: t('password'), submit: t('submit'), demo: t('demo'), demoHint: t('demoHint') }}
       />
     </PageFrame>

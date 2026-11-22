@@ -23,7 +23,7 @@
     "password": "Password",
     "submit": "Sign in",
     "demo": "Demo accounts",
-    "demoHint": "Fictional .test accounts. In demo mode you can also pick a role without a password."
+    "demoHint": "Fictional demo accounts for judges. Open a role to look around; no real data."
   },
   "citizen": {
     "phoneTitle": "Your phone number",

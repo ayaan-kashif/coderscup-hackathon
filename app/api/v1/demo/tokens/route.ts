@@ -4,7 +4,9 @@ import { ROLES } from '@/auth/actor';
 import { ACCESS_TOKEN_TTL_SEC, sessionCookie, signAccessToken } from '@/auth/tokens';
 import { citizens, memberships, tenants, users } from '@/db/schema/all';
 import { route } from '@/lib/api/route';
-import { isDemoMode } from '@/lib/env';
+import { timingSafeEqual } from 'node:crypto';
+import { demoAccessCode, demoSignInAvailable } from '@/lib/env';
+import { sha256Hex } from '@/lib/hash';
 import { ApiError } from '@/lib/errors';
 import { DEMO_ROLE_ACCOUNTS, DEMO_STAFF } from '@/services/seed/demo-accounts';
 
@@ -12,7 +14,11 @@ const body = z.object({
   role: z.enum(ROLES as unknown as ['citizen', 'helper', 'officer', 'admin', 'auditor']),
   /** a specific seeded demo account; defaults to the persona for the role */
   email: z.string().email().refine((e) => e.endsWith('.test')).optional(),
+  /** the demo access code, when the deployment sets DEMO_ACCESS_CODE */
+  accessCode: z.string().max(200).optional(),
 });
+
+const sameCode = (a: string, b: string) => timingSafeEqual(Buffer.from(sha256Hex(a), 'hex'), Buffer.from(sha256Hex(b), 'hex'));
 
 /**
  * API-6: a 15-minute token for a seeded demo role, so judges can test permissions with curl.
@@ -21,10 +27,13 @@ const body = z.object({
 export const POST = route({
   operationId: 'demoToken', method: 'POST', path: '/api/v1/demo/tokens', summary: 'Mint a 15-minute token for a demo role (demo mode only)', tags: ['Auth'],
   auth: 'public', body,
-  rateLimit: ({ ip }) => [{ name: 'demo_tokens', key: ip, limit: 20, windowSec: 60 }],
+  // with an access code, wrong guesses are limited much harder
+  rateLimit: ({ ip }) => [{ name: 'demo_tokens', key: ip, limit: 20, windowSec: 60 }, ...(demoAccessCode() ? [{ name: 'demo_tokens_code', key: ip, limit: 15, windowSec: 600 }] : [])],
   audit: { action: 'auth.demo_token', resourceType: 'session' },
   handler: async (c, db) => {
-    if (!isDemoMode()) throw new ApiError('DEMO_DISABLED', 'The requested resource was not found.');
+    if (!demoSignInAvailable()) throw new ApiError('DEMO_DISABLED', 'The requested resource was not found.');
+    const need = demoAccessCode();
+    if (need && !(c.body.accessCode && sameCode(c.body.accessCode, need))) throw new ApiError('FORBIDDEN_ROLE', 'Wrong or missing demo access code.');
     const role = c.body.role;
     if (role === 'citizen') {
       const phone = DEMO_ROLE_ACCOUNTS.citizen.phone!;

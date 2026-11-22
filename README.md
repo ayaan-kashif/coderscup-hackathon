@@ -78,6 +78,7 @@ No external database or API keys required: every service falls back gracefully.
 | `UPSTASH_REDIS_REST_URL` / `TOKEN` | Optional | Global distributed rate limiter. *Fallback: in-memory rate limiting.* |
 | `SENTRY_DSN` | Optional | Zero-PII error tracking and performance monitoring. *Fallback: standard structured console logs.* |
 | `DEMO_MODE` | Optional | Enables `/api/v1/demo/tokens` and instant role-picker on `/`. Set to `false` for live deployments. |
+| `DEMO_ACCESS_CODE` | Optional | A private code that unlocks demo sign-in (the role picker and `/api/v1/demo/tokens`). On Vercel, demo sign-in stays closed unless this is set, so a public link cannot open every role. Share the code only with judges. |
 | `DEMO_STAFF_PASSWORD` | Optional | Password for demo staff accounts (`<set DEMO_STAFF_PASSWORD in .env.local>`). |
 | `DEMO_CITIZEN_PIN` | Optional | 4-digit PIN for the demo citizens. Set it in `.env.local`; it is never printed here or committed. |
 

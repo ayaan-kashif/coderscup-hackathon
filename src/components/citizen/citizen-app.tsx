@@ -117,7 +117,11 @@ export function CitizenApp() {
       <Screen title={t('citizen.codeTitle')} prompt="ask_code" replay={t('citizen.playPrompt')}>
         <p className="text-sm text-muted-foreground">{t('citizen.codeHint')}</p>
         <a className="block text-center underline" href={`/mock/phone?phone=${encodeURIComponent(`+9200000${phone}`)}`} target="_blank" rel="noreferrer">{t('home.mockPhone')} ↗</a>
-        <Keypad value={code} onChange={setCode} max={6} />
+        <Keypad value={code} onChange={setCode} max={6} slots />
+        {/* the sign-in code is 6 digits from the SMS; the 4-digit PIN comes on the next screen */}
+        <p className="text-center text-sm text-muted-foreground" data-testid="code-length-hint">
+          {code.length === 6 ? bi('Press Continue.', 'آگے بڑھیں دبائیں۔') : bi(`The code has 6 digits (${code.length} of 6). It is in the mock phone message. Your 4-digit PIN comes next.`, `کوڈ 6 ہندسوں کا ہے (${code.length} / 6)۔ یہ فرضی فون کے پیغام میں ہے۔ آپ کا 4 ہندسوں کا پن اگلے مرحلے میں آئے گا۔`)}
+        </p>
         {message && <p role="alert" className="text-center text-destructive">{message}</p>}
         <Button size="xl" className="w-full" disabled={code.length !== 6} onClick={async () => {
           const r = await api('/api/v1/auth/otp/verify', { body: { phone: `+9200000${phone}`, code } });

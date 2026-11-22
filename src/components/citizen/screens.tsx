@@ -309,6 +309,66 @@ export function DataScreen({ caseId }: { caseId: string | null }) {
   );
 }
 
+const STATUS_TEXT: Record<string, [string, string]> = {
+  draft: ['Not sent yet', 'ابھی نہیں بھیجی'], submitted: ['Reached the office', 'دفتر پہنچ گئی'], processing: ['Being checked', 'جانچ جاری ہے'],
+  needs_proof: ['One more photo needed', 'ایک اور تصویر چاہیے'], in_review: ['An officer is looking', 'افسر دیکھ رہا ہے'],
+  approved_on_hold: ['Approved, payment scheduled', 'منظور، ادائیگی طے'], approved: ['Approved', 'منظور'], rejected: ['Not approved', 'منظور نہیں ہوئی'],
+  paid: ['Paid: check the amount', 'ادائیگی ہو گئی'], confirmed: ['Received in full', 'پوری رقم ملی'], disputed: ['Payment complaint open', 'ادائیگی کی شکایت'],
+  paused_for_consent: ['Paused: sharing stopped', 'رکی ہوئی: شیئرنگ بند'], frozen: ['On hold', 'روکی ہوئی'], closed: ['Closed', 'بند'],
+};
+const EVENT_TEXT: Record<string, [string, string]> = {
+  created: ['Started', 'شروع کی'], reached_office: ['Reached the office', 'دفتر پہنچی'], officer_opened: ['An officer opened it', 'افسر نے کھولی'],
+  checked: ['Checked', 'جانچ ہوئی'], officer_decided: ['An officer decided', 'افسر نے فیصلہ کیا'], proof_sent: ['You sent a photo', 'آپ نے تصویر بھیجی'],
+  payment_scheduled: ['Payment scheduled', 'ادائیگی طے'], payment_sent: ['Payment sent', 'ادائیگی بھیجی'], receipt: ['You confirmed the amount', 'آپ نے رقم کی تصدیق کی'],
+  on_hold: ['On hold', 'روکی گئی'], resumed: ['Resumed', 'دوبارہ شروع'], paused: ['Paused', 'رکی'],
+};
+
+/** Dashboard: all her applications with status, ticks and a timeline (tap one to see its history; "Open" goes to the status screen) */
+export function MyApplications({ onOpen }: { onOpen: (caseId: string) => void }) {
+  const bi = useBi();
+  const [items, setItems] = useState<{ id: string; status: string; ticks: 'grey1' | 'grey2' | 'blue2' | 'failed'; updatedAt: string }[] | null>(null);
+  const [open, setOpen] = useState<string | null>(null);
+  const [events, setEvents] = useState<{ ts: string; event: string }[]>([]);
+  useEffect(() => {
+    let alive = true;
+    void api('/api/v1/me/cases').then((r) => { if (alive && r.status === 200) setItems(r.body.items); }, () => {});
+    return () => { alive = false; };
+  }, []);
+  if (!items || items.length === 0) return null;
+  const text = (m: Record<string, [string, string]>, k: string) => (m[k] ? bi(m[k][0], m[k][1]) : k.replace(/_/g, ' '));
+  return (
+    <section className="space-y-2" data-testid="my-applications" aria-label={bi('My applications', 'میری درخواستیں')}>
+      <h3 className="px-1 text-lg font-bold">{bi('My applications', 'میری درخواستیں')}</h3>
+      <ul className="space-y-2">
+        {items.map((c) => (
+          <li key={c.id} className="rounded-[20px] border border-white/10 bg-bento p-3" data-testid="application-row">
+            <button type="button" className="flex w-full flex-wrap items-center justify-between gap-2 text-start" aria-expanded={open === c.id}
+              onClick={async () => {
+                if (open === c.id) { setOpen(null); return; }
+                setOpen(c.id); setEvents([]);
+                const r = await api(`/api/v1/cases/${c.id}/timeline`);
+                if (r.status === 200) setEvents(r.body.events);
+              }}>
+              <span className="font-semibold">{text(STATUS_TEXT, c.status)}</span>
+              <span className="rounded-full bg-void px-3 py-1"><Ticks tick={c.ticks} labels={{ saved: bi('Saved on phone', 'فون میں محفوظ'), sent: bi('Reached the office', 'دفتر پہنچ گئی'), opened: bi('Officer opened it', 'افسر نے کھولی'), failed: '' }} /></span>
+            </button>
+            <p className="text-xs text-muted-foreground">{new Date(c.updatedAt).toLocaleDateString()}</p>
+            {open === c.id && (
+              <div className="mt-2 space-y-2 border-t border-white/10 pt-2" data-testid="application-timeline">
+                <ol className="space-y-1 text-sm">
+                  {events.length === 0 && <li className="text-muted-foreground">…</li>}
+                  {events.map((e, i) => <li key={i} className="flex justify-between gap-2"><span>{text(EVENT_TEXT, e.event)}</span><span className="text-xs text-muted-foreground">{new Date(e.ts).toLocaleString()}</span></li>)}
+                </ol>
+                {c.status !== 'draft' && <Button size="sm" variant="secondary" onClick={() => onOpen(c.id)}>{bi('Open', 'کھولیں')}</Button>}
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 const SHARE_CHOICES: { key: string; en: string; ur: string; icon: string }[] = [
   { key: 'identity', en: 'Identity check', ur: 'شناخت کی جانچ', icon: '🪪' },
   { key: 'documents', en: 'Photos of documents', ur: 'دستاویزات کی تصاویر', icon: '📄' },

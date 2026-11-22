@@ -16,7 +16,7 @@ import { VoicePrompt, playSequence } from '@/components/voice/voice-prompt';
 import { useBi } from '@/components/voice/voice-lib';
 import { outboxDb } from '@/offline/outbox';
 import { startSync } from '@/offline/sync';
-import { api, CaseStatusScreen, DataScreen, HelpScreen, ProofScreen, RealScreen, ReceiptScreen } from './screens';
+import { api, CaseStatusScreen, DataScreen, HelpScreen, MyApplications, ProofScreen, RealScreen, ReceiptScreen } from './screens';
 import { TRUST_PICTURES, trustPicture } from './trust-pictures';
 import { DuressSafetyCard, PayoutChangeFlow } from './duress-safety';
 
@@ -291,6 +291,7 @@ function Home({ me, online }: { me: Me; online: boolean }) {
       {view.name === 'home' && (
         <>
           <VoicePrompt clip="home_tiles" label={t('citizen.playPrompt')} />
+          <MyApplications key={version} onOpen={(id) => setView({ name: 'status', caseId: id })} />
           <motion.div className="grid grid-cols-2 gap-3" initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.07, delayChildren: 0.1 } } }}>
             {TILES.map((tile) => {
               const primary = tile.view === 'apply';

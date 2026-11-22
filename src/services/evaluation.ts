@@ -182,16 +182,25 @@ export async function liveMetrics(db: DbOrTx, tenantId: string) {
       percentile_cont(0.5) within group (order by extract(epoch from ((pipeline->>'finishedAt')::timestamptz - (pipeline->>'startedAt')::timestamptz)) * 1000) as p50,
       percentile_cont(0.95) within group (order by extract(epoch from ((pipeline->>'finishedAt')::timestamptz - (pipeline->>'startedAt')::timestamptz)) * 1000) as p95
     from cases where tenant_id = ${tenantId} and pipeline ? 'finishedAt'`))[0];
+  // speed per pipeline stage (ms), over the cases that have finished; the stage timings are written by the pipeline itself
+  const stages = rowsOf<{ stage: string; n: number; p50: number; p95: number; first: string | null; last: string | null }>(await db.execute(sql`
+    select t.key as stage, count(*)::int as n,
+      percentile_cont(0.5) within group (order by t.value::float) as p50, percentile_cont(0.95) within group (order by t.value::float) as p95,
+      min(c.updated_at)::text as first, max(c.updated_at)::text as last
+    from cases c, jsonb_each_text(c.pipeline->'timings') t
+    where c.tenant_id = ${tenantId} and c.pipeline ? 'timings' and c.pipeline ? 'finishedAt' group by t.key order by p95 desc`));
   const ov = rowsOf<{ officer: number; overrides: number }>(await db.execute(sql`
     select count(*)::int as officer,
       sum(case when (o.outcome = 'APPROVED' and s.proposed_action = 'reject') or (o.outcome = 'REJECTED' and s.proposed_action <> 'reject') then 1 else 0 end)::int as overrides
     from decisions o join decisions s on s.id = o.previous_decision_id
     where o.tenant_id = ${tenantId} and o.actor_type = 'officer' and o.outcome in ('APPROVED', 'REJECTED')`))[0];
-  const cases = rowsOf<{ n: number; cost: number | null }>(await db.execute(sql`select count(distinct case_id)::int as n, sum(cost_usd)::float as cost from ai_calls where tenant_id = ${tenantId} and case_id is not null`))[0];
+  const cases = rowsOf<{ n: number; calls: number; cost: number | null; first: string | null; last: string | null }>(await db.execute(sql`select count(distinct case_id)::int as n, count(*)::int as calls, sum(cost_usd)::float as cost, min(created_at)::text as first, max(created_at)::text as last from ai_calls where tenant_id = ${tenantId} and case_id is not null`))[0];
   return {
     pipelineMs: { n: pipe?.n ?? 0, p50: pipe?.p50 ? Math.round(pipe.p50) : null, p95: pipe?.p95 ? Math.round(pipe.p95) : null },
+    stageMs: stages.map((x) => ({ stage: x.stage, n: x.n, p50: Math.round(x.p50), p95: Math.round(x.p95), from: x.first, to: x.last })),
     aiCalls: ai.map((a) => ({ ...a, p50: a.p50 ? Math.round(a.p50) : null, p95: a.p95 ? Math.round(a.p95) : null })),
     costPerCaseUsd: cases && cases.n ? r4((cases.cost ?? 0) / cases.n) : null,
+    cost: { perCaseUsd: cases && cases.n ? r4((cases.cost ?? 0) / cases.n) : null, totalUsd: r4(cases?.cost ?? 0), cases: cases?.n ?? 0, aiCalls: cases?.calls ?? 0, from: cases?.first ?? null, to: cases?.last ?? null },
     officerOverrides: ratio(ov?.overrides ?? 0, ov?.officer ?? 0),
   };
 }

@@ -2,11 +2,15 @@
 
 **Prototype — not an official service.** Every person, document, phone number and government system here is synthetic or a labelled mock. Coder's Cup '26, "The Last Mile: AI on Public Rails". Full spec: [docs/PRD.md](docs/PRD.md). Build logs: [PROMPT-1](docs/progress/PROMPT-1.md) · [PROMPT-2](docs/progress/PROMPT-2.md) · [PROMPT-3](docs/progress/PROMPT-3.md).
 
+> **We help a widow who cannot read receive her relief payment safely and in full, even though she cannot fill the form, her records do not match, and scammers and middlemen are after the same money.**
+
+**Deployed:** `<paste the Vercel URL here after `vercel deploy --prod`>` · **Demo video:** `<Google Drive link>`
+
 > AI reads, mocks confirm, rules decide, people sign off. A widow who cannot read applies by voice on a weak signal; the system acts alone only when the evidence clears a bar set by the cost of a mistake, and otherwise hands the case to an officer with the reason and the one fact that would settle it.
 
 ## Contents
 
-[Quick start](#quick-start) · [Demo accounts and curl](#demo-accounts-and-curl-per-role) · [Architecture](#architecture) · [Features](#features-one-section-each) · [Decision maths](#the-decision-maths) · [Evaluation](#evaluation-results) · [Break It](#break-it) · [Tests](#tests) · [Real vs simulated](#what-is-real-and-what-is-simulated) · [Limits](#limits-we-state-openly) · [Deploy](#deploy-vercel--supabase-mumbai)
+[Quick start](#quick-start) · [Brief coverage](#brief-coverage) · [Demo accounts and curl](#demo-accounts-and-curl-per-role) · [Architecture](#architecture) · [Features](#features-one-section-each) · [Decision maths](#the-decision-maths) · [Evaluation](#evaluation-results) · [Break It](#break-it) · [Tests](#tests) · [Real vs simulated](#what-is-real-and-what-is-simulated) · [Limits](#limits-we-state-openly) · [Deploy](#deploy-vercel--supabase-mumbai)
 
 ## Quick start
 
@@ -66,21 +70,90 @@ No external database or API keys required: every service falls back gracefully.
 | `PII_ENC_KEY` | **Yes** | 32-byte AES-256-GCM base64 key for encrypting CNIC numbers & wallet details. |
 | `PII_HMAC_PEPPER` | **Yes** | Cryptographic pepper for blind index lookups. |
 | `API_KEY_PEPPER` | **Yes** | Pepper string for hashing staff & agency API keys. |
-| `AI_GATEWAY_API_KEY` | Optional | Powers Gemini 3.8 Flash, Jev, and ElevenLabs Scribe. *Fallback: deterministic rules & person-in-the-loop.* |
+| `AI_GATEWAY_API_KEY` | Optional | Powers Gemini 3.8 Flash, Jev, ElevenLabs Scribe and text-to-speech. The Vercel account behind it needs a card on file or the gateway answers 403. *Fallback: deterministic rules & person-in-the-loop.* |
+| `VERIFICATION_AGENT` | Optional | `on` turns on the bounded verification agent (escalate-only; needs the gateway key). |
+| `CRON_SECRET` | Optional | Opens `/api/cron/*`, the scheduler fallback when Inngest is not configured. |
 | `UPLIFT_API_KEY` | Optional | Uplift AI Speech-to-Text API for Urdu voice transcription. *Fallback: icon selection / manual text.* |
 | `INNGEST_EVENT_KEY` / `SIGNING_KEY` | Optional | Durable asynchronous background event queues. *Fallback: synchronous inline execution.* |
 | `UPSTASH_REDIS_REST_URL` / `TOKEN` | Optional | Global distributed rate limiter. *Fallback: in-memory rate limiting.* |
 | `SENTRY_DSN` | Optional | Zero-PII error tracking and performance monitoring. *Fallback: standard structured console logs.* |
 | `DEMO_MODE` | Optional | Enables `/api/v1/demo/tokens` and instant role-picker on `/`. Set to `false` for live deployments. |
 | `DEMO_STAFF_PASSWORD` | Optional | Password for demo staff accounts (`<set DEMO_STAFF_PASSWORD in .env.local>`). |
-| `DEMO_CITIZEN_PIN` | Optional | PIN for demo citizen accounts (`4525`). |
+| `DEMO_CITIZEN_PIN` | Optional | 4-digit PIN for the demo citizens. Set it in `.env.local`; it is never printed here or committed. |
+
+## Brief coverage
+
+Every item of the brief, where it is, and how to try it. Everything is synthetic or a labelled mock.
+
+### The 5 roles (the brief asks for 3)
+Citizen, community helper, department officer, admin, auditor. **Try:** `/login` → pick a role.
+
+### The 7 core platform features
+| Feature | Try |
+| --- | --- |
+| Secure login with role-based access | `/login`; the generated permission matrix (`tests/integration/permission-matrix.test.ts`, 1,000+ cells). Admins and auditors can turn on TOTP in their console. |
+| Dashboard with progress, status and history | Citizen `/c`: "My applications" lists every application with status, ticks and a timeline (tap one). Helper `/h`: each family's status and ticks. Officer `/o`: the queue with counts per stop. |
+| Case management (create, assign, escalate, close) | `/o` → open a case → assign, escalate, close; `POST /api/v1/cases`, `/assign`, `/close`. |
+| Public REST API with keys and OpenAPI docs | `/api/docs`; `/a/org` → Create key → `curl -H "X-API-Key: …"`. |
+| Audit log of every user, AI and agent action | `/au/chain` (hash chain, hourly anchors), `/au` (decisions and AI decisions), `/au/access` (every data read, allowed and refused, with CSV export). |
+| Consent management (see, share, withdraw, correct) | Citizen → My data: see who holds it, choose what to share (identity, documents, payout, contact, voice) with the PIN, stop sharing, correct a fact, download your data. |
+| Mock identity, payment and data services behind clean APIs | `/api/mock/*` (every response says `simulated: true`); change their speed and failure rate in `/a/chaos`. |
+
+### The 7 optional platform features we picked
+| Feature | Try |
+| --- | --- |
+| Multi-tenant workspaces | Sindh, Punjab and a sandbox office; an officer of another office gets 404 on any case. The admin console header lists only offices where you hold a role (Admin Sana holds two). |
+| Admin rule editor | `/a` → New draft → edit → Save → Run the Twin → Publish (a second admin approves a harmful change). |
+| Notifications | In-app, mock SMS and voice notes only, through the outbox with retries: `/mock/phone` after any status change. No WhatsApp, no email. |
+| Officer review queue with priority and confidence sorting | `/o`. |
+| Background jobs and queues | Inngest steps with an inline fallback; the outbox, hourly audit anchor and daily retention sweep; `/a/org` → Background jobs. |
+| Rate limiting and error handling | Per-IP, per-actor and per-route limits (Upstash, or in-memory); RFC 9457 errors with request ids; request a sign-in code for the same phone 4 times within 10 minutes and read the 429 and its `Retry-After`. |
+| Low-bandwidth and offline mode | Citizen app with the network switched off (DevTools → Offline) or on a 2G / Data Saver connection: no photo previews, slower polling, tick states. |
+
+Also built beyond the minimum: webhooks, tenant analytics (`/a/analytics`), plans and usage limits.
+
+### The 10 AI features (the brief asks for 3)
+| Feature | Try |
+| --- | --- |
+| RAG with citations | Citizen → Help → ask "Am I eligible if my husband died abroad?"; hybrid keyword + vector retrieval over the 19 clauses; an answer without a valid citation is refused. |
+| Classification and routing (Jev) | Scam type, intent routing, complaint triage and an escalate-only second opinion; `/au` → AI decisions. |
+| Computer vision | Document upload: signed-QR check, blur check, image reuse, extraction, weak signals (editing software, error-level) shown to officers. |
+| Voice | Urdu speech-to-text for answers with read-back; text-to-speech for dynamic phrases, cached by text hash. |
+| Structured outputs | Zod schemas on every model output; an invalid output is refused, never guessed. |
+| Guardrails and human approval | Injection scan; models only add stops; nothing is rejected automatically; no model has a tool that approves, rejects or moves money. |
+| Explainability | Citizen (icons and voice), officer (rule trace, evidence contributions) and auditor (full trace, replay) views. |
+| Anomaly and duplicate detection | `/h`: one wallet on two families freezes both; duplicate CNIC and near-duplicate people. |
+| **Memory and context** | **Case state lives in Postgres** (facts with their source, the immutable decision history, the audit chain); **the phone keeps an IndexedDB outbox** so nothing is lost offline; **the pipeline is resumable** (each step is durable, and a run re-checks consent before every step and continues where it stopped). Try: submit a case, drop the connection mid-way, reconnect, and find exactly one case. |
+| Evaluation dashboard | `/a/evaluation`: routing, calibration, scam, matching, documents, RAG with denominators; speed per pipeline stage (p50/p95) and AI cost per case; the cost slider; Break It. |
+
+A bounded verification agent (read-only tools, at most 8 steps, escalate-only) is built but **off by default** (`VERIFICATION_AGENT=on`); it is not claimed until it has run live.
+
+### The 4 bonus features
+| Feature | Try |
+| --- | --- |
+| Helper Mode | `/h`: 40 families, each unlocked with its own PIN; one family withdrawing consent blocks only that family. |
+| Offline-first sync | Apply with the network off, reconnect; ticks go grey, grey, blue; one case, however many retries. |
+| Digital Twin | `/a` → Run the Twin on a draft → second admin approves → publish → open cases are re-decided; any that would get worse stop at S11. |
+| Scam Map | `/map`: filter by time, district and scam type; counts under 3 are hidden; a spike drafts an alert that an officer approves in `/o/scams`. |
+
+Also: **Silent Duress PIN** (a PIN typed backwards looks like a normal sign-in but locks the money down and alerts officers).
+
+### Try lines for the newest pieces
+- **Consent by data category:** `/c` → My data → "What you share" → switch off "Photos of documents" → Save with PIN → try to add a photo (403 `CONSENT_WITHDRAWN`, the category named).
+- **AI decisions:** `/au` → search → open a scam verdict → its trace (input hash, model, prompt version, probabilities, reason).
+- **Auditor read log:** `/au/access` → "Every data read" → filter "Refused" → Export CSV.
+- **Admin users:** `/a/org` → Users → change a role, Deactivate (their next request is refused), Reactivate.
+- **Speed and cost:** `/a/evaluation` → Live → "Speed per pipeline stage" and "AI cost".
+- **Dashboard:** `/c` home → "My applications".
+- **Scam Map filters:** `/map?days=30&type=fee_before_payment&district=HYD`.
+- **Helper per-family consent:** unlock a family in `/h`, then withdraw that family's consent as the citizen; that family returns 403, the other families still work.
 
 ## Demo accounts and curl per role
 
-Demo mode (`DEMO_MODE=true`) issues 15-minute tokens for seeded fictional accounts (20 per minute per IP). Passwords and PINs live only in environment variables.
+Demo mode (`DEMO_MODE=true`) issues 15-minute tokens for seeded fictional accounts (20 per minute per IP). Passwords and PINs live only in environment variables (`DEMO_STAFF_PASSWORD`, `DEMO_CITIZEN_PIN` in `.env.local`) and are never printed in this file. Sign in with the demo tokens below, or the role picker on `/login`.
 
 ```bash
-BASE=http://localhost:3100            # or the deployed URL
+BASE=https://<deployed-url>           # the deployed link above; use http://localhost:3100 when running locally
 tok() { curl -s -X POST $BASE/api/v1/demo/tokens -H 'content-type: application/json' -d "{\"role\":\"$1\"${2:+,\"email\":\"$2\"}}" | jq -r .token; }
 CIT=$(tok citizen); HLP=$(tok helper); OFF=$(tok officer); ADM=$(tok admin); AUD=$(tok auditor)
 PUN=$(tok officer officer.bilal@punjab.amanat.test); SBX=$(tok admin admin.breakit@sandbox.amanat.test)
@@ -143,7 +216,7 @@ route(): request id → authenticate → rate limit → Zod → authorize (role 
         └── pure core src/domain: three-valued rules, matcher, logistic + isotonic scorer, decide(), cost threshold, evaluation
 ```
 
-Code map: [src/lib/api/route.ts](src/lib/api/route.ts) (the only way an API handler is built) · [src/auth/policy.ts](src/auth/policy.ts) (the permission matrix) · [src/domain/](src/domain/) (decision core, no I/O) · [src/services/pipeline/](src/services/pipeline/) · [src/ai/](src/ai/) · [src/db/](src/db/) (52 tables, RLS on all, the §20.3 audit chain) · [ml/](ml/) (generator and training, seed 2026) · [tests/](tests/).
+Code map: [src/lib/api/route.ts](src/lib/api/route.ts) (the only way an API handler is built) · [src/auth/policy.ts](src/auth/policy.ts) (the permission matrix) · [src/domain/](src/domain/) (decision core, no I/O) · [src/services/pipeline/](src/services/pipeline/) · [src/ai/](src/ai/) · [src/db/](src/db/) (54 tables, RLS on all, the §20.3 audit chain) · [ml/](ml/) (generator and training, seed 2026) · [tests/](tests/).
 
 ## Features (one section each)
 
@@ -221,7 +294,7 @@ Replays stored snapshots (the last 90 days and every open case) under a draft. I
 Three cost sliders recompute, in milliseconds on the frozen 100-case test set: the threshold, the route split, wrong approvals with their 95% bound, and officer hours. The dashboard shows the §25.2 metrics with their denominators; Break It is described below. **Try:** `/a/evaluation`; `/a/break-it` as the sandbox admin.
 
 ### F15 Public API, keys, notifications
-REST under `/api/v1`, with OpenAPI 3.1 and curl examples at `/api/docs`. Per-office API keys have scopes, are stored hashed, shown once, and can be revoked. Notifications go in-app, by mock SMS and by voice note only, and never contain links or ask for money. **Try:** `/a/org` → Create key → `curl -H "X-API-Key: …"`. Webhooks are not built (a P1 item).
+REST under `/api/v1`, with OpenAPI 3.1 and curl examples at `/api/docs`. Per-office API keys have scopes, are stored hashed, shown once, and can be revoked. Notifications go in-app, by mock SMS and by voice note only, and never contain links or ask for money. **Try:** `/a/org` → Create key → `curl -H "X-API-Key: …"`. Signed webhooks (`case.decided`, `case.escalated`, `payment.sent`, `consent.withdrawn`) go through the outbox with retries, a delivery log and replay; manage them in `/a/org`. Plans (`/api/v1/admin/plan`) cap cases per month, API calls per minute and AI calls per day per office.
 
 ### F16 Policy assistant with citations
 Retrieves from the 19 policy clauses. An answer must cite the retrieved clauses with exact quotes; otherwise it says "I am not sure; a person will call you" and opens an officer query. **Try:** citizen → Help. It needs the gateway key to answer; without it, it refuses safely.
@@ -264,6 +337,10 @@ From `pnpm eval` on the frozen synthetic datasets (seed 2026); the dashboard (`/
 | RAG (D5) | Expected clause in the top 4 retrieved | 27 / 30 | — |
 | Not measured here | Citation accuracy, refusals, voice word error rate, Jev label swap | need the gateway or speech keys | |
 
+### Evaluation with the real models
+
+**Status: not yet run.** The model IDs were checked against the gateway's catalogue (`pnpm ai:smoke`), but every gateway call currently returns `403: AI Gateway requires a valid credit card on file`, so the citation accuracy, refusals (D5), voice word error rate and digit accuracy (D4), Jev label swap (D2) and extraction accuracy (D6) have not been measured live. Urdu speech-to-text through Uplift AI works (`UPLIFT_API_KEY`). Once the account has a card: `pnpm ai:smoke`, then `pnpm eval` (frozen test sets only), then Break It as the sandbox admin; attacks #2 and #8 are then expected to be caught by S6 and S9 instead of going to a person under S8. The label-swap check and the other model-dependent steps are covered by tests with mock models in the meantime.
+
 How to read these numbers:
 - The scam rules were tuned on D2's tune split and measured on the untouched test split; both score 100%.
 - "Edited text caught" uses the printed fields an extraction model would read, so it is an upper bound; live extraction needs the key.
@@ -271,7 +348,7 @@ How to read these numbers:
 
 ## Break It
 
-18 attacks, 20 clean control cases and 5 genuine messages checked on someone else's behalf, run through the live pipeline in the sandbox office, with no AI key:
+18 attacks, 20 clean control cases and 5 genuine messages checked on someone else's behalf, run through the live pipeline in the sandbox office. These are the results measured **without an AI key** (controls carry no photographs, so they do not need extraction; attacks with photographs go to a person). Live results with the gateway key are measured after the key's account is funded; the run and its output are listed under "Evaluation with the real models" below:
 
 | Result | Attacks | Controls | Genuine messages |
 | --- | --- | --- | --- |
@@ -320,7 +397,7 @@ Attacks #2 and #8 need the extraction model to be caught. Without the key they g
 - **Image checks are narrow.** Reuse detection catches identical or re-encoded copies, but not a cropped re-photograph of the same card. Anything beyond that is a hint for officers.
 - **Anomaly rules catch patterns, not every theft.** The exact-amount receipt and complaints cover what the rules miss.
 - **Mocks are simpler than real registries**, which have other failure modes, latencies and legal limits.
-- **Without the gateway key**, the live system sends every case that has documents to a person. With the key, the model-dependent checks (extraction, injection, second opinion, policy answers) have been exercised only by tests using the AI SDK's mock models, not yet on real traffic.
+- **Without the gateway key**, the live system sends every case that has photographed documents to a person, because the printed text cannot be read and compared with the signed QR (stop S8). Break It's 20 clean controls are created from form answers and registry records with no document upload, so they never need the extraction model; that is why they are approved with no key while a case with photos is not. With the key, the model-dependent checks (extraction, injection, second opinion, policy answers) have been exercised only by tests using the AI SDK's mock models, not yet on real traffic.
 
 ## Deploy (Vercel + Supabase, Mumbai)
 

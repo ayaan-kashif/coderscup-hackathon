@@ -73,6 +73,7 @@ const BODY_OVERRIDES: Record<string, unknown> = {
   createUser: { email: 'probe.user@sindh.amanat.test', displayName: 'Probe User', role: 'officer' },
   createApiKey: { name: 'probe key', scopes: ['scam:check'] },
   updateUser: { isSenior: false },
+  transcribeHelpQuestion: { mediaType: 'audio/webm', dataBase64: 'A'.repeat(400), durationMs: 2000 },
   resolveDuressAlarm: { action: 'escalate', note: 'matrix probe' },
 };
 const QUERY_OVERRIDES: Record<string, Record<string, string>> = { getConsentAndAccess: { citizenId: '00000000-0000-4000-8000-000000000000' } };

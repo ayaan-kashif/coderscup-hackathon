@@ -7,7 +7,8 @@ import type { DbOrTx } from '@/db/client';
 import { aiCall } from './calls';
 import { getModelIds } from './models';
 import { PROMPTS } from './prompts';
-import { transcribeWith } from './runtime';
+import { generateStructured, transcribeWith } from './runtime';
+import { z } from 'zod';
 
 export type SttResult = { ok: true; text: string; model: string; tried: string[] } | { ok: false; reason: 'empty' | 'unavailable'; tried: string[] };
 
@@ -18,7 +19,7 @@ export function looksUrdu(text: string) {
   return urdu > 0 || latin > 0 ? urdu >= latin * 0.5 || /\b(haan|han|nahin|nahi|ji|bibi|begum|muhammad)\b/i.test(text) || /\d/.test(text) : false;
 }
 
-export async function transcribeUrdu(db: DbOrTx, o: { tenantId: string; caseId: string | null; audio: Uint8Array; mediaType: string }): Promise<SttResult> {
+export async function transcribeUrdu(db: DbOrTx, o: { tenantId: string | null; caseId: string | null; audio: Uint8Array; mediaType: string; timeoutMs?: number }): Promise<SttResult> {
   const ids = await getModelIds(db, o.tenantId);
   const tried: string[] = [];
   let sawEmpty = false;
@@ -26,7 +27,7 @@ export async function transcribeUrdu(db: DbOrTx, o: { tenantId: string; caseId: 
     tried.push(model);
     try {
       const r = await aiCall({ db, tenantId: o.tenantId, caseId: o.caseId, purpose: 'stt.urdu', model, promptVersion: PROMPTS.stt.version }, () =>
-        transcribeWith({ model, audio: o.audio, mediaType: o.mediaType, timeoutMs: 15_000 }));
+        transcribeWith({ model, audio: o.audio, mediaType: o.mediaType, timeoutMs: o.timeoutMs ?? 15_000 }));
       const text = r.text.trim();
       if (!text) { sawEmpty = true; continue; }
       return { ok: true, text, model: r.modelId, tried };
@@ -41,4 +42,24 @@ export function yesNo(text: string): 'yes' | 'no' | null {
   if (/^(haan|han|haa|ji|ji haan|jee|yes|ہاں|جی|جی ہاں)\b/.test(t)) return 'yes';
   if (/^(nahin|nahi|nai|no|نہیں|نہ)\b/.test(t)) return 'no';
   return null;
+}
+
+/** Devanagari (Hindi script) letters */
+export const hasDevanagari = (t: string) => /[\u0900-\u097F]/.test(t);
+
+/**
+ * If Urdu speech came back in Hindi script, ask the existing Gemini model ONCE to rewrite it in Urdu script.
+ * Never throws and never logs the text; if the rewrite fails the original is returned and flagged.
+ */
+export async function ensureUrduScript(db: DbOrTx, tenantId: string | null, text: string): Promise<{ text: string; rewritten: boolean; script: 'urdu' | 'devanagari' }> {
+  if (!hasDevanagari(text)) return { text, rewritten: false, script: 'urdu' };
+  const ids = await getModelIds(db, tenantId);
+  try {
+    const r = await aiCall({ db, tenantId, purpose: 'stt.urdu_script', model: ids.summarizer, promptVersion: PROMPTS.sttUrduScript.version }, () =>
+      generateStructured({ model: ids.summarizer, schema: z.object({ urdu: z.string().min(1).max(600) }), system: PROMPTS.sttUrduScript.system, timeoutMs: 10_000, messages: [{ role: 'user', content: text }] }));
+    const urdu = r.object.urdu.trim();
+    return hasDevanagari(urdu) ? { text, rewritten: false, script: 'devanagari' } : { text: urdu, rewritten: true, script: 'urdu' };
+  } catch {
+    return { text, rewritten: false, script: 'devanagari' };
+  }
 }

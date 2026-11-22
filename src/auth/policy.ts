@@ -16,7 +16,7 @@ export type Action =
   | 'case.write' | 'case.status' | 'case.explain' | 'case.freeze' | 'queue.read'
   | 'decision.read' | 'decision.replay' | 'aidecision.read'
   | 'complaint.create' | 'correction.create' | 'correction.review' | 'receipt.confirm'
-  | 'helper.work' | 'scam.desk' | 'assist.policy' | 'notifications.read' | 'self.update' | 'audit.breakglass';
+  | 'helper.work' | 'scam.desk' | 'assist.policy' | 'assist.transcribe' | 'notifications.read' | 'self.update' | 'audit.breakglass';
 
 type Scope = 'own' | 'grant' | 'tenant' | 'any';
 export type ConsentNeed = { purpose: string; category: string };
@@ -97,6 +97,8 @@ export const MATRIX: Record<Action, Partial<Record<Role | 'api_key', Rule>>> = {
   'helper.work': { helper: { scope: 'any' } },
   'scam.desk': { officer: T() },
   'assist.policy': { citizen: { scope: 'any' }, helper: { scope: 'any' }, officer: { scope: 'any' } },
+  /** speech-to-text for a Help question: citizens and helpers only */
+  'assist.transcribe': { citizen: { scope: 'any' }, helper: { scope: 'any' } },
   'notifications.read': { citizen: { scope: 'any' }, helper: { scope: 'any' }, officer: { scope: 'any' }, admin: { scope: 'any' } },
   /** F8: an auditor opens personal fields for an open complaint or a legal request (logged, 30 min) */
   'audit.breakglass': { auditor: T() },

@@ -1,5 +1,5 @@
 'use client';
-import { AlertTriangle, Check, Mic, RefreshCw, ShieldOff, Volume2, X } from 'lucide-react';
+import { AlertTriangle, Check, RefreshCw, ShieldOff, Volume2, X, Send } from 'lucide-react';
 import { isLowBandwidth } from '@/components/shell/low-bandwidth';
 import { useCallback, useEffect, useState } from 'react';
 import { CameraCapture } from '@/components/apply/camera';
@@ -10,6 +10,7 @@ import { CountUp } from '@/components/motion/count-up';
 import { StepFrame } from '@/components/brand/step-frame';
 import { Button } from '@/components/ui/button';
 import { Keypad } from '@/components/voice/keypad';
+import { HelpMic, micErrorText, withoutClauseIds } from '@/components/voice/help-mic';
 import { VoicePrompt, playSequence } from '@/components/voice/voice-prompt';
 import { amountClips, speakText, useBi } from '@/components/voice/voice-lib';
 import { enqueue, outboxDb } from '@/offline/outbox';
@@ -458,19 +459,35 @@ export function HelpScreen() {
   const bi = useBi();
   const [q, setQ] = useState('');
   const [a, setA] = useState<{ answer_ur: string; answer_en: string; citations: { clause_id: string; quote: string }[]; refused: boolean } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  // the existing Ask logic; a spoken question is sent with inputMode 'voice' (a 2-4 sentence answer written to be read aloud)
+  const ask = async (question: string, inputMode: 'text' | 'voice') => {
+    setBusy(true); setErr(null);
+    const r = await api('/api/v1/assist/policy', { body: { question, inputMode } });
+    setBusy(false);
+    if (r.status === 200) { setA(r.body); if (r.body.refused) void playSequence(['help_not_sure']); else void speakText(withoutClauseIds(r.body.answer_ur)); }
+    else setErr(r.body.detail ?? String(r.status));
+  };
   return (
     <section className="space-y-4" data-testid="help-screen">
       <VoicePrompt clip="help_ask" label={bi('Play again', 'دوبارہ سنیں')} />
+      <HelpMic disabled={busy}
+        onError={(e) => setErr(micErrorText(e, bi))}
+        onText={async (text) => {
+          setErr(null); setA(null); setQ(text); // the text shows in the box and stays editable
+          if (text.trim().length < 5) { setErr(micErrorText('nothing', bi)); return; }
+          await speakText(`آپ نے پوچھا: ${text}`, { kind: 'readback' }); // read back (never stored), then send
+          await ask(text, 'voice');
+        }} />
       <textarea className="min-h-24 w-full rounded-[20px] border border-white/12 bg-white/5 p-3 transition-colors focus-visible:border-mint text-lg" value={q} onChange={(e) => setQ(e.target.value)} placeholder={bi('Am I eligible if my husband died abroad?', 'اگر شوہر بیرون ملک فوت ہوئے تو کیا میں اہل ہوں؟')} />
-      <Button size="xl" className="w-full" disabled={q.length < 5} onClick={async () => {
-        const r = await api('/api/v1/assist/policy', { body: { question: q } });
-        if (r.status === 200) { setA(r.body); if (r.body.refused) void playSequence(['help_not_sure']); else void speakText(r.body.answer_ur); }
-      }}><Mic className="!size-6" /> {bi('Ask', 'پوچھیں')}</Button>
+      <Button size="xl" className="w-full" disabled={q.length < 5 || busy} data-testid="help-ask" onClick={() => void ask(q, 'text')}><Send className="!size-6" /> {bi('Ask', 'پوچھیں')}</Button>
+      {err && <p role="alert" className="rounded-2xl border border-warning/40 bg-warning/10 p-3 text-sm font-medium" data-testid="help-error">{err}</p>}
       {a && (
         <div className="space-y-2 rounded-[20px] border border-white/10 bg-void/40 p-4" data-testid="policy-answer">
           <div className="flex items-start gap-2">
             <p className="flex-1 text-lg font-semibold">{bi(a.answer_en, a.answer_ur)}</p>
-            {!a.refused && <Button size="icon" variant="ghost" aria-label={bi('Play again', 'دوبارہ سنیں')} onClick={() => void speakText(a.answer_ur)}><Volume2 /></Button>}
+            {!a.refused && <Button size="icon" variant="ghost" aria-label={bi('Play again', 'دوبارہ سنیں')} onClick={() => void speakText(withoutClauseIds(a.answer_ur))}><Volume2 /></Button>}
           </div>
           {a.citations.map((c) => <p key={c.clause_id} className="text-sm text-muted-foreground">§ {c.clause_id}: “{c.quote}”</p>)}
         </div>

@@ -18,6 +18,7 @@ export const PROCESSORS = [
   { id: 'mock-identity', en: 'Identity registry (simulated)', ur: 'شناختی ریکارڈ (فرضی)', purpose: 'Check your identity card details', simulated: true },
   { id: 'mock-civil', en: 'Civil registry (simulated)', ur: 'سول رجسٹری (فرضی)', purpose: 'Check marriage and death records', simulated: true },
   { id: 'mock-ledger', en: 'Payment ledger (simulated)', ur: 'ادائیگی کا کھاتہ (فرضی)', purpose: 'Send and check payments', simulated: true },
+  { id: 'uplift-ai', en: 'Uplift AI (Urdu speech-to-text)', ur: 'اپلفٹ اے آئی (اردو آواز سے متن)', purpose: 'Turn your spoken question or answer into text. Your voice is not kept.', simulated: false },
   { id: 'ai-gateway', en: 'AI services via Vercel AI Gateway (Google Gemini, TypeSafe Jev, ElevenLabs)', ur: 'اے آئی خدمات', purpose: 'Read documents, understand voice, flag cases for a person. They never decide.', simulated: false },
 ];
 

@@ -80,7 +80,7 @@ const QUERY_OVERRIDES: Record<string, Record<string, string>> = { getConsentAndA
 
 // ---------------------------------------------------------------- fixtures (all in the Sindh office)
 const F: Record<string, string> = {};
-type Who = 'citizen' | 'helper' | 'officer' | 'admin' | 'auditor' | 'api_key';
+type Who = 'citizen' | 'helper' | 'officer' | 'admin' | 'auditor' | 'shopkeeper' | 'api_key';
 const tokens: Record<string, { token?: string; apiKey?: string }> = {};
 
 beforeAll(async () => {
@@ -150,6 +150,9 @@ beforeAll(async () => {
   tokens.officer = { token: await staff('officer.imran@sindh.amanat.test', 'officer', 'sindh') };
   tokens.admin = { token: await staff('admin.sana@sindh.amanat.test', 'admin', 'sindh') };
   tokens.auditor = { token: await staff('auditor.raza@sindh.amanat.test', 'auditor', 'sindh') };
+  // the demo shopkeeper (Akram, Hyderabad): his own routes are allowed, every other route is a 403 in every column
+  const [akram] = await t.db.select({ id: users.id }).from(users).where(eq(users.username, 'akram.hyd')).limit(1);
+  tokens.shopkeeper = { token: await signAccessToken({ sub: akram!.id, kind: 'staff', app_role: 'shopkeeper', tid: t.ids.tenantIds.sindh! }) };
   tokens.api_key = { apiKey: key };
   // the other office (tenant axis) and another citizen (ownership axis)
   tokens['officer@punjab'] = { token: await staff('officer.bilal@punjab.amanat.test', 'officer', 'punjab') };
@@ -235,7 +238,7 @@ describe('generated permission matrix', () => {
     const all = routes();
     expect(all.length).toBeGreaterThan(70);
     for (const r of all) {
-      for (const role of ['citizen', 'helper', 'officer', 'admin', 'auditor', 'api_key'] as Who[]) await cell(r, role, role, 'role');
+      for (const role of ['citizen', 'helper', 'officer', 'admin', 'auditor', 'shopkeeper', 'api_key'] as Who[]) await cell(r, role, role, 'role');
       for (const role of ['officer', 'admin', 'auditor', 'helper'] as const) await cell(r, `${role}@punjab`, role, 'tenant');
       await cell(r, 'citizen@other', 'citizen', 'own');
       if (r.spec.path.startsWith('/api/v1/cases/{id}') || r.spec.path.startsWith('/api/v1/decisions/{id}')) {

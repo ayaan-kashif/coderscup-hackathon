@@ -20,6 +20,7 @@ export const ERROR_CODES = {
   DEPENDENCY_UNAVAILABLE: { status: 503, title: 'A required service is down' },
   PAYLOAD_TOO_LARGE: { status: 413, title: 'File too big' },
   UNSUPPORTED_MEDIA: { status: 415, title: 'Unsupported file type' },
+  NOT_ON_WHATSAPP: { status: 422, title: 'This number is not on WhatsApp' },
   DEMO_DISABLED: { status: 404, title: 'Not found' },
   INTERNAL: { status: 500, title: 'Unexpected error' },
 } as const;

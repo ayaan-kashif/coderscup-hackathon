@@ -48,6 +48,7 @@
     "inngest": "4.26.2",
     "jose": "^6.2.18",
     "jsqr": "^1.4.0",
+    "libphonenumber-js": "^1.13.17",
     "lucide-react": "^1.76.0",
     "maplibre-gl": "^5.24.1",
     "motion": "^14.14.0",

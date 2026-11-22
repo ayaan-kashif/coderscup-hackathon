@@ -12,6 +12,10 @@ const schema = z.object({
   DEMO_MODE: z.string().optional(),
   /** when set, demo sign-in needs this code (judges get it privately); on Vercel, demo sign-in stays off without it */
   DEMO_ACCESS_CODE: z.string().optional(),
+  /** where citizen sign-in codes go: mock (default, the on-screen phone only) or baileys (real numbers through the WhatsApp gateway) */
+  OTP_PROVIDER: z.enum(['mock', 'baileys']).optional(),
+  WA_GATEWAY_URL: z.string().url().optional(),
+  WA_GATEWAY_SECRET: z.string().min(24).optional(),
   DEMO_STAFF_PASSWORD: z.string().optional(),
   DEMO_CITIZEN_PIN: z.string().optional(),
   MOCK_BASE_URL: z.string().optional(),
@@ -26,9 +30,17 @@ const schema = z.object({
 
 export type Env = z.infer<typeof schema>;
 
+/** server-only: with OTP_PROVIDER=baileys the gateway URL and secret are required (checked on every read, so a bad setup fails at the first request) */
+const checked = schema.superRefine((v, ctx) => {
+  if (v.OTP_PROVIDER === 'baileys') {
+    if (!v.WA_GATEWAY_URL) ctx.addIssue({ code: 'custom', path: ['WA_GATEWAY_URL'], message: 'required when OTP_PROVIDER=baileys' });
+    if (!v.WA_GATEWAY_SECRET) ctx.addIssue({ code: 'custom', path: ['WA_GATEWAY_SECRET'], message: 'required (24+ characters) when OTP_PROVIDER=baileys' });
+  }
+});
+
 /** Read on every call so tests can change process.env. */
 export function env(): Env {
-  return schema.parse(process.env);
+  return checked.parse(process.env) as Env;
 }
 
 export function requireEnv<K extends keyof Env>(key: K): NonNullable<Env[K]> {
@@ -44,3 +56,10 @@ export const demoAccessCode = () => env().DEMO_ACCESS_CODE?.trim() || null;
  * set or this is not a Vercel deployment (local runs and CI). A public deployment with DEMO_MODE=true but no code stays closed.
  */
 export const demoSignInAvailable = () => isDemoMode() && (!!demoAccessCode() || !process.env.VERCEL);
+
+export const otpProvider = () => env().OTP_PROVIDER ?? 'mock';
+/** the gateway settings, or null when sign-in codes are not sent through WhatsApp */
+export function waGateway(): { url: string; secret: string } | null {
+  const e = env();
+  return e.OTP_PROVIDER === 'baileys' && e.WA_GATEWAY_URL && e.WA_GATEWAY_SECRET ? { url: e.WA_GATEWAY_URL, secret: e.WA_GATEWAY_SECRET } : null;
+}

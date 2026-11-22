@@ -105,7 +105,7 @@ export function ConfigPanel() {
 
 /** A6 organisation: users and roles, session revocation, API keys (created once, revoked any time) */
 export function OrgPanel() {
-  const [users, setUsers] = useState<{ id: string; email: string; name: string; role: string; isSenior: boolean; sessionsRevokedAt: string | null }[]>([]);
+  const [users, setUsers] = useState<{ id: string; email: string; name: string; role: string; isSenior: boolean; active: boolean; sessionsRevokedAt: string | null }[]>([]);
   const [keys, setKeys] = useState<{ id: string; name: string; prefix: string; scopes: string[]; lastUsedAt: string | null; revokedAt: string | null }[]>([]);
   const [webhooks, setWebhooks] = useState<{ id: string; url: string; events: string[]; active: boolean; createdAt: string }[]>([]);
   const [deliveries, setDeliveries] = useState<{ id: string; endpointId: string; event: string; status: string; attempts: number; responseStatus: number | null; createdAt: string }[]>([]);
@@ -144,8 +144,15 @@ export function OrgPanel() {
         <CardContent className="space-y-2 text-sm">
           {users.map((u) => (
             <div key={u.id} className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-1">
-              <span>{u.name} <span className="text-xs text-muted-foreground">{u.email}</span> <Badge variant="secondary">{u.role}{u.isSenior ? ' · senior' : ''}</Badge></span>
-              <Button size="sm" variant="ghost" onClick={async () => { const r = await api(`/api/v1/admin/users/${u.id}/revoke-sessions`, { method: 'POST' }); setMsg(r.status === 200 ? `Sessions of ${u.name} revoked.` : r.body.detail); }}>Revoke sessions</Button>
+              <span className={u.active ? '' : 'opacity-60'}>{u.name} <span className="text-xs text-muted-foreground">{u.email}</span> <Badge variant="secondary">{u.role}{u.isSenior ? ' · senior' : ''}</Badge> {!u.active && <Badge variant="destructive">deactivated</Badge>}</span>
+              <span className="flex flex-wrap items-center gap-1">
+                <select aria-label={`role of ${u.name}`} className="h-8 rounded-xl border border-white/12 bg-white/5 px-2 text-xs" value={u.role} disabled={!u.active}
+                  onChange={async (e) => { const r = await api(`/api/v1/admin/users/${u.id}`, { method: 'PATCH', body: { role: e.target.value } }); setMsg(r.status === 200 ? `${u.name} is now ${e.target.value}; their sessions were revoked.` : `${r.body.code}: ${r.body.detail}`); setV((x) => x + 1); }}>
+                  {['officer', 'admin', 'auditor', 'helper'].map((r) => <option key={r}>{r}</option>)}
+                </select>
+                <Button size="sm" variant="ghost" onClick={async () => { const r = await api(`/api/v1/admin/users/${u.id}`, { method: 'PATCH', body: { active: !u.active } }); setMsg(r.status === 200 ? `${u.name} ${u.active ? 'deactivated' : 'reactivated'}.` : `${r.body.code}: ${r.body.detail}`); setV((x) => x + 1); }}>{u.active ? 'Deactivate' : 'Reactivate'}</Button>
+                <Button size="sm" variant="ghost" onClick={async () => { const r = await api(`/api/v1/admin/users/${u.id}/revoke-sessions`, { method: 'POST' }); setMsg(r.status === 200 ? `Sessions of ${u.name} revoked.` : r.body.detail); }}>Revoke sessions</Button>
+              </span>
             </div>
           ))}
           <div className="grid gap-2 pt-2 sm:grid-cols-3">

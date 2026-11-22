@@ -16,7 +16,7 @@ import { VoicePrompt, playSequence } from '@/components/voice/voice-prompt';
 import { useBi } from '@/components/voice/voice-lib';
 import { outboxDb } from '@/offline/outbox';
 import { startSync } from '@/offline/sync';
-import { api, CaseStatusScreen, DataScreen, HelpScreen, ProofScreen, RealScreen, ReceiptScreen } from './screens';
+import { api, CaseStatusScreen, DataScreen, HelpScreen, MyApplications, ProofScreen, RealScreen, ReceiptScreen } from './screens';
 import { TRUST_PICTURES, trustPicture } from './trust-pictures';
 import { DuressSafetyCard, PayoutChangeFlow } from './duress-safety';
 
@@ -117,7 +117,11 @@ export function CitizenApp() {
       <Screen title={t('citizen.codeTitle')} prompt="ask_code" replay={t('citizen.playPrompt')}>
         <p className="text-sm text-muted-foreground">{t('citizen.codeHint')}</p>
         <a className="block text-center underline" href={`/mock/phone?phone=${encodeURIComponent(`+9200000${phone}`)}`} target="_blank" rel="noreferrer">{t('home.mockPhone')} ↗</a>
-        <Keypad value={code} onChange={setCode} max={6} />
+        <Keypad value={code} onChange={setCode} max={6} slots />
+        {/* the sign-in code is 6 digits from the SMS; the 4-digit PIN comes on the next screen */}
+        <p className="text-center text-sm text-muted-foreground" data-testid="code-length-hint">
+          {code.length === 6 ? bi('Press Continue.', 'آگے بڑھیں دبائیں۔') : bi(`The code has 6 digits (${code.length} of 6). It is in the mock phone message. Your 4-digit PIN comes next.`, `کوڈ 6 ہندسوں کا ہے (${code.length} / 6)۔ یہ فرضی فون کے پیغام میں ہے۔ آپ کا 4 ہندسوں کا پن اگلے مرحلے میں آئے گا۔`)}
+        </p>
         {message && <p role="alert" className="text-center text-destructive">{message}</p>}
         <Button size="xl" className="w-full" disabled={code.length !== 6} onClick={async () => {
           const r = await api('/api/v1/auth/otp/verify', { body: { phone: `+9200000${phone}`, code } });
@@ -287,6 +291,7 @@ function Home({ me, online }: { me: Me; online: boolean }) {
       {view.name === 'home' && (
         <>
           <VoicePrompt clip="home_tiles" label={t('citizen.playPrompt')} />
+          <MyApplications key={version} onOpen={(id) => setView({ name: 'status', caseId: id })} />
           <motion.div className="grid grid-cols-2 gap-3" initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.07, delayChildren: 0.1 } } }}>
             {TILES.map((tile) => {
               const primary = tile.view === 'apply';

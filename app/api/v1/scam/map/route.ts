@@ -1,11 +1,13 @@
 import { z } from 'zod';
 import { route } from '@/lib/api/route';
-import { SCAM_TYPES } from '@/lib/scam-map';
-import { scamMap } from '@/services/scam';
+import { scamMap, scamMapOptions } from '@/services/scam';
 
 const query = z.object({
-  days: z.coerce.number().int().min(1).max(30).optional(),
-  type: z.enum(['all', ...SCAM_TYPES]).optional(),
+  days: z.coerce.number().int().min(1).max(90).optional(),
+  district: z.string().regex(/^[A-Z]{2,5}$/).optional(),
+  type: z.string().regex(/^(all|[a-z_]{3,40})$/).optional(),
+  /** 1: also list districts with no reports in the period (the heat map shows them as "fewer than 3") */
+  empty: z.enum(['0', '1']).optional(),
 });
 
 /**
@@ -18,6 +20,15 @@ export const GET = route({
   auth: 'optional', query, audit: false, transaction: false,
   handler: async (c, db) => {
     const staff = c.actor && c.actor.role !== 'citizen' && c.actor.tenantId ? c.actor.tenantId : null;
-    return { body: { districts: await scamMap(db, c.query.days ?? 7, { type: c.query.type, tenantId: staff, withAlerts: !!staff && c.actor?.role === 'officer' }) } };
+    const days = c.query.days ?? 7;
+    const district = c.query.district ?? null;
+    const type = c.query.type && c.query.type !== 'all' ? c.query.type : null;
+    return {
+      body: {
+        filter: { days, district, type },
+        options: await scamMapOptions(db),
+        districts: await scamMap(db, { days, district, type, tenantId: staff, withAlerts: !!staff && c.actor?.role === 'officer', includeEmpty: c.query.empty === '1' }),
+      },
+    };
   },
 });

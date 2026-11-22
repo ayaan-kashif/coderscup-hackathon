@@ -17,7 +17,7 @@ type Ids = { staffIds: Record<string, string>; tenantIds: Record<string, string>
 let t: TestDb & { ids: Ids };
 const tok: Record<string, string> = {};
 type D = { code: string; count: number | null; underThreshold: boolean; countToday: number | null; series: { day: string; count: number | null }[]; byType: Record<string, number | null>; spike: boolean; alert: { id: string; status: string } | null; total: number | string; lat: number; lng: number };
-const get = async (query: Record<string, string> = {}, token?: string) => (await call(scamMap.GET, '/api/v1/scam/map', { query, token })).body.districts as D[];
+const get = async (query: Record<string, string> = {}, token?: string) => (await call(scamMap.GET, '/api/v1/scam/map', { query: { empty: '1', ...query }, token })).body.districts as D[];
 const row = (ds: D[], code: string) => ds.find((d) => d.code === code)!;
 const staff = (email: string, role: 'officer', tenant: string) => signAccessToken({ sub: t.ids.staffIds[email]!, kind: 'staff', app_role: role, tid: t.ids.tenantIds[tenant]! });
 
@@ -82,8 +82,9 @@ describe('GET /api/v1/scam/map', () => {
     expect(one.count).toBeLessThan(all);
     expect(one.count).toBeGreaterThanOrEqual(6);
     expect(row(await get({ type: 'lottery_prize' }), 'KHS').count).toBeNull(); // KHS has none of these
-    const bad = await call(scamMap.GET, '/api/v1/scam/map', { query: { type: 'bogus' } });
+    const bad = await call(scamMap.GET, '/api/v1/scam/map', { query: { type: 'bad type;' } });
     expect(bad.status).toBe(422);
+    expect(row(await get({ type: 'bogus' }), 'KHS').count).toBeNull(); // an unknown type matches nothing
   });
 
   it('flags a spike with the alert job rule: today ≥ 5 and ≥ 3× the previous 7-day average', async () => {

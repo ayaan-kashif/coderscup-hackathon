@@ -5,7 +5,7 @@ import { eq } from 'drizzle-orm';
 import { cases, complaints } from '@/db/schema/all';
 import { route } from '@/lib/api/route';
 
-const body = z.object({ question: z.string().min(5).max(500) });
+const body = z.object({ question: z.string().min(5).max(500), /** a spoken question gets a 2-4 sentence answer written to be read aloud */ inputMode: z.enum(['text', 'voice']).default('text') });
 
 /** CIT-12 / F16: a policy answer with clause citations, or "I am not sure; a person will call you" (opens an officer query) */
 export const POST = route({
@@ -20,13 +20,13 @@ export const POST = route({
       const [k] = await db.select({ tenantId: cases.tenantId }).from(cases).where(eq(cases.citizenId, c.actor!.citizenId)).limit(1);
       tenantId = k?.tenantId ?? null;
     }
-    const r = await answerPolicy(db, tenantId, c.body.question);
+    const r = await answerPolicy(db, tenantId, c.body.question, { inputMode: c.body.inputMode });
     const id = await recordAiDecision(db, {
       tenantId, kind: 'policy_answer', input: { question: c.body.question }, model: r.model, promptVersion: r.promptVersion,
       result: { refused: r.answer.refused, citations: r.answer.citations, reason: r.reason, retrieved: r.retrieved }, userReason: r.answer.refused ? 'Not sure: a person will call you.' : `Answered from clauses ${r.answer.citations.map((x) => x.clause_id).join(', ')}.`,
     });
     // uncertain → an officer query (a low-severity complaint of type "other" so it lands in the officer's queue)
     if (r.answer.refused && tenantId) await db.insert(complaints).values({ tenantId, citizenId: c.actor!.citizenId ?? null, type: 'other', channel: 'policy_query', severity: 0, description: `Policy question needs a person: ${c.body.question.slice(0, 300)}` });
-    return { body: { ...r.answer, aiDecisionId: id, retrieved: r.retrieved, reason: r.reason }, audit: { resourceId: id, tenantId, details: { refused: r.answer.refused, reason: r.reason } } };
+    return { body: { ...r.answer, aiDecisionId: id, retrieved: r.retrieved, reason: r.reason }, audit: { resourceId: id, tenantId, details: { refused: r.answer.refused, reason: r.reason, inputMode: c.body.inputMode } } };
   },
 });

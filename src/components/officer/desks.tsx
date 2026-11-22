@@ -79,7 +79,7 @@ export function ScamDesk() {
   const [mapFailed, setMapFailed] = useState(false);
   const desk = useLoad<{ items: DeskItem[] }>('/api/v1/scam/desk');
   const alerts = useLoad<{ items: Alert[] }>('/api/v1/scam/alerts');
-  const map = useLoad<{ districts: MapDistrict[] }>(`/api/v1/scam/map?days=${days}&type=${type}`);
+  const map = useLoad<{ districts: MapDistrict[] }>(`/api/v1/scam/map?days=${days}&type=${type}&empty=1`);
   const [msg, setMsg] = useState<string | null>(null);
   const districts = map.data?.districts ?? [];
   const sel = districts.find((d) => d.code === selected) ?? null;

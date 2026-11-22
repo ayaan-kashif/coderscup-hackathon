@@ -91,6 +91,9 @@ import * as rMeMfaConfirm from '../../../app/api/v1/me/mfa/confirm/route';
 import * as rAuthSwitchTenant from '../../../app/api/v1/auth/switch-tenant/route';
 import * as rMeTenants from '../../../app/api/v1/me/tenants/route';
 import * as rMeExport from '../../../app/api/v1/me/export/route';
+import * as rAuditReads from '../../../app/api/v1/audit/reads/route';
+import * as rAdminUsersById from '../../../app/api/v1/admin/users/[id]/route';
+import * as rAssistTranscribe from '../../../app/api/v1/assist/transcribe/route';
 import * as rRulesDraftsByIdSuggest from '../../../app/api/v1/rules/drafts/[id]/suggest/route';
 import * as rAuditAccess from '../../../app/api/v1/audit/access/route';
 import * as rAuditBreakGlass from '../../../app/api/v1/audit/break-glass/route';
@@ -120,7 +123,7 @@ export const ROUTE_MODULES: Record<string, Mod> = {
   adminConfig, adminChaos, auditEvents, auditVerify,
   rAiDecisions, rAiDecisionsById, rAssistIntent, rAssistPolicy, rCasesByIdAnswers, rCasesByIdAssign, rCasesByIdClose, rCasesByIdDecisions, rCasesByIdDocuments, rCasesByIdDocumentsDoc, rCasesByIdExplanation, rCasesByIdFreeze, rCasesByIdProof, rCasesByIdSubmit, rCasesByIdTimeline, rCasesByIdUnfreeze, rCasesByIdVoice, rComplaints, rComplaintsById, rComplaintsByIdResolve, rCorrections, rCorrectionsByIdApprove, rCorrectionsByIdReject, rDecisionsById, rDecisionsByIdReplay, rHelperActivity, rHelperFamilies, rHelperGrants, rHelperGrantsById, rMeAccessLog, rMeCases, rMeConsents, rMeConsentsByIdWithdraw, rMeCorrections, rMeNotifications, rPaymentsByIdReceipt, rPayoutChanges, rPayoutChangesByIdApprove, rPayoutChangesByIdBlock, rPayoutChangesByIdObject, rQueue, rScamAlerts, rScamAlertsByIdApprove, rScamAlertsByIdDismiss, rScamCheck, rScamDesk, rScamDuress, rScamDuressByIdResolve, rScamMap, rScamReportsByIdLabel,
   rAdminApiKeys, rAdminApiKeysByIdRevoke, rAdminUsers, rAdminUsersByIdRevokeSessions, rAdminWebhooks, rAdminWebhooksById, rAdminWebhooksDeliveries, rAdminWebhooksDeliveriesByIdReplay, rAuditAccess, rAuditBreakGlass, rDecisions, rEvalBreakIt, rEvalCostPreview, rEvalMetrics, rEvalRuns, rEvalRunsById, rRules, rRulesDrafts, rRulesDraftsById, rRulesDraftsByIdApprove, rRulesDraftsByIdPreview, rRulesDraftsByIdPublish, rRulesDraftsByIdTwin, rTwinRunsById,
-  rAuditAnchors, rAdminRetention, rAdminOutbox, rAdminPlan, rAdminAnalytics, rAdminPolicyEmbed, rVoiceTts, rAuthMfaVerify, rMeMfaSetup, rMeMfaConfirm, rAuthSwitchTenant, rMeTenants, rMeExport, rRulesDraftsByIdSuggest,
+  rAuditAnchors, rAdminRetention, rAdminOutbox, rAdminPlan, rAdminAnalytics, rAdminPolicyEmbed, rVoiceTts, rAuthMfaVerify, rMeMfaSetup, rMeMfaConfirm, rAuthSwitchTenant, rMeTenants, rMeExport, rRulesDraftsByIdSuggest, rAuditReads, rAdminUsersById, rAssistTranscribe,
 };
 
 export function allSpecs(): AnySpec[] {

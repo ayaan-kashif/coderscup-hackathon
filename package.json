@@ -28,6 +28,7 @@
     "test:summary": "tsx scripts/test-summary.ts",
     "warmup": "tsx scripts/warmup.ts",
     "eval": "tsx --conditions=react-server scripts/eval.ts",
+    "ai:smoke": "tsx --conditions=react-server scripts/ai-smoke.ts",
     "demo:twice": "pnpm demo:reset && pnpm test:e2e && pnpm demo:reset && pnpm test:e2e"
   },
   "dependencies": {

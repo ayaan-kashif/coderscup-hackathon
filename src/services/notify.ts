@@ -3,7 +3,8 @@
  * voice note only (no WhatsApp, no email, no real SMS). Citizen messages never contain links and never ask for
  * money, PINs or codes; voice messages open by naming the citizen's trust picture.
  */
-import { and, eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
+import { categoryShared } from './consent';
 import { bannedInCitizenMessage } from '@/ai/guard';
 import { encryptPii } from '@/auth/crypto';
 import type { DbOrTx } from '@/db/client';
@@ -68,8 +69,10 @@ export async function notifyCitizen(db: DbOrTx, p: { tenantId: string | null; ci
   if (banned.length) { log('error', 'notification blocked by guard', { key: p.key, banned }); return; }
   const t = TEMPLATES[p.key] as Template;
   const phone = p.toPhone ?? c.phone ?? null;
+  // CONS-3: with "contact" switched off she gets in-app messages only; the safety notices (payout number change, scam alert) still go out
+  const contactOk = !p.tenantId || (await categoryShared(db, p.citizenId, p.tenantId, 'contact').catch(() => true)) || p.key === 'payout_change_notice' || p.key === 'payout_change_blocked';
   for (const channel of t.channels) {
-    if (channel !== 'in_app' && !phone) continue;
+    if (channel !== 'in_app' && (!phone || !contactOk)) continue;
     const [row] = await db.insert(notifications).values({ tenantId: p.tenantId, citizenId: p.citizenId, channel, templateKey: p.key, variables: { ...vars, voice: t.voice ?? [] } }).returning({ id: notifications.id });
     if (channel === 'in_app') { await db.update(notifications).set({ status: 'sent', sentAt: new Date(), attempts: 1 }).where(eq(notifications.id, row!.id)); continue; }
     // NOT-3: SMS and voice go through the transactional outbox (tracked status, retries with backoff).
@@ -89,7 +92,7 @@ export async function notifyCitizen(db: DbOrTx, p: { tenantId: string | null; ci
 
 /** in-app alert for every officer of a tenant (helper anomalies, payment holds, pipeline errors) */
 export async function alertOfficers(db: DbOrTx, tenantId: string, text: string, ref: Record<string, string>) {
-  const officers = await db.select({ userId: memberships.userId }).from(memberships).where(and(eq(memberships.tenantId, tenantId), eq(memberships.role, 'officer')));
+  const officers = await db.select({ userId: memberships.userId }).from(memberships).where(and(eq(memberships.tenantId, tenantId), eq(memberships.role, 'officer'), isNull(memberships.deactivatedAt)));
   for (const o of officers) {
     await db.insert(notifications).values({ tenantId, userId: o.userId, channel: 'in_app', templateKey: 'officer_alert', variables: { text, ...ref }, status: 'sent', sentAt: new Date(), attempts: 1 });
   }

@@ -7,15 +7,18 @@ import 'server-only';
 import { and, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import type { DbOrTx } from '@/db/client';
+import { rowsOf } from '@/db/rows';
 import { auditEvents, cases, consents, helperAssignments, helperGrants, memberships, payments, tenants, users } from '@/db/schema/all';
 import { ApiError } from '@/lib/errors';
-import { CONSENT_NOTICE_VERSION, ELIGIBILITY_CATEGORIES } from './seed/core';
+import { NARROWABLE_CATEGORIES } from './consent-categories';
+import { CONSENT_NOTICE_VERSION } from './seed/core';
 
 /** processors named in plain words (CONS-1); all registries and model providers here are SIMULATED or prototype */
 export const PROCESSORS = [
   { id: 'mock-identity', en: 'Identity registry (simulated)', ur: 'شناختی ریکارڈ (فرضی)', purpose: 'Check your identity card details', simulated: true },
   { id: 'mock-civil', en: 'Civil registry (simulated)', ur: 'سول رجسٹری (فرضی)', purpose: 'Check marriage and death records', simulated: true },
   { id: 'mock-ledger', en: 'Payment ledger (simulated)', ur: 'ادائیگی کا کھاتہ (فرضی)', purpose: 'Send and check payments', simulated: true },
+  { id: 'uplift-ai', en: 'Uplift AI (Urdu speech-to-text)', ur: 'اپلفٹ اے آئی (اردو آواز سے متن)', purpose: 'Turn your spoken question or answer into text. Your voice is not kept.', simulated: false },
   { id: 'ai-gateway', en: 'AI services via Vercel AI Gateway (Google Gemini, TypeSafe Jev, ElevenLabs)', ur: 'اے آئی خدمات', purpose: 'Read documents, understand voice, flag cases for a person. They never decide.', simulated: false },
 ];
 
@@ -33,16 +36,37 @@ export async function listConsents(db: DbOrTx, citizenId: string) {
 
 export const grantBody = z.object({
   tenantId: z.uuid(),
-  dataCategories: z.array(z.enum(['case', 'identity', 'documents', 'payments'])).min(1).max(4).default([...ELIGIBILITY_CATEGORIES] as never),
+  /** what she shares: any of identity, documents, payments (payout), contact, voice. At least one; 'case' is always included. Stopping everything is "withdraw". */
+  dataCategories: z.array(z.enum(['case', ...NARROWABLE_CATEGORIES])).min(1).max(6).refine((c) => c.some((x) => x !== 'case'), 'choose at least one kind of data; to stop everything, withdraw').default([...NARROWABLE_CATEGORIES] as never),
   pin: z.string().regex(/^\d{4}$/),
 });
+
+export type ShareCategory = (typeof NARROWABLE_CATEGORIES)[number] | 'case';
+
+/**
+ * CONS-3: is this category of her data shared with this office right now? Decided by the same database function the
+ * permission layer uses (has_active_consent), so a withdrawn or expired consent is "no" for every category.
+ */
+export async function categoryShared(db: DbOrTx, citizenId: string, tenantId: string, category: ShareCategory) {
+  const res = await db.execute(sql`select has_active_consent(${citizenId}::uuid, 'tenant', ${tenantId}::uuid, 'eligibility_verification', ${category}) as ok`);
+  return rowsOf<{ ok: boolean }>(res)[0]?.ok === true;
+}
+
+/** throws 403 CONSENT_WITHDRAWN naming the category she switched off (the server is the only check; hiding a button is not) */
+export async function requireCategory(db: DbOrTx, citizenId: string | null, tenantId: string, category: ShareCategory, what: string) {
+  if (!citizenId) return;
+  if (!(await categoryShared(db, citizenId, tenantId, category))) {
+    throw new ApiError('CONSENT_WITHDRAWN', `You stopped sharing your ${what} with this office. Turn it on in My data to continue.`, { extra: { category } });
+  }
+}
 
 /** grant or narrow (a narrower grant replaces the active row; the old one stays in history as withdrawn) */
 export async function grantConsent(db: DbOrTx, citizenId: string, b: z.infer<typeof grantBody>) {
   const [t] = await db.select({ id: tenants.id }).from(tenants).where(eq(tenants.id, b.tenantId)).limit(1);
   if (!t) throw new ApiError('VALIDATION_FAILED', 'Unknown office.');
   await db.update(consents).set({ status: 'withdrawn', withdrawnAt: new Date() }).where(and(eq(consents.citizenId, citizenId), eq(consents.granteeId, b.tenantId), eq(consents.purpose, 'eligibility_verification'), eq(consents.status, 'active')));
-  const [row] = await db.insert(consents).values({ citizenId, tenantId: b.tenantId, granteeType: 'tenant', granteeId: b.tenantId, purpose: 'eligibility_verification', dataCategories: b.dataCategories, method: 'voice_pin', noticeVersion: CONSENT_NOTICE_VERSION }).returning();
+  const dataCategories = ['case', ...new Set(b.dataCategories.filter((x) => x !== 'case'))];
+  const [row] = await db.insert(consents).values({ citizenId, tenantId: b.tenantId, granteeType: 'tenant', granteeId: b.tenantId, purpose: 'eligibility_verification', dataCategories, method: 'voice_pin', noticeVersion: CONSENT_NOTICE_VERSION }).returning();
   // a case paused for consent resumes into review (a person looks again; nothing is auto-approved on resume)
   const resumed = await db.update(cases).set({ status: 'in_review', updatedAt: new Date() }).where(and(eq(cases.citizenId, citizenId), eq(cases.tenantId, b.tenantId), eq(cases.status, 'paused_for_consent'))).returning({ id: cases.id });
   return { consent: row!, resumed: resumed.map((r) => r.id) };

@@ -64,6 +64,20 @@
       "when": 1795294878892,
       "tag": "0008_silent_duress_pin",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1795315278409,
+      "tag": "0009_consent_contact_voice",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1795316533695,
+      "tag": "0010_memberships_deactivated",
+      "breakpoints": true
     }
   ]
 }

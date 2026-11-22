@@ -16,7 +16,7 @@ export type Action =
   | 'case.write' | 'case.status' | 'case.explain' | 'case.freeze' | 'queue.read'
   | 'decision.read' | 'decision.replay' | 'aidecision.read'
   | 'complaint.create' | 'correction.create' | 'correction.review' | 'receipt.confirm'
-  | 'helper.work' | 'scam.desk' | 'assist.policy' | 'notifications.read' | 'self.update' | 'audit.breakglass';
+  | 'helper.work' | 'scam.desk' | 'assist.policy' | 'assist.transcribe' | 'notifications.read' | 'self.update' | 'audit.breakglass';
 
 type Scope = 'own' | 'grant' | 'tenant' | 'any';
 export type ConsentNeed = { purpose: string; category: string };
@@ -76,8 +76,9 @@ export const MATRIX: Record<Action, Partial<Record<Role | 'api_key', Rule>>> = {
   'scam.check': { citizen: { scope: 'any' }, helper: { scope: 'any' }, officer: { scope: 'any' }, admin: { scope: 'any' }, api_key: { scope: 'any', apiScope: 'scam:check' } },
   'scam.alert.approve': { officer: T() },
   /** answers, documents, voice, submit, proof: her own case, or a helper under a live grant (HELP-4) */
-  'case.write': { citizen: { scope: 'own' }, helper: { scope: 'grant' }, api_key: T({ apiScope: 'cases:write' }) },
-  'case.status': { citizen: { scope: 'own' }, helper: { scope: 'grant' } },
+  // a helper acts under the family's unlock AND only while that family's consent to the office is active (CONS-4)
+  'case.write': { citizen: { scope: 'own' }, helper: { scope: 'grant', consent: ELIGIBILITY }, api_key: T({ apiScope: 'cases:write' }) },
+  'case.status': { citizen: { scope: 'own' }, helper: { scope: 'grant', consent: ELIGIBILITY } },
   'case.explain': {
     citizen: { scope: 'own', view: 'citizen' },
     helper: { scope: 'grant', view: 'citizen' },
@@ -96,6 +97,8 @@ export const MATRIX: Record<Action, Partial<Record<Role | 'api_key', Rule>>> = {
   'helper.work': { helper: { scope: 'any' } },
   'scam.desk': { officer: T() },
   'assist.policy': { citizen: { scope: 'any' }, helper: { scope: 'any' }, officer: { scope: 'any' } },
+  /** speech-to-text for a Help question: citizens and helpers only */
+  'assist.transcribe': { citizen: { scope: 'any' }, helper: { scope: 'any' } },
   'notifications.read': { citizen: { scope: 'any' }, helper: { scope: 'any' }, officer: { scope: 'any' }, admin: { scope: 'any' } },
   /** F8: an auditor opens personal fields for an open complaint or a legal request (logged, 30 min) */
   'audit.breakglass': { auditor: T() },

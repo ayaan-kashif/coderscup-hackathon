@@ -2,7 +2,7 @@ import { getDb } from '@/db/client';
 import { PageFrame } from '@/components/shell/page-frame';
 import { PublicHeatMap } from '@/components/officer/public-heat-map';
 import { SimulatedBadge } from '@/components/shell/simulated-badge';
-import { scamMap } from '@/services/scam';
+import { scamMap, scamMapOptions } from '@/services/scam';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,14 +12,25 @@ const POS: Record<string, [number, number]> = {
 };
 
 /** SCAM-5 public Scam Map: confirmed scams by district (last 7 days), spike flags, no personal data, < 3 shows no count */
-export default async function ScamMapPage() {
-  const rows = await scamMap(getDb(), 7);
+export default async function ScamMapPage({ searchParams }: { searchParams: Promise<{ days?: string; district?: string; type?: string }> }) {
+  const sp = await searchParams;
+  const days = [7, 14, 30, 90].includes(Number(sp.days)) ? Number(sp.days) : 7;
+  const district = /^[A-Z]{2,5}$/.test(sp.district ?? '') ? sp.district! : null;
+  const type = /^[a-z_]{3,40}$/.test(sp.type ?? '') ? sp.type! : null;
+  const db = getDb();
+  const [rows, options] = await Promise.all([scamMap(db, { days, district, type }), scamMapOptions(db)]);
   const n = (v: number | string) => (typeof v === 'number' ? v : 2);
   return (
     <PageFrame width="max-w-5xl" title={<>Scam Map <SimulatedBadge what="Saaya programme" /></>}>
-      <p className="text-muted-foreground">Confirmed fake messages reported in the last 7 days. Districts with fewer than 3 reports show no exact count. Nothing here identifies a person.</p>
+      <p className="text-muted-foreground">Confirmed fake messages reported in the last {days} days. Districts with fewer than 3 reports show no exact count. Nothing here identifies a person.</p>
+      <form method="get" className="flex flex-wrap items-end gap-3 text-sm" data-testid="scam-map-filters">
+        <label className="grid gap-1">Time<select name="days" defaultValue={days} className="h-10 rounded-xl border border-white/12 bg-white/5 px-2">{[7, 14, 30, 90].map((d) => <option key={d} value={d}>Last {d} days</option>)}</select></label>
+        <label className="grid gap-1">District<select name="district" defaultValue={district ?? ''} className="h-10 rounded-xl border border-white/12 bg-white/5 px-2"><option value="">All districts</option>{options.districts.map((d) => <option key={d.code} value={d.code}>{d.name}</option>)}</select></label>
+        <label className="grid gap-1">Scam type<select name="type" defaultValue={type ?? ''} className="h-10 rounded-xl border border-white/12 bg-white/5 px-2"><option value="">All types</option>{options.types.map((t) => <option key={t} value={t}>{t.replace(/_/g, ' ')}</option>)}</select></label>
+        <button type="submit" className="h-10 rounded-full bg-primary px-5 font-semibold text-primary-foreground">Apply</button>
+      </form>
       <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        <PublicHeatMap fallback={
+        <PublicHeatMap days={days} district={district} type={type} fallback={
         <svg viewBox="0 0 100 100" className="w-full rounded-3xl border border-white/10 bg-bento" role="img" aria-label="district map">
           {Object.entries(POS).map(([code, [x, y]]) => {
             const d = rows.find((r) => r.code === code);
@@ -35,12 +46,12 @@ export default async function ScamMapPage() {
         } />
         <div className="overflow-x-auto">
           <table className="w-full text-sm" data-testid="scam-map-table">
-            <thead><tr className="text-muted-foreground"><th className="p-2 text-start">District</th><th className="p-2 text-start">Today</th><th className="p-2 text-start">7 days</th><th className="p-2 text-start">Most common</th><th className="p-2 text-start">Spike</th></tr></thead>
+            <thead><tr className="text-muted-foreground"><th className="p-2 text-start">District</th><th className="p-2 text-start">Today</th><th className="p-2 text-start">{days} days</th><th className="p-2 text-start">Most common</th><th className="p-2 text-start">Spike</th></tr></thead>
             <tbody>
               {rows.map((d) => (
                 <tr key={d.code} className="border-t border-border"><td className="p-2">{d.name}</td><td className="p-2">{String(d.today)}</td><td className="p-2">{String(d.total)}</td><td className="p-2">{d.topType?.replace(/_/g, ' ') ?? '—'}</td><td className="p-2">{d.spike ? <span className="font-bold text-destructive">⚠ spike</span> : '—'}</td></tr>
               ))}
-              {!rows.length && <tr><td colSpan={5} className="p-4 text-center text-muted-foreground">No confirmed scams this week.</td></tr>}
+              {!rows.length && <tr><td colSpan={5} className="p-4 text-center text-muted-foreground">No confirmed scams for this filter.</td></tr>}
             </tbody>
           </table>
         </div>

@@ -1,4 +1,5 @@
 import 'server-only';
+import { requireCategory } from './consent';
 /**
  * F10 Helper Mode: up to 40 families as avatar cards (never trust pictures); a family unlocks with its OWN PIN for
  * 30 idle minutes or 2 hours; switching families locks the previous one; helpers never see a full CNIC and cannot
@@ -44,6 +45,8 @@ export async function liveGrant(db: DbOrTx, helperUserId: string) {
 export async function unlockFamily(db: DbOrTx, helperUserId: string, citizenId: string, pin: string, deviceId?: string) {
   const [a] = await db.select().from(helperAssignments).where(and(eq(helperAssignments.helperUserId, helperUserId), eq(helperAssignments.citizenId, citizenId), eq(helperAssignments.status, 'active'), gt(helperAssignments.expiresAt, sql`now()`))).limit(1);
   if (!a) throw new ApiError('NOT_FOUND');
+  // CONS-4: a family that stopped sharing with the office cannot be unlocked again until she shares again
+  await requireCategory(db, citizenId, a.tenantId, 'case', 'application');
   const [c] = await db.select().from(citizens).where(eq(citizens.id, citizenId)).for('update').limit(1);
   if (!c?.pinHash) throw new ApiError('VALIDATION_FAILED', 'This family has not set a PIN yet; send a code to their phone instead.');
   if (c.pinLockedUntil && c.pinLockedUntil.getTime() > Date.now()) return { ok: false as const, locked: true, left: 0 };

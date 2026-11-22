@@ -35,7 +35,7 @@ export const PIPELINE_STEPS = [
   'rules', 'score', 'second_opinion', 'decide', 'explain', 'notify', 'hold', 'pay',
 ] as const;
 
-async function progress(db: DbOrTx, caseId: string, p: { mode: string; runId: string; step: string; done: string[]; startedAt: string; finishedAt?: string; outcome?: string }) {
+async function progress(db: DbOrTx, caseId: string, p: { mode: string; runId: string; step: string; done: string[]; startedAt: string; finishedAt?: string; outcome?: string; timings?: Record<string, number> }) {
   await db.update(cases).set({ pipeline: p }).where(eq(cases.id, caseId));
 }
 
@@ -45,8 +45,10 @@ export async function runCaseProcess(db: DbOrTx, caseId: string, step: Stepper, 
   const asOf = opts.asOf ?? startedAt;
   const state: RunState = initialState(asOf, runId);
   const done: string[] = [];
+  /** milliseconds per stage, for the evaluation dashboard (speed per pipeline stage) */
+  const timings: Record<string, number> = {};
   let current = 'load';
-  const mark = async (name: string) => { done.push(name); current = name; await progress(db, caseId, { mode: step.mode, runId, step: name, done: [...done], startedAt }); };
+  const mark = async (name: string) => { done.push(name); current = name; await progress(db, caseId, { mode: step.mode, runId, step: name, done: [...done], startedAt, timings: { ...timings } }); };
 
   try {
     // 1. load and lock
@@ -68,7 +70,9 @@ export async function runCaseProcess(db: DbOrTx, caseId: string, step: Stepper, 
       const ok = await step.run(`${name}:consent`, () => consentActive(db, c));
       if (!ok) { await step.run(`${name}:pause`, () => pauseForConsent(db, caseId, name)); return STOP; }
       current = name;
+      const t0 = Date.now();
       const out = await step.run(name, fn);
+      timings[name] = Date.now() - t0;
       await mark(name);
       return out;
     };
@@ -142,20 +146,20 @@ export async function runCaseProcess(db: DbOrTx, caseId: string, step: Stepper, 
     if ((await gated('notify', () => stepNotify(db, caseId, persisted))) === STOP) return { runId, stopped: 'consent' };
 
     if (persisted.outcome !== 'AUTO_APPROVE') {
-      await progress(db, caseId, { mode: step.mode, runId, step: 'done', done, startedAt, finishedAt: new Date().toISOString(), outcome: persisted.outcome });
+      await progress(db, caseId, { mode: step.mode, runId, step: 'done', done, startedAt, finishedAt: new Date().toISOString(), outcome: persisted.outcome, timings });
       return { runId, outcome: persisted.outcome, decisionId: persisted.decisionId };
     }
     // 16. cooling-off hold
     const hold = await gated('hold', () => stepSchedulePayment(db, caseId, { type: 'system', id: 'pipeline:case.process' }));
     if (hold === STOP) return { runId, stopped: 'consent' };
-    await progress(db, caseId, { mode: step.mode, runId, step: 'hold', done, startedAt, outcome: persisted.outcome });
+    await progress(db, caseId, { mode: step.mode, runId, step: 'hold', done, startedAt, outcome: persisted.outcome, timings });
     const slept = await step.sleepUntil('cooling-off', new Date(hold.holdUntil ?? Date.now()));
     // 17. pay (re-checks consent, freezes and pending payout changes itself)
     if (slept) {
       const paid = await gated('pay', () => payIfDue(db, hold.paymentId));
       if (paid === STOP) return { runId, stopped: 'consent' };
     }
-    await progress(db, caseId, { mode: step.mode, runId, step: slept ? 'done' : 'hold', done, startedAt, finishedAt: new Date().toISOString(), outcome: persisted.outcome });
+    await progress(db, caseId, { mode: step.mode, runId, step: slept ? 'done' : 'hold', done, startedAt, finishedAt: new Date().toISOString(), outcome: persisted.outcome, timings });
     return { runId, outcome: persisted.outcome, decisionId: persisted.decisionId, paymentId: hold.paymentId };
   } catch (e) {
     log('error', 'case.process failed', { caseId, step: current, error: e instanceof Error ? e.stack ?? e.message : String(e) });

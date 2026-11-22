@@ -1,4 +1,5 @@
 import 'server-only';
+import { requireCategory } from './consent';
 /**
  * Citizen / helper side of a case (PRD §21.2): answers as facts with sources, document upload keyed by SHA-256,
  * voice upload with read-back, submit, proof, light status, timeline. Helpers act only under a live grant
@@ -133,6 +134,7 @@ export const documentUploadSchema = docBody;
 
 export async function storeDocument(db: DbOrTx, actor: Actor, caseId: string, b: z.infer<typeof docBody>, allowStatuses = ['draft']) {
   const c = await caseFor(db, caseId);
+  await requireCategory(db, c.citizenId, c.tenantId, 'documents', 'documents');
   if (!allowStatuses.includes(c.status)) throw new ApiError('CASE_STATE', `Photos cannot be added while the case is ${c.status}.`);
   const buf = Buffer.from(b.dataBase64, 'base64');
   if (buf.length > 750_000) throw new ApiError('PAYLOAD_TOO_LARGE', 'Photo over 750 KB after compression. Retake with the app camera, which compresses it.');
@@ -162,6 +164,7 @@ export const voiceBodySchema = z.object({
 /** VOICE-1/5: transcribe now for read-back; demo audio is deleted right after; a failure queues the clip, never guesses */
 export async function storeVoice(db: DbOrTx, actor: Actor, caseId: string, b: z.infer<typeof voiceBodySchema>, demoTenant: boolean) {
   const c = await caseFor(db, caseId);
+  await requireCategory(db, c.citizenId, c.tenantId, 'voice', 'voice answers');
   if (!EDITABLE.includes(c.status)) throw new ApiError('CASE_STATE', `Answers cannot change while the case is ${c.status}.`);
   const audio = Buffer.from(b.dataBase64, 'base64');
   const r = await transcribeUrdu(db, { tenantId: c.tenantId, caseId, audio, mediaType: b.mediaType });

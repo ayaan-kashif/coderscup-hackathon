@@ -136,6 +136,14 @@ export function EvalDashboard() {
           <div className="text-sm">
             <h4 className="mb-1 font-semibold">Live (this office)</h4>
             <p>Pipeline p50 / p95: {m.live.pipelineMs.p50 ?? '—'} / {m.live.pipelineMs.p95 ?? '—'} ms (n={m.live.pipelineMs.n}) · cost per case {m.live.costPerCaseUsd === null ? '—' : `$${m.live.costPerCaseUsd}`} · officer overrides <R r={m.live.officerOverrides} /></p>
+            <div className="mt-2 overflow-x-auto" data-testid="stage-latency">
+              <h5 className="text-xs font-semibold">Speed per pipeline stage</h5>
+              {m.live.stageMs.length === 0 ? <p className="text-xs text-muted-foreground">No finished cases with timings yet.</p> : (
+                <table className="w-full text-xs"><thead><tr className="text-muted-foreground"><th className="text-start">Stage</th><th className="text-end">p50 ms</th><th className="text-end">p95 ms</th><th className="text-end">cases</th><th className="text-start ps-3">period</th></tr></thead>
+                  <tbody>{m.live.stageMs.map((x: { stage: string; n: number; p50: number; p95: number; from: string | null; to: string | null }) => <tr key={x.stage} className="border-t border-border"><td>{x.stage}</td><td className="text-end tabular-nums">{x.p50}</td><td className="text-end tabular-nums">{x.p95}</td><td className="text-end tabular-nums">{x.n}</td><td className="ps-3">{x.from?.slice(0, 10)} to {x.to?.slice(0, 10)}</td></tr>)}</tbody></table>
+              )}
+            </div>
+            <p className="mt-2 text-xs" data-testid="ai-cost">AI cost: {m.live.cost.perCaseUsd === null ? 'no model calls on cases yet' : `$${m.live.cost.perCaseUsd} per case (total $${m.live.cost.totalUsd} over ${m.live.cost.cases} cases, ${m.live.cost.aiCalls} model calls, ${m.live.cost.from?.slice(0, 10)} to ${m.live.cost.to?.slice(0, 10)})`}</p>
             <p className="text-xs text-muted-foreground">AI calls: {m.live.aiCalls.map((a: { purpose: string; n: number; errors: number; p50: number | null }) => `${a.purpose} ${a.n} (${a.errors} not ok, p50 ${a.p50 ?? '—'} ms)`).join(' · ') || 'none yet'}</p>
           </div>
         )}

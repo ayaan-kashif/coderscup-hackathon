@@ -1,5 +1,5 @@
 'use client';
-import { AlertTriangle, Check, Mic, RefreshCw, ShieldOff, Volume2, X } from 'lucide-react';
+import { AlertTriangle, Check, RefreshCw, ShieldOff, Volume2, X, Send } from 'lucide-react';
 import { isLowBandwidth } from '@/components/shell/low-bandwidth';
 import { useCallback, useEffect, useState } from 'react';
 import { CameraCapture } from '@/components/apply/camera';
@@ -10,6 +10,7 @@ import { CountUp } from '@/components/motion/count-up';
 import { StepFrame } from '@/components/brand/step-frame';
 import { Button } from '@/components/ui/button';
 import { Keypad } from '@/components/voice/keypad';
+import { HelpMic, micErrorText, withoutClauseIds } from '@/components/voice/help-mic';
 import { VoicePrompt, playSequence } from '@/components/voice/voice-prompt';
 import { amountClips, speakText, useBi } from '@/components/voice/voice-lib';
 import { enqueue, outboxDb } from '@/offline/outbox';
@@ -274,6 +275,7 @@ export function DataScreen({ caseId }: { caseId: string | null }) {
           {c?.processors.map((p) => <li key={p.id} className="rounded-2xl border border-white/10 bg-void/40 p-3 text-sm">{bi(p.en, p.ur)} {p.simulated && <SimulatedBadge what="mock" />}<span className="block text-xs text-muted-foreground">{p.purpose}</span></li>)}
         </ul>
       </div>
+      {c?.consents.filter((x) => x.status === 'active' && x.grantee.type === 'office').map((x) => <ShareChoices key={x.id} tenantId={x.tenantId} current={x.dataCategories} onDone={() => setVersion((v) => v + 1)} />)}
       {withdrawing && (
         <div className="space-y-3 rounded-[24px] border-2 border-warning bg-warning/10 p-5" data-testid="withdraw-confirm">
           <p className="font-semibold">{bi('Your application will pause until you share again.', 'جب تک آپ دوبارہ اجازت نہ دیں، درخواست رکی رہے گی۔')}</p>
@@ -305,6 +307,110 @@ export function DataScreen({ caseId }: { caseId: string | null }) {
         <a href="/api/v1/me/export" download>{bi('Download my data', 'اپنی معلومات ڈاؤن لوڈ کریں')}</a>
       </Button>
     </section>
+  );
+}
+
+const STATUS_TEXT: Record<string, [string, string]> = {
+  draft: ['Not sent yet', 'ابھی نہیں بھیجی'], submitted: ['Reached the office', 'دفتر پہنچ گئی'], processing: ['Being checked', 'جانچ جاری ہے'],
+  needs_proof: ['One more photo needed', 'ایک اور تصویر چاہیے'], in_review: ['An officer is looking', 'افسر دیکھ رہا ہے'],
+  approved_on_hold: ['Approved, payment scheduled', 'منظور، ادائیگی طے'], approved: ['Approved', 'منظور'], rejected: ['Not approved', 'منظور نہیں ہوئی'],
+  paid: ['Paid: check the amount', 'ادائیگی ہو گئی'], confirmed: ['Received in full', 'پوری رقم ملی'], disputed: ['Payment complaint open', 'ادائیگی کی شکایت'],
+  paused_for_consent: ['Paused: sharing stopped', 'رکی ہوئی: شیئرنگ بند'], frozen: ['On hold', 'روکی ہوئی'], closed: ['Closed', 'بند'],
+};
+const EVENT_TEXT: Record<string, [string, string]> = {
+  created: ['Started', 'شروع کی'], reached_office: ['Reached the office', 'دفتر پہنچی'], officer_opened: ['An officer opened it', 'افسر نے کھولی'],
+  checked: ['Checked', 'جانچ ہوئی'], officer_decided: ['An officer decided', 'افسر نے فیصلہ کیا'], proof_sent: ['You sent a photo', 'آپ نے تصویر بھیجی'],
+  payment_scheduled: ['Payment scheduled', 'ادائیگی طے'], payment_sent: ['Payment sent', 'ادائیگی بھیجی'], receipt: ['You confirmed the amount', 'آپ نے رقم کی تصدیق کی'],
+  on_hold: ['On hold', 'روکی گئی'], resumed: ['Resumed', 'دوبارہ شروع'], paused: ['Paused', 'رکی'],
+};
+
+/** Dashboard: all her applications with status, ticks and a timeline (tap one to see its history; "Open" goes to the status screen) */
+export function MyApplications({ onOpen }: { onOpen: (caseId: string) => void }) {
+  const bi = useBi();
+  const [items, setItems] = useState<{ id: string; status: string; ticks: 'grey1' | 'grey2' | 'blue2' | 'failed'; updatedAt: string }[] | null>(null);
+  const [open, setOpen] = useState<string | null>(null);
+  const [events, setEvents] = useState<{ ts: string; event: string }[]>([]);
+  useEffect(() => {
+    let alive = true;
+    void api('/api/v1/me/cases').then((r) => { if (alive && r.status === 200) setItems(r.body.items); }, () => {});
+    return () => { alive = false; };
+  }, []);
+  if (!items || items.length === 0) return null;
+  const text = (m: Record<string, [string, string]>, k: string) => (m[k] ? bi(m[k][0], m[k][1]) : k.replace(/_/g, ' '));
+  return (
+    <section className="space-y-2" data-testid="my-applications" aria-label={bi('My applications', 'میری درخواستیں')}>
+      <h3 className="px-1 text-lg font-bold">{bi('My applications', 'میری درخواستیں')}</h3>
+      <ul className="space-y-2">
+        {items.map((c) => (
+          <li key={c.id} className="rounded-[20px] border border-white/10 bg-bento p-3" data-testid="application-row">
+            <button type="button" className="flex w-full flex-wrap items-center justify-between gap-2 text-start" aria-expanded={open === c.id}
+              onClick={async () => {
+                if (open === c.id) { setOpen(null); return; }
+                setOpen(c.id); setEvents([]);
+                const r = await api(`/api/v1/cases/${c.id}/timeline`);
+                if (r.status === 200) setEvents(r.body.events);
+              }}>
+              <span className="font-semibold">{text(STATUS_TEXT, c.status)}</span>
+              <span className="rounded-full bg-void px-3 py-1"><Ticks tick={c.ticks} labels={{ saved: bi('Saved on phone', 'فون میں محفوظ'), sent: bi('Reached the office', 'دفتر پہنچ گئی'), opened: bi('Officer opened it', 'افسر نے کھولی'), failed: '' }} /></span>
+            </button>
+            <p className="text-xs text-muted-foreground">{new Date(c.updatedAt).toLocaleDateString()}</p>
+            {open === c.id && (
+              <div className="mt-2 space-y-2 border-t border-white/10 pt-2" data-testid="application-timeline">
+                <ol className="space-y-1 text-sm">
+                  {events.length === 0 && <li className="text-muted-foreground">…</li>}
+                  {events.map((e, i) => <li key={i} className="flex justify-between gap-2"><span>{text(EVENT_TEXT, e.event)}</span><span className="text-xs text-muted-foreground">{new Date(e.ts).toLocaleString()}</span></li>)}
+                </ol>
+                {c.status !== 'draft' && <Button size="sm" variant="secondary" onClick={() => onOpen(c.id)}>{bi('Open', 'کھولیں')}</Button>}
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+const SHARE_CHOICES: { key: string; en: string; ur: string; icon: string }[] = [
+  { key: 'identity', en: 'Identity check', ur: 'شناخت کی جانچ', icon: '🪪' },
+  { key: 'documents', en: 'Photos of documents', ur: 'دستاویزات کی تصاویر', icon: '📄' },
+  { key: 'payments', en: 'Payout details', ur: 'ادائیگی کی تفصیل', icon: '💵' },
+  { key: 'contact', en: 'SMS and voice calls', ur: 'ایس ایم ایس اور فون', icon: '📱' },
+  { key: 'voice', en: 'My voice answers', ur: 'میرے آواز کے جوابات', icon: '🎙️' },
+];
+
+/** CONS-3: switch single kinds of data on or off with her PIN (the server enforces each one where the data is used) */
+function ShareChoices({ tenantId, current, onDone }: { tenantId: string; current: string[]; onDone: () => void }) {
+  const bi = useBi();
+  const [chosen, setChosen] = useState<string[]>(() => SHARE_CHOICES.map((c) => c.key).filter((k) => current.includes(k)));
+  const [pin, setPin] = useState('');
+  const [msg, setMsg] = useState<string | null>(null);
+  const changed = chosen.slice().sort().join() !== SHARE_CHOICES.map((c) => c.key).filter((k) => current.includes(k)).sort().join();
+  return (
+    <div className="space-y-3 rounded-[24px] border border-white/10 bg-void/40 p-4" data-testid="share-choices">
+      <h3 className="text-lg font-bold">{bi('What you share', 'آپ کیا شیئر کرتی ہیں')}</h3>
+      <ul className="space-y-2">
+        {SHARE_CHOICES.map((c) => (
+          <li key={c.key}>
+            <label className="flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-white/10 p-3">
+              <span className="text-lg">{c.icon} {bi(c.en, c.ur)}</span>
+              <input type="checkbox" className="size-7" data-testid={`share-${c.key}`} checked={chosen.includes(c.key)} onChange={(e) => setChosen(e.target.checked ? [...chosen, c.key] : chosen.filter((k) => k !== c.key))} />
+            </label>
+          </li>
+        ))}
+      </ul>
+      {changed && (
+        <>
+          <Keypad value={pin} onChange={setPin} max={4} masked />
+          <Button size="xl" className="w-full" disabled={pin.length !== 4 || chosen.length === 0} data-testid="share-save" onClick={async () => {
+            const r = await api('/api/v1/me/consents', { body: { tenantId, dataCategories: chosen, pin } });
+            setPin('');
+            if (r.status === 201) { setMsg(bi('Saved.', 'محفوظ ہو گیا۔')); onDone(); } else setMsg(r.body.detail ?? String(r.status));
+          }}>{bi('Save with PIN', 'پن سے محفوظ کریں')}</Button>
+          {chosen.length === 0 && <p className="text-sm text-muted-foreground">{bi('To stop everything, use "Stop sharing" below.', 'سب کچھ بند کرنے کے لیے نیچے "شیئرنگ بند کریں" استعمال کریں۔')}</p>}
+        </>
+      )}
+      {msg && <p role="status" className="text-sm">{msg}</p>}
+    </div>
   );
 }
 
@@ -353,19 +459,35 @@ export function HelpScreen() {
   const bi = useBi();
   const [q, setQ] = useState('');
   const [a, setA] = useState<{ answer_ur: string; answer_en: string; citations: { clause_id: string; quote: string }[]; refused: boolean } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  // the existing Ask logic; a spoken question is sent with inputMode 'voice' (a 2-4 sentence answer written to be read aloud)
+  const ask = async (question: string, inputMode: 'text' | 'voice') => {
+    setBusy(true); setErr(null);
+    const r = await api('/api/v1/assist/policy', { body: { question, inputMode } });
+    setBusy(false);
+    if (r.status === 200) { setA(r.body); if (r.body.refused) void playSequence(['help_not_sure']); else void speakText(withoutClauseIds(r.body.answer_ur)); }
+    else setErr(r.body.detail ?? String(r.status));
+  };
   return (
     <section className="space-y-4" data-testid="help-screen">
       <VoicePrompt clip="help_ask" label={bi('Play again', 'دوبارہ سنیں')} />
+      <HelpMic disabled={busy}
+        onError={(e) => setErr(micErrorText(e, bi))}
+        onText={async (text) => {
+          setErr(null); setA(null); setQ(text); // the text shows in the box and stays editable
+          if (text.trim().length < 5) { setErr(micErrorText('nothing', bi)); return; }
+          await speakText(`آپ نے پوچھا: ${text}`, { kind: 'readback' }); // read back (never stored), then send
+          await ask(text, 'voice');
+        }} />
       <textarea className="min-h-24 w-full rounded-[20px] border border-white/12 bg-white/5 p-3 transition-colors focus-visible:border-mint text-lg" value={q} onChange={(e) => setQ(e.target.value)} placeholder={bi('Am I eligible if my husband died abroad?', 'اگر شوہر بیرون ملک فوت ہوئے تو کیا میں اہل ہوں؟')} />
-      <Button size="xl" className="w-full" disabled={q.length < 5} onClick={async () => {
-        const r = await api('/api/v1/assist/policy', { body: { question: q } });
-        if (r.status === 200) { setA(r.body); if (r.body.refused) void playSequence(['help_not_sure']); else void speakText(r.body.answer_ur); }
-      }}><Mic className="!size-6" /> {bi('Ask', 'پوچھیں')}</Button>
+      <Button size="xl" className="w-full" disabled={q.length < 5 || busy} data-testid="help-ask" onClick={() => void ask(q, 'text')}><Send className="!size-6" /> {bi('Ask', 'پوچھیں')}</Button>
+      {err && <p role="alert" className="rounded-2xl border border-warning/40 bg-warning/10 p-3 text-sm font-medium" data-testid="help-error">{err}</p>}
       {a && (
         <div className="space-y-2 rounded-[20px] border border-white/10 bg-void/40 p-4" data-testid="policy-answer">
           <div className="flex items-start gap-2">
             <p className="flex-1 text-lg font-semibold">{bi(a.answer_en, a.answer_ur)}</p>
-            {!a.refused && <Button size="icon" variant="ghost" aria-label={bi('Play again', 'دوبارہ سنیں')} onClick={() => void speakText(a.answer_ur)}><Volume2 /></Button>}
+            {!a.refused && <Button size="icon" variant="ghost" aria-label={bi('Play again', 'دوبارہ سنیں')} onClick={() => void speakText(withoutClauseIds(a.answer_ur))}><Volume2 /></Button>}
           </div>
           {a.citations.map((c) => <p key={c.clause_id} className="text-sm text-muted-foreground">§ {c.clause_id}: “{c.quote}”</p>)}
         </div>

@@ -24,7 +24,8 @@ export const DEFAULT_CONFIG: Record<string, unknown> = {
 };
 
 export const CONSENT_NOTICE_VERSION = 'saaya-notice-v1';
-export const ELIGIBILITY_CATEGORIES = ['case', 'identity', 'documents', 'payments'];
+export { ELIGIBILITY_CATEGORIES, NARROWABLE_CATEGORIES } from '../consent-categories';
+import { ELIGIBILITY_CATEGORIES } from '../consent-categories';
 
 export type SeedCoreOpts = { staffPassword: string; citizenPin: string; reset?: boolean };
 

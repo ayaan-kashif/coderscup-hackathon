@@ -122,15 +122,16 @@ export function validateCitations(a: PolicyAnswer, retrieved: Clause[]): string[
 
 export const RETRIEVAL_MIN_SCORE = 0.08;
 
-export async function answerPolicy(db: DbOrTx, tenantId: string | null, question: string) {
+export async function answerPolicy(db: DbOrTx, tenantId: string | null, question: string, opts: { inputMode?: 'text' | 'voice' } = {}) {
+  const prompt = opts.inputMode === 'voice' ? PROMPTS.policyAnswerVoice : PROMPTS.policyAnswer;
   const ids = await getModelIds(db, tenantId);
   const retrieved = await retrieveClauses(db, question, 4, tenantId);
   const top = retrieved[0]?.score ?? 0;
-  const base = { model: ids.policy, promptVersion: PROMPTS.policyAnswer.version, retrieved: retrieved.map((r) => ({ clauseId: r.clauseId, score: Math.round(r.score * 1000) / 1000 })) };
+  const base = { model: ids.policy, promptVersion: prompt.version, retrieved: retrieved.map((r) => ({ clauseId: r.clauseId, score: Math.round(r.score * 1000) / 1000 })) };
   if (top < RETRIEVAL_MIN_SCORE) return { ...base, answer: { ...NOT_SURE, citations: [], refused: true }, reason: 'low_retrieval_score' };
   try {
-    const r = await aiCall({ db, tenantId, purpose: 'assist.policy', model: ids.policy, promptVersion: PROMPTS.policyAnswer.version }, () =>
-      generateStructured({ model: ids.policy, schema: answerSchema, system: PROMPTS.policyAnswer.system, timeoutMs: 10_000,
+    const r = await aiCall({ db, tenantId, purpose: 'assist.policy', model: ids.policy, promptVersion: prompt.version }, () =>
+      generateStructured({ model: ids.policy, schema: answerSchema, system: prompt.system, timeoutMs: 10_000,
         messages: [{ role: 'user', content: JSON.stringify({ question, clauses: retrieved.map((c) => ({ clause_id: c.clauseId, text: c.text })) }) }] }));
     const problems = validateCitations(r.object, retrieved);
     if (r.object.refused || problems.length) return { ...base, model: r.modelId, answer: { ...NOT_SURE, citations: [], refused: true }, reason: r.object.refused ? 'model_refused' : `validation: ${problems.join('; ')}` };

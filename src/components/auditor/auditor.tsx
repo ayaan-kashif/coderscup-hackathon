@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { api } from '@/components/citizen/screens';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -108,5 +108,37 @@ export function ConsentAccess() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+type ReadRow = { seq: number; ts: string; actorType: string; actorId: string; action: string; resourceType: string; citizenId: string | null; outcome: string; code: string | null };
+
+/** AU3: every read of personal data in this office, allowed and refused; read-only; export as CSV or JSON */
+export function AllReads() {
+  const [outcome, setOutcome] = useState('');
+  const [from, setFrom] = useState('');
+  const [data, setData] = useState<{ total: number; denied: number; shown: number; items: ReadRow[] } | null>(null);
+  const qs = new URLSearchParams({ ...(outcome ? { outcome } : {}), ...(from ? { from: new Date(from).toISOString() } : {}) });
+  useEffect(() => {
+    let alive = true;
+    void api(`/api/v1/audit/reads?limit=100&${qs}`).then((r) => { if (alive && r.status === 200) setData(r.body); });
+    return () => { alive = false; };
+  }, [qs.toString()]); // eslint-disable-line react-hooks/exhaustive-deps
+  return (
+    <Card data-testid="all-reads">
+      <CardHeader><CardTitle>Every data read</CardTitle><CardDescription>All reads of personal data in this office, allowed and refused. Ids and codes only; read-only.</CardDescription></CardHeader>
+      <CardContent className="space-y-2">
+        <div className="flex flex-wrap items-end gap-2 text-sm">
+          <label className="grid gap-1">Outcome<select className="h-10 rounded-xl border border-white/12 bg-white/5 px-2" value={outcome} onChange={(e) => setOutcome(e.target.value)}><option value="">All</option><option value="allowed">Allowed</option><option value="denied">Refused</option></select></label>
+          <label className="grid gap-1">Since<Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} /></label>
+          <Button asChild variant="outline" size="sm"><a href={`/api/v1/audit/reads?format=csv&limit=5000&${qs}`} download>Export CSV</a></Button>
+          <Button asChild variant="outline" size="sm"><a href={`/api/v1/audit/reads?limit=5000&${qs}`} download="data-reads.json">Export JSON</a></Button>
+        </div>
+        {data && <p className="text-xs text-muted-foreground">{data.total} reads, {data.denied} refused; showing {data.shown}.</p>}
+        <div className="overflow-x-auto"><table className="w-full text-xs" data-testid="reads-table"><tbody>
+          {data?.items.map((e) => <tr key={e.seq} className={`border-t border-border ${e.outcome === 'denied' ? 'bg-destructive/10' : ''}`}><td className="p-1">{new Date(e.ts).toLocaleString()}</td><td className="p-1">{e.actorType}</td><td className="p-1 font-mono">{e.action}</td><td className="p-1">{e.outcome}{e.code ? ` · ${e.code}` : ''}</td></tr>)}
+        </tbody></table></div>
+      </CardContent>
+    </Card>
   );
 }

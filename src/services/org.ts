@@ -4,7 +4,7 @@ import 'server-only';
  * hashed storage and revocation. AU3 consent and access logs; break-glass access for auditors (F8).
  */
 import { randomBytes } from 'node:crypto';
-import { and, desc, eq, gt, inArray, isNull, or, sql } from 'drizzle-orm';
+import { and, desc, eq, gt, gte, inArray, isNotNull, isNull, lte, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { apiKeyHash, hashSecret } from '@/auth/crypto';
 import type { DbOrTx } from '@/db/client';
@@ -12,7 +12,7 @@ import { aiDecisions, apiKeys, auditEvents, cases, citizens, complaints, consent
 import { ApiError } from '@/lib/errors';
 
 export async function listUsers(db: DbOrTx, tenantId: string) {
-  return db.select({ id: users.id, email: users.email, name: users.displayName, role: memberships.role, isSenior: memberships.isSenior, sessionsRevokedAt: users.sessionsRevokedAt, createdAt: users.createdAt })
+  return db.select({ id: users.id, email: users.email, name: users.displayName, role: memberships.role, isSenior: memberships.isSenior, active: sql<boolean>`${memberships.deactivatedAt} is null`, sessionsRevokedAt: users.sessionsRevokedAt, createdAt: users.createdAt })
     .from(memberships).innerJoin(users, eq(users.id, memberships.userId)).where(eq(memberships.tenantId, tenantId)).orderBy(memberships.role, users.displayName);
 }
 
@@ -26,11 +26,41 @@ export const newUserBody = z.object({
 /** returns a one-time temporary password (shown once, never stored in clear) */
 export async function createUser(db: DbOrTx, tenantId: string, b: z.infer<typeof newUserBody>) {
   const temp = `tmp-${randomBytes(9).toString('base64url')}`;
-  const [u] = await db.insert(users).values({ kind: 'staff', email: b.email.toLowerCase(), displayName: b.displayName, passwordHash: await hashSecret(temp), locale: 'en' })
-    .onConflictDoUpdate({ target: users.email, set: { displayName: b.displayName } }).returning({ id: users.id });
+  // an address that already has an account (here or in another office) is never touched or pulled into this office
+  const [exists] = await db.select({ id: users.id }).from(users).where(eq(users.email, b.email.toLowerCase())).limit(1);
+  if (exists) throw new ApiError('CASE_STATE', 'That address already has an account. Use a different fictional .test address.');
+  const [u] = await db.insert(users).values({ kind: 'staff', email: b.email.toLowerCase(), displayName: b.displayName, passwordHash: await hashSecret(temp), locale: 'en' }).returning({ id: users.id });
   await db.insert(memberships).values({ userId: u!.id, tenantId, role: b.role, isSenior: b.isSenior })
     .onConflictDoUpdate({ target: [memberships.userId, memberships.tenantId], set: { role: b.role, isSenior: b.isSenior } });
   return { id: u!.id, temporaryPassword: temp };
+}
+
+export const userPatchBody = z.object({
+  role: z.enum(['officer', 'admin', 'auditor', 'helper']).optional(),
+  isSenior: z.boolean().optional(),
+  active: z.boolean().optional(),
+}).refine((b) => b.role !== undefined || b.isSenior !== undefined || b.active !== undefined, 'send role, isSenior or active');
+
+/**
+ * A6: change a user's role in THIS office, or deactivate / reactivate them. Their sessions are revoked on any change so
+ * it takes effect at once. An admin cannot lock themselves out, and an office always keeps one active admin.
+ */
+export async function updateUser(db: DbOrTx, tenantId: string, actorId: string, userId: string, b: z.infer<typeof userPatchBody>) {
+  const [m] = await db.select().from(memberships).where(and(eq(memberships.userId, userId), eq(memberships.tenantId, tenantId))).for('update').limit(1);
+  if (!m) throw new ApiError('NOT_FOUND');
+  const willRole = b.role ?? m.role;
+  const willActive = b.active ?? m.deactivatedAt === null;
+  if (userId === actorId && (willRole !== m.role || !willActive)) throw new ApiError('CASE_STATE', 'You cannot change your own role or deactivate yourself. Ask another admin.');
+  const losesAdmin = m.role === 'admin' && m.deactivatedAt === null && (willRole !== 'admin' || !willActive);
+  if (losesAdmin) {
+    const [others] = await db.select({ n: sql<number>`count(*)::int` }).from(memberships).where(and(eq(memberships.tenantId, tenantId), eq(memberships.role, 'admin'), isNull(memberships.deactivatedAt), sql`${memberships.userId} <> ${userId}`));
+    if (!others?.n) throw new ApiError('CASE_STATE', 'This is the only active admin of the office. Add another admin first.');
+  }
+  const set = { role: willRole, isSenior: willRole === 'officer' ? (b.isSenior ?? m.isSenior) : false, deactivatedAt: willActive ? null : (m.deactivatedAt ?? new Date()) };
+  await db.update(memberships).set(set).where(eq(memberships.id, m.id));
+  const changed = willRole !== m.role || willActive !== (m.deactivatedAt === null) || set.isSenior !== m.isSenior;
+  if (changed) await revokeSessions(db, userId);
+  return { id: userId, from: { role: m.role, active: m.deactivatedAt === null, isSenior: m.isSenior }, to: { role: set.role, active: willActive, isSenior: set.isSenior } };
 }
 
 export async function revokeSessions(db: DbOrTx, userId: string) {
@@ -93,6 +123,44 @@ export async function consentAndAccess(db: DbOrTx, tenantId: string, citizenId: 
   const reads = await db.select({ ts: auditEvents.ts, action: auditEvents.action, actorType: auditEvents.actorType, actorId: auditEvents.actorId, outcome: auditEvents.outcome, details: auditEvents.details })
     .from(auditEvents).where(and(eq(auditEvents.subjectCitizenId, citizenId), or(eq(auditEvents.tenantId, tenantId), isNull(auditEvents.tenantId)))).orderBy(desc(auditEvents.id)).limit(300);
   return { consents: cons, events: reads };
+}
+
+/** AU3: what counts as "a read of personal data" in the audit chain (plus every refused attempt, whatever the action) */
+const READ_ACTION = sql`(${auditEvents.action} ~ '([.]read|[.]explain|[.]timeline|[.]replay|[.]search|[.]open)$' or ${auditEvents.action} in ('case.status', 'queue.read'))`;
+
+export const readsQuery = z.object({
+  outcome: z.enum(['allowed', 'denied', 'error']).optional(),
+  citizenId: z.uuid().optional(),
+  actorType: z.enum(['user', 'api_key', 'agent', 'system']).optional(),
+  from: z.iso.datetime().optional(),
+  to: z.iso.datetime().optional(),
+  limit: z.coerce.number().int().min(1).max(5000).default(500),
+  format: z.enum(['json', 'csv']).default('json'),
+});
+
+/** AU3: every read of any citizen's data in this office, allowed and denied, newest first. Ids and codes only. */
+export async function dataReads(db: DbOrTx, tenantId: string, q: z.infer<typeof readsQuery>) {
+  const w = [eq(auditEvents.tenantId, tenantId), isNotNull(auditEvents.subjectCitizenId), or(READ_ACTION, eq(auditEvents.outcome, 'denied'))!];
+  if (q.outcome) w.push(eq(auditEvents.outcome, q.outcome));
+  if (q.citizenId) w.push(eq(auditEvents.subjectCitizenId, q.citizenId));
+  if (q.actorType) w.push(eq(auditEvents.actorType, q.actorType));
+  if (q.from) w.push(gte(auditEvents.ts, new Date(q.from)));
+  if (q.to) w.push(lte(auditEvents.ts, new Date(q.to)));
+  const rows = await db.select({ seq: auditEvents.seq, ts: auditEvents.ts, actorType: auditEvents.actorType, actorId: auditEvents.actorId, action: auditEvents.action, resourceType: auditEvents.resourceType, resourceId: auditEvents.resourceId, citizenId: auditEvents.subjectCitizenId, outcome: auditEvents.outcome, code: sql<string | null>`${auditEvents.details}->>'code'` })
+    .from(auditEvents).where(and(...w)).orderBy(desc(auditEvents.id)).limit(q.limit);
+  const [tot] = await db.select({ n: sql<number>`count(*)::int` }).from(auditEvents).where(and(...w));
+  const [den] = await db.select({ n: sql<number>`count(*)::int` }).from(auditEvents).where(and(...w, eq(auditEvents.outcome, 'denied')));
+  return { total: tot?.n ?? 0, denied: den?.n ?? 0, shown: rows.length, items: rows };
+}
+
+/** RFC 4180 CSV; a cell that starts with = + - @ is prefixed so a spreadsheet never runs it as a formula */
+export function toCsv(rows: Record<string, unknown>[], cols: string[]) {
+  const cell = (v: unknown) => {
+    let t = v === null || v === undefined ? '' : v instanceof Date ? v.toISOString() : typeof v === 'object' ? JSON.stringify(v) : String(v);
+    if (/^[=+\-@\t\r]/.test(t)) t = `'${t}`;
+    return /[",\n\r]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t;
+  };
+  return [cols.join(','), ...rows.map((r) => cols.map((c) => cell(r[c])).join(','))].join('\r\n') + '\r\n';
 }
 
 export const breakGlassBody = z.object({

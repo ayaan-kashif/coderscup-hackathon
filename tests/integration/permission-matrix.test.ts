@@ -72,6 +72,8 @@ const BODY_OVERRIDES: Record<string, unknown> = {
   updateRuleDraft: { rules: [], thresholds: {}, costs: {} },
   createUser: { email: 'probe.user@sindh.amanat.test', displayName: 'Probe User', role: 'officer' },
   createApiKey: { name: 'probe key', scopes: ['scam:check'] },
+  updateUser: { isSenior: false },
+  transcribeHelpQuestion: { mediaType: 'audio/webm', dataBase64: 'A'.repeat(400), durationMs: 2000 },
   resolveDuressAlarm: { action: 'escalate', note: 'matrix probe' },
 };
 const QUERY_OVERRIDES: Record<string, Record<string, string>> = { getConsentAndAccess: { citizenId: '00000000-0000-4000-8000-000000000000' } };
@@ -194,7 +196,7 @@ function expected(action: Action, who: Who, otherTenant: boolean, owner: 'zarina
 
 const GUARD_CODES = new Set(['FORBIDDEN_ROLE', 'GRANT_REQUIRED', 'CONSENT_WITHDRAWN', 'SCOPE_MISSING', 'UNAUTHENTICATED']);
 /** handler-level narrowing on top of the matrix (documented on each route) */
-const HANDLER_NARROWED = new Set(['auditEvents', 'searchDecisions', 'getConsentAndAccess', 'getDocumentImage', 'getCaseExplanation']);
+const HANDLER_NARROWED = new Set(['auditEvents', 'searchDecisions', 'getConsentAndAccess', 'listDataReads', 'getDocumentImage', 'getCaseExplanation']);
 
 function routes() {
   const out: { op: string; method: string; handler: Handler; spec: Spec }[] = [];

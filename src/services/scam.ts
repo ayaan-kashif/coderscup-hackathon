@@ -213,10 +213,15 @@ export async function maybeDraftAlert(db: DbOrTx, districtId: string, tenantId: 
 
 /**
  * SCAM-5: confirmed scams by district and day. Totals only; the server masks every count under 3, so the browser never
- * receives the real number. Legacy fields (total, today, days, topType, spike) are kept for older callers.
- * The spike flag always looks at every scam type, whatever type filter is chosen (same rule as maybeDraftAlert).
+ * receives the real number. Filters: time (days, 1 to 90), district, scam type. Legacy fields (total, today, days, topType,
+ * spike) are kept for older callers. The spike flag always looks at every scam type, whatever type filter is chosen
+ * (same rule as maybeDraftAlert). Staff get only their own office (tenantId); includeEmpty adds districts with no reports.
  */
-export async function scamMap(db: DbOrTx, days: number = 7, opts: { type?: string; tenantId?: string | null; withAlerts?: boolean } = {}) {
+export type ScamMapFilter = { days?: number; district?: string | null; type?: string | null; tenantId?: string | null; withAlerts?: boolean; includeEmpty?: boolean };
+
+export async function scamMap(db: DbOrTx, f: ScamMapFilter | number = {}) {
+  const { days = 7, district = null, tenantId = null, withAlerts = false, includeEmpty = false } = typeof f === 'number' ? { days: f } : f;
+  const type = typeof f === 'number' ? null : f.type ?? null;
   const span = Math.max(days, 8); // the spike rule needs today plus the 7 days before it
   const rows = rowsOf<{ code: string; name: string; lat: number | null; lng: number | null; id: string; day: string | null; type: string | null; n: number }>(await db.execute(sql`
     select d.id, d.code, d.name, d.lat, d.lng,
@@ -224,18 +229,18 @@ export async function scamMap(db: DbOrTx, days: number = 7, opts: { type?: strin
     from districts d
     left join scam_reports r on r.district_id = d.id and (r.verdict = 'fake' or r.officer_label = 'fake')
       and r.created_at >= (date_trunc('day', now() at time zone 'UTC') - make_interval(days => ${span - 1})) at time zone 'UTC'
-    ${opts.tenantId ? sql`where d.tenant_id = ${opts.tenantId}` : sql``}
+    where true ${tenantId ? sql`and d.tenant_id = ${tenantId}` : sql``} ${district ? sql`and d.code = ${district}` : sql``}
     group by d.id, d.code, d.name, d.lat, d.lng, day, type order by d.code, day`));
   const todayStr = new Date().toISOString().slice(0, 10);
   const dayList = Array.from({ length: span }, (_, i) => new Date(Date.now() - (span - 1 - i) * 86_400_000).toISOString().slice(0, 10));
   const periodDays = dayList.slice(-days);
   const prevDays = dayList.slice(-8, -1); // the 7 days before today
-  const wantType = opts.type && opts.type !== 'all' ? opts.type : null;
+  const wantType = type && type !== 'all' ? type : null;
 
   const drafts = new Map<string, { id: string; status: string }>();
-  if (opts.withAlerts && opts.tenantId) {
+  if (withAlerts && tenantId) {
     const al = await db.select({ id: scamAlerts.id, districtId: scamAlerts.districtId, status: scamAlerts.status }).from(scamAlerts)
-      .where(and(eq(scamAlerts.tenantId, opts.tenantId), eq(scamAlerts.status, 'draft'))).orderBy(scamAlerts.createdAt);
+      .where(and(eq(scamAlerts.tenantId, tenantId), eq(scamAlerts.status, 'draft'))).orderBy(scamAlerts.createdAt);
     for (const a of al) drafts.set(a.districtId, { id: a.id, status: a.status });
   }
 
@@ -250,7 +255,7 @@ export async function scamMap(db: DbOrTx, days: number = 7, opts: { type?: strin
     if (periodDays.includes(r.day)) d.perType.set(r.type ?? 'other', (d.perType.get(r.type ?? 'other') ?? 0) + r.n);
   }
 
-  return [...by.values()].map((d) => {
+  return [...by.values()].filter((d) => includeEmpty || [...d.perDay.values()].some((n) => n > 0)).map((d) => {
     const total = periodDays.reduce((a, x) => a + (d.perDay.get(x) ?? 0), 0);
     const today = d.perDay.get(todayStr) ?? 0;
     const spike = isSpike(d.perDayAll.get(todayStr) ?? 0, prevDays.reduce((a, x) => a + (d.perDayAll.get(x) ?? 0), 0));
@@ -268,6 +273,13 @@ export async function scamMap(db: DbOrTx, days: number = 7, opts: { type?: strin
       alert: drafts.get(d.id) ?? null,
     };
   });
+}
+
+/** the scam types and districts a visitor can filter by (names only, no counts) */
+export async function scamMapOptions(db: DbOrTx) {
+  const types = rowsOf<{ t: string }>(await db.execute(sql`select distinct scam_type as t from scam_reports where scam_type is not null and (verdict = 'fake' or officer_label = 'fake') order by 1`)).map((r) => r.t);
+  const districts = rowsOf<{ code: string; name: string }>(await db.execute(sql`select code, name from districts where id in (select district_id from scam_reports where district_id is not null) order by name`));
+  return { types, districts };
 }
 
 export const hashMessage = (t: string) => hashJson(t);

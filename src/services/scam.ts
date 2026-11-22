@@ -211,11 +211,17 @@ export async function maybeDraftAlert(db: DbOrTx, districtId: string, tenantId: 
 }
 
 /** SCAM-5: confirmed scams by district and day; districts under 3 reports show no exact count */
-export async function scamMap(db: DbOrTx, days = 7) {
+export type ScamMapFilter = { days?: number; district?: string | null; type?: string | null };
+
+/** SCAM-5: filters by time (days), district and scam type. Every count under 3 is hidden, under any filter combination. */
+export async function scamMap(db: DbOrTx, f: ScamMapFilter | number = {}) {
+  const { days = 7, district = null, type = null } = typeof f === 'number' ? { days: f } : f;
+  const byDistrictSql = district ? sql`and d.code = ${district}` : sql``;
+  const byTypeSql = type ? sql`and r.scam_type = ${type}` : sql``;
   const rows = rowsOf<{ code: string; name: string; day: string; n: number; type: string | null }>(await db.execute(sql`
     select d.code, d.name, to_char(date_trunc('day', r.created_at), 'YYYY-MM-DD') as day, count(*)::int as n, mode() within group (order by r.scam_type) as type
     from scam_reports r join districts d on d.id = r.district_id
-    where (r.verdict = 'fake' or r.officer_label = 'fake') and r.created_at >= now() - make_interval(days => ${days})
+    where (r.verdict = 'fake' or r.officer_label = 'fake') and r.created_at >= now() - make_interval(days => ${days}) ${byDistrictSql} ${byTypeSql}
     group by d.code, d.name, day order by day desc, d.code`));
   const byDistrict: Record<string, { code: string; name: string; total: number; today: number; days: { day: string; count: number | string }[]; topType: string | null }> = {};
   const todayStr = new Date().toISOString().slice(0, 10);
@@ -231,6 +237,13 @@ export async function scamMap(db: DbOrTx, days = 7) {
     const spike = d.today >= 5 && d.today >= 3 * prev;
     return { ...d, spike, total: d.total < 3 ? 'fewer than 3' : d.total, today: d.today < 3 ? (d.today ? 'fewer than 3' : 0) : d.today };
   });
+}
+
+/** the scam types and districts a visitor can filter by (names only, no counts) */
+export async function scamMapOptions(db: DbOrTx) {
+  const types = rowsOf<{ t: string }>(await db.execute(sql`select distinct scam_type as t from scam_reports where scam_type is not null and (verdict = 'fake' or officer_label = 'fake') order by 1`)).map((r) => r.t);
+  const districts = rowsOf<{ code: string; name: string }>(await db.execute(sql`select code, name from districts where id in (select district_id from scam_reports where district_id is not null) order by name`));
+  return { types, districts };
 }
 
 export const hashMessage = (t: string) => hashJson(t);

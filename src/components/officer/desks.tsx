@@ -113,7 +113,7 @@ export function ScamDesk() {
             {selected && <Button size="sm" variant="ghost" onClick={() => setSelected(null)}>Clear district: {sel?.name ?? selected}</Button>}
           </div>
           {!mapFailed && districts.length > 0 && <ScamHeatMap districts={districts} selected={selected} onSelect={(c) => setSelected((cur) => (cur === c ? null : c))} onFail={() => setMapFailed(true)} />}
-          {mapFailed && <p className="text-xs text-muted-foreground" role="status">The map could not start on this device. The table below has the same numbers.</p>}
+          {mapFailed && <p className="text-xs text-muted-foreground" data-testid="map-fallback">The map could not start on this device. The table below has the same numbers.</p>}
           {selAlerts.length > 0 && <div className="space-y-2" data-testid="selected-alert">{selAlerts.map(alertRow)}</div>}
           <div className="overflow-x-auto">
             <table className="w-full text-sm" data-testid="scam-map">

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { boundsOf, isSpike, LOW_WEIGHT, mask, toGeoJSON, type MapDistrict } from '@/lib/scam-map';
 
 const d = (code: string, count: number | null, extra: Partial<MapDistrict> = {}): MapDistrict => ({
-  code, name: code, lat: 25, lng: 68, count, underThreshold: count === null, countToday: null, series: [], byType: {}, spike: false, alert: null, ...extra,
+  code, name: code, lat: 25, lng: 68, count, underThreshold: count === null, countToday: null, series: [], byType: {}, spike: false, topType: null, alert: null, ...extra,
 });
 
 describe('scam map helpers', () => {

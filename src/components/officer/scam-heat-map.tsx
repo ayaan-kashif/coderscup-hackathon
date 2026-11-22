@@ -19,7 +19,7 @@ export type HeatMapProps = {
   onFail: () => void;
 };
 
-const LABEL_ZOOM = 6.2;
+const LABEL_ZOOM = 5.2;
 const TYPE_LABEL: Record<string, string> = {
   fee_before_payment: 'Fee before payment', asks_pin_code_cnic: 'Asks PIN / code / CNIC', fake_approval_link: 'Fake approval link',
   impersonation_call: 'Impersonation call', fake_registration_drive: 'Fake registration drive', lottery_prize: 'Lottery / prize',
@@ -123,7 +123,7 @@ export default function ScamHeatMap({ districts, selected, onSelect, onFail }: H
       if (/webgl|context/i.test(msg)) onFail();
     });
     const syncZoom = () => box.current?.setAttribute('data-labels', map.getZoom() >= LABEL_ZOOM ? 'on' : 'off');
-    map.on('zoom', syncZoom); syncZoom();
+    map.on('zoom', syncZoom); map.on('moveend', syncZoom); map.on('idle', syncZoom); syncZoom();
     const marks = markers.current;
     return () => {
       popup.current?.remove();

@@ -3,7 +3,8 @@ import { and, asc, eq, isNull, sql } from 'drizzle-orm';
 import type { DbOrTx } from '@/db/client';
 import { citizens, memberships, tenants, users } from '@/db/schema/all';
 import type { Role } from '@/auth/actor';
-import { decryptPii, encryptPii, hashSecret, otpHash, safeEqualHex, verifySecret } from '@/auth/crypto';
+import { decryptPii, encryptPii, hashSecret, otpHash, piiLookupHash, safeEqualHex, verifySecret } from '@/auth/crypto';
+import type { NormalizedPhone } from './otp/phone';
 import { signAccessToken, signMfaChallenge, verifyMfaChallenge } from '@/auth/tokens';
 import { newTotpSecret, otpauthUri, verifyTotp } from '@/auth/totp';
 import { duressHashFor, isPalindromePin, matchPin, PALINDROME_PIN_MESSAGE } from './duress';
@@ -116,30 +117,56 @@ export async function listMyTenants(db: DbOrTx, userId: string) {
   return (await staffMemberships(db, userId)).map((x) => ({ code: x.code, name: x.name, role: x.role }));
 }
 
-/** Creates (or refreshes) a one-time code. The caller sends it to the MOCK SMS inbox after commit. */
-export async function issueOtp(db: DbOrTx, phone: string) {
+/**
+ * Creates (or refreshes) a one-time code. A fictional +92 00000 number is keyed by its plain value; a real number is stored only
+ * encrypted plus its HMAC, and the unique hash makes two parallel first requests one user. The caller sends the code after this.
+ */
+export async function issueOtp(db: DbOrTx, phone: NormalizedPhone) {
   const code = String(randomInt(0, 1_000_000)).padStart(6, '0');
-  const values = { otpHash: otpHash(phone, code), otpExpiresAt: sql`now() + make_interval(mins => ${OTP_TTL_MIN})` as unknown as Date, otpAttempts: 0 };
-  await db.insert(users).values({ kind: 'citizen', phone, displayName: 'Citizen', ...values })
-    .onConflictDoUpdate({ target: users.phone, set: values });
+  const values = { otpHash: otpHash(phone.e164, code), otpExpiresAt: sql`now() + make_interval(mins => ${OTP_TTL_MIN})` as unknown as Date, otpAttempts: 0 };
+  if (phone.kind === 'fictional') {
+    await db.insert(users).values({ kind: 'citizen', phone: phone.e164, displayName: 'Citizen', ...values })
+      .onConflictDoUpdate({ target: users.phone, set: values });
+  } else {
+    await db.insert(users).values({ kind: 'citizen', phoneEnc: encryptPii(phone.e164), phoneHash: piiLookupHash(phone.e164), displayName: 'Citizen', ...values })
+      .onConflictDoUpdate({ target: users.phoneHash, set: values });
+  }
   return code;
 }
 
-export type OtpCheck = { ok: true; token: string; pinSet: boolean; hasProfile: boolean } | { ok: false; reason: 'expired' | 'wrong' | 'too_many'; left: number };
+export type OtpCheck = { ok: true; token: string; pinSet: boolean; hasProfile: boolean; created: boolean } | { ok: false; reason: 'expired' | 'wrong' | 'too_many'; left: number };
 
-export async function checkOtp(db: DbOrTx, phone: string, code: string): Promise<OtpCheck> {
-  const [u] = await db.select().from(users).where(and(eq(users.phone, phone), eq(users.kind, 'citizen'))).for('update').limit(1);
+/** a number's first sign-in makes its citizen row: the fictional identity card number is a placeholder no registry knows */
+export async function ensureCitizen(db: DbOrTx, userId: string) {
+  for (let i = 0; i < 4; i++) {
+    const [have] = await db.select({ id: citizens.id, pinHash: citizens.pinHash }).from(citizens).where(eq(citizens.userId, userId)).limit(1);
+    if (have) return { ...have, created: false };
+    const cnic = `00000-${String(randomInt(0, 10_000_000)).padStart(7, '0')}-${randomInt(0, 10)}`;
+    // the unique user and CNIC hash make this race-safe: a parallel insert simply loses and we read the winner
+    await db.insert(citizens).values({
+      userId, cnicEnc: encryptPii(cnic), cnicHash: piiLookupHash(cnic), cnicLast4: cnic.replace(/\D/g, '').slice(-4), nameDisplay: 'Citizen', nameNorm: '',
+    }).onConflictDoNothing();
+  }
+  const [c] = await db.select({ id: citizens.id, pinHash: citizens.pinHash }).from(citizens).where(eq(citizens.userId, userId)).limit(1);
+  if (!c) throw new ApiError('INTERNAL', 'Could not create the account. Try again.');
+  return { ...c, created: false };
+}
+
+export async function checkOtp(db: DbOrTx, phone: NormalizedPhone, code: string): Promise<OtpCheck> {
+  const who = phone.kind === 'fictional' ? eq(users.phone, phone.e164) : eq(users.phoneHash, piiLookupHash(phone.e164));
+  const [u] = await db.select().from(users).where(and(who, eq(users.kind, 'citizen'))).for('update').limit(1);
   if (!u?.otpHash || !u.otpExpiresAt || u.otpExpiresAt.getTime() < Date.now()) return { ok: false, reason: 'expired', left: 0 };
   if (u.otpAttempts >= OTP_MAX_ATTEMPTS) return { ok: false, reason: 'too_many', left: 0 };
-  if (!safeEqualHex(u.otpHash, otpHash(phone, code))) {
+  if (!safeEqualHex(u.otpHash, otpHash(phone.e164, code))) {
     await db.update(users).set({ otpAttempts: u.otpAttempts + 1 }).where(eq(users.id, u.id));
     return { ok: false, reason: 'wrong', left: OTP_MAX_ATTEMPTS - u.otpAttempts - 1 };
   }
   await db.update(users).set({ otpHash: null, otpExpiresAt: null, otpAttempts: 0, lastLoginAt: new Date() }).where(eq(users.id, u.id));
-  const [c] = await db.select({ id: citizens.id, pinHash: citizens.pinHash }).from(citizens).where(eq(citizens.userId, u.id)).limit(1);
+  const [before] = await db.select({ id: citizens.id }).from(citizens).where(eq(citizens.userId, u.id)).limit(1);
+  const c = await ensureCitizen(db, u.id);
   // stage 'otp': the device is registered, but nothing personal opens before the PIN (AUTH-2)
-  const token = await signAccessToken({ sub: u.id, kind: 'citizen', app_role: 'citizen', cid: c?.id, stage: 'otp' });
-  return { ok: true, token, pinSet: !!c?.pinHash, hasProfile: !!c };
+  const token = await signAccessToken({ sub: u.id, kind: 'citizen', app_role: 'citizen', cid: c.id, stage: 'otp' });
+  return { ok: true, token, pinSet: !!c.pinHash, hasProfile: true, created: !before };
 }
 
 /** `duress: true` is for the server only: callers must answer exactly as for the real PIN and run triggerDuress */

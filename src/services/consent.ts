@@ -31,6 +31,8 @@ export async function listConsents(db: DbOrTx, citizenId: string) {
     consents: rows.map((r) => ({ id: r.c.id, tenantId: r.c.tenantId, grantee: r.c.granteeType === 'tenant' ? { type: 'office', name: r.tenantName, nameUr: r.tenantNameUr } : { type: 'helper', id: r.c.granteeId }, purpose: r.c.purpose, dataCategories: r.c.dataCategories, status: r.c.status, method: r.c.method, noticeVersion: r.c.noticeVersion, expiresAt: r.c.expiresAt, withdrawnAt: r.c.withdrawnAt, createdAt: r.c.createdAt })),
     helpers: helpers.map((h) => ({ assignmentId: h.id, name: h.name, status: h.status, expiresAt: h.expiresAt })),
     processors: PROCESSORS,
+    // offices a citizen without any consent yet can choose to share with (the first one is the programme's main office)
+    offices: (await db.select({ id: tenants.id, code: tenants.code, name: tenants.name, nameUr: tenants.nameUr }).from(tenants).where(eq(tenants.isSandbox, false))).sort((a, b) => Number(b.code === 'sindh') - Number(a.code === 'sindh') || a.code.localeCompare(b.code)),
   };
 }
 

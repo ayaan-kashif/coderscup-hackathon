@@ -9,6 +9,7 @@ import * as auditEvents from '../../../app/api/v1/audit/events/route';
 import * as auditVerify from '../../../app/api/v1/audit/verify/route';
 import * as login from '../../../app/api/v1/auth/login/route';
 import * as logout from '../../../app/api/v1/auth/logout/route';
+import * as otpChannels from '../../../app/api/v1/auth/otp/channels/route';
 import * as otpRequest from '../../../app/api/v1/auth/otp/request/route';
 import * as otpVerify from '../../../app/api/v1/auth/otp/verify/route';
 import * as pinSet from '../../../app/api/v1/auth/pin/set/route';
@@ -19,6 +20,7 @@ import * as caseStatus from '../../../app/api/v1/cases/[id]/status/route';
 import * as demoTokens from '../../../app/api/v1/demo/tokens/route';
 import * as health from '../../../app/api/v1/health/route';
 import * as me from '../../../app/api/v1/me/route';
+import * as meOnboarding from '../../../app/api/v1/me/onboarding/route';
 import * as status from '../../../app/api/v1/status/route';
 import * as rAiDecisions from '../../../app/api/v1/ai-decisions/route';
 import * as rAiDecisionsById from '../../../app/api/v1/ai-decisions/[id]/route';
@@ -119,7 +121,7 @@ type AnySpec = RouteSpec<unknown, unknown, unknown>;
 type Mod = Record<string, unknown>;
 
 export const ROUTE_MODULES: Record<string, Mod> = {
-  health, status, me, login, logout, otpRequest, otpVerify, pinSet, pinVerify, demoTokens, cases, caseById, caseStatus,
+  health, status, me, meOnboarding, login, logout, otpChannels, otpRequest, otpVerify, pinSet, pinVerify, demoTokens, cases, caseById, caseStatus,
   adminConfig, adminChaos, auditEvents, auditVerify,
   rAiDecisions, rAiDecisionsById, rAssistIntent, rAssistPolicy, rCasesByIdAnswers, rCasesByIdAssign, rCasesByIdClose, rCasesByIdDecisions, rCasesByIdDocuments, rCasesByIdDocumentsDoc, rCasesByIdExplanation, rCasesByIdFreeze, rCasesByIdProof, rCasesByIdSubmit, rCasesByIdTimeline, rCasesByIdUnfreeze, rCasesByIdVoice, rComplaints, rComplaintsById, rComplaintsByIdResolve, rCorrections, rCorrectionsByIdApprove, rCorrectionsByIdReject, rDecisionsById, rDecisionsByIdReplay, rHelperActivity, rHelperFamilies, rHelperGrants, rHelperGrantsById, rMeAccessLog, rMeCases, rMeConsents, rMeConsentsByIdWithdraw, rMeCorrections, rMeNotifications, rPaymentsByIdReceipt, rPayoutChanges, rPayoutChangesByIdApprove, rPayoutChangesByIdBlock, rPayoutChangesByIdObject, rQueue, rScamAlerts, rScamAlertsByIdApprove, rScamAlertsByIdDismiss, rScamCheck, rScamDesk, rScamDuress, rScamDuressByIdResolve, rScamMap, rScamReportsByIdLabel,
   rAdminApiKeys, rAdminApiKeysByIdRevoke, rAdminUsers, rAdminUsersByIdRevokeSessions, rAdminWebhooks, rAdminWebhooksById, rAdminWebhooksDeliveries, rAdminWebhooksDeliveriesByIdReplay, rAuditAccess, rAuditBreakGlass, rDecisions, rEvalBreakIt, rEvalCostPreview, rEvalMetrics, rEvalRuns, rEvalRunsById, rRules, rRulesDrafts, rRulesDraftsById, rRulesDraftsByIdApprove, rRulesDraftsByIdPreview, rRulesDraftsByIdPublish, rRulesDraftsByIdTwin, rTwinRunsById,

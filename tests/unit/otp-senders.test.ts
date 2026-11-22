@@ -123,6 +123,11 @@ describe('env (server only)', () => {
     expect(otpProvider()).toBe('mock');
     expect(waGateway()).toBeNull();
   });
+  it('empty values, as copied from .env.example, count as not set', () => {
+    process.env.OTP_PROVIDER = ''; process.env.WA_GATEWAY_URL = ''; process.env.WA_GATEWAY_SECRET = '';
+    expect(otpProvider()).toBe('mock');
+    expect(waGateway()).toBeNull();
+  });
   it('baileys needs the gateway URL and a 24+ character secret, checked on read', () => {
     process.env.OTP_PROVIDER = 'baileys';
     delete process.env.WA_GATEWAY_URL; delete process.env.WA_GATEWAY_SECRET;

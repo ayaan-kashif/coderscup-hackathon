@@ -78,6 +78,13 @@
       "when": 1795316533695,
       "tag": "0010_memberships_deactivated",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1795342917611,
+      "tag": "0011_whatsapp_citizen_phone",
+      "breakpoints": true
     }
   ]
 }

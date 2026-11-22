@@ -1,5 +1,8 @@
 import { z } from 'zod';
 
+/** an empty value in .env ("OTP_PROVIDER=") means not set */
+const blankIsUnset = <T extends z.ZodType>(t: T) => z.preprocess((v) => (v === '' ? undefined : v), t.optional());
+
 const schema = z.object({
   DATABASE_URL: z.string().optional(),
   DATABASE_URL_DIRECT: z.string().optional(),
@@ -13,9 +16,9 @@ const schema = z.object({
   /** when set, demo sign-in needs this code (judges get it privately); on Vercel, demo sign-in stays off without it */
   DEMO_ACCESS_CODE: z.string().optional(),
   /** where citizen sign-in codes go: mock (default, the on-screen phone only) or baileys (real numbers through the WhatsApp gateway) */
-  OTP_PROVIDER: z.enum(['mock', 'baileys']).optional(),
-  WA_GATEWAY_URL: z.string().url().optional(),
-  WA_GATEWAY_SECRET: z.string().min(24).optional(),
+  OTP_PROVIDER: blankIsUnset(z.enum(['mock', 'baileys'])),
+  WA_GATEWAY_URL: blankIsUnset(z.string().url()),
+  WA_GATEWAY_SECRET: blankIsUnset(z.string().min(24)),
   DEMO_STAFF_PASSWORD: z.string().optional(),
   DEMO_CITIZEN_PIN: z.string().optional(),
   MOCK_BASE_URL: z.string().optional(),

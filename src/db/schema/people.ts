@@ -10,7 +10,11 @@ export const users = pgTable('users', {
   id: id(),
   kind: text('kind', { enum: ['staff', 'citizen'] }).notNull(),
   email: text('email').unique(),
+  /** fictional +92 00000 numbers only (the on-screen mock phone); a real WhatsApp number is never stored here */
   phone: text('phone').unique(),
+  /** a real number: encrypted (AES-GCM) plus its HMAC lookup hash. The unique hash makes first-login upserts race-safe. */
+  phoneEnc: bytea('phone_enc'),
+  phoneHash: text('phone_hash').unique(),
   displayName: text('display_name').notNull(),
   passwordHash: text('password_hash'),
   otpHash: text('otp_hash'),
@@ -25,7 +29,7 @@ export const users = pgTable('users', {
   lastLoginAt: ts('last_login_at'),
   createdAt: createdAt(),
 }, (t) => [
-  check('users_login_present', sql`${t.email} is not null or ${t.phone} is not null`),
+  check('users_login_present', sql`${t.email} is not null or ${t.phone} is not null or ${t.phoneHash} is not null`),
   // staff use the reserved .test domain only (AUTH-1)
   check('users_email_test_domain', sql`${t.email} is null or ${t.email} like '%.test'`),
 ]);

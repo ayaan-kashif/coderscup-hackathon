@@ -29,7 +29,9 @@
     "warmup": "tsx scripts/warmup.ts",
     "eval": "tsx --conditions=react-server scripts/eval.ts",
     "ai:smoke": "tsx --conditions=react-server scripts/ai-smoke.ts",
-    "demo:twice": "pnpm demo:reset && pnpm test:e2e && pnpm demo:reset && pnpm test:e2e"
+    "demo:twice": "pnpm demo:reset && pnpm test:e2e && pnpm demo:reset && pnpm test:e2e",
+    "wa:test-otp": "tsx --conditions=react-server scripts/wa-test-otp.ts",
+    "users:purge-whatsapp": "tsx --conditions=react-server scripts/purge-whatsapp-users.ts"
   },
   "dependencies": {
     "@ai-sdk/elevenlabs": "^3.0.87",

@@ -5,10 +5,11 @@ import type { DbOrTx } from '@/db/client';
 import { rowsOf } from '@/db/rows';
 import { auditChainHeads } from '@/db/schema/all';
 import { verifyChain } from '@/lib/audit';
-import { isDemoMode } from '@/lib/env';
+import { isDemoMode, waGateway } from '@/lib/env';
 import { rateLimitBackendName } from '@/lib/rate-limit';
 import { breakerSnapshots } from './adapters';
 import { listChaos } from './config';
+import { gatewayConnected } from './otp/sender';
 
 type Health = 'ok' | 'degraded' | 'down';
 
@@ -53,6 +54,12 @@ export async function getSystemStatus(db: DbOrTx) {
   checks.aiGateway = { status: ai ? 'ok' : 'degraded', detail: ai ? 'Vercel AI Gateway' : 'not configured: model steps take their fallbacks (a person decides)' };
   checks.jobs = { status: process.env.INNGEST_EVENT_KEY ? 'ok' : 'degraded', detail: process.env.INNGEST_EVENT_KEY ? 'Inngest' : 'inline after the response (no scheduler)' };
   checks.errorReporting = { status: process.env.SENTRY_DSN ? 'ok' : 'degraded', detail: process.env.SENTRY_DSN ? 'Sentry' : 'structured logs only' };
+  // WhatsApp sign-in codes (Baileys gateway): shown only when it is switched on; never the linked number
+  const wa = waGateway();
+  if (wa) {
+    const up = await gatewayConnected(wa);
+    checks.whatsappGateway = { status: up ? 'ok' : 'degraded', detail: up ? 'WhatsApp gateway: connected' : 'WhatsApp gateway: disconnected (sign-in falls back to the demo phone)' };
+  }
   const tests = lastTestRun();
 
   const overall: Health = Object.values(checks).some((c) => c.status === 'down') ? 'down' : Object.values(checks).some((c) => c.status === 'degraded') ? 'degraded' : 'ok';

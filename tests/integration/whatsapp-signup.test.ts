@@ -19,6 +19,7 @@ import { decryptPii, piiLookupHash } from '@/auth/crypto';
 import { auditEvents, cases as casesT, citizens, consents as consentsT, users } from '@/db/schema/all';
 import { resetMemoryRateLimits } from '@/lib/rate-limit';
 import { purgeWhatsappAccounts } from '@/services/account';
+import { getSystemStatus } from '@/services/status';
 import { resetGatewayHealthCache } from '@/services/otp/sender';
 import { aiOff, aiReset } from '../helpers/ai';
 import { call, idem, seededDb } from '../helpers/api';
@@ -167,6 +168,21 @@ describe('WhatsApp codes through the gateway', () => {
     const r = await request('12345');
     expect(r.status).toBe(422);
     expect(r.body.ur).toMatch(/موبائل/);
+  });
+});
+
+describe('/status', () => {
+  it('shows "WhatsApp gateway: connected / disconnected" without any number, and nothing when WhatsApp is off', async () => {
+    const up = await getSystemStatus(t.db);
+    expect(up.checks.whatsappGateway?.detail).toBe('WhatsApp gateway: connected');
+    expect(up.checks.whatsappGateway?.status).toBe('ok');
+    gateway.health = () => ({ ok: false });
+    resetGatewayHealthCache();
+    const down = await getSystemStatus(t.db);
+    expect(String(down.checks.whatsappGateway?.detail)).toMatch(/^WhatsApp gateway: disconnected/);
+    expect(JSON.stringify(down.checks.whatsappGateway)).not.toMatch(/\+92|\d{7}/);
+    process.env.OTP_PROVIDER = 'mock';
+    expect((await getSystemStatus(t.db)).checks.whatsappGateway).toBeUndefined();
   });
 });
 

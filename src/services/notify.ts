@@ -3,7 +3,7 @@
  * voice note only (no WhatsApp, no email, no real SMS). Citizen messages never contain links and never ask for
  * money, PINs or codes; voice messages open by naming the citizen's trust picture.
  */
-import { and, eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import { categoryShared } from './consent';
 import { bannedInCitizenMessage } from '@/ai/guard';
 import { encryptPii } from '@/auth/crypto';
@@ -92,7 +92,7 @@ export async function notifyCitizen(db: DbOrTx, p: { tenantId: string | null; ci
 
 /** in-app alert for every officer of a tenant (helper anomalies, payment holds, pipeline errors) */
 export async function alertOfficers(db: DbOrTx, tenantId: string, text: string, ref: Record<string, string>) {
-  const officers = await db.select({ userId: memberships.userId }).from(memberships).where(and(eq(memberships.tenantId, tenantId), eq(memberships.role, 'officer')));
+  const officers = await db.select({ userId: memberships.userId }).from(memberships).where(and(eq(memberships.tenantId, tenantId), eq(memberships.role, 'officer'), isNull(memberships.deactivatedAt)));
   for (const o of officers) {
     await db.insert(notifications).values({ tenantId, userId: o.userId, channel: 'in_app', templateKey: 'officer_alert', variables: { text, ...ref }, status: 'sent', sentAt: new Date(), attempts: 1 });
   }

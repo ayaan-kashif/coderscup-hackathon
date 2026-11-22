@@ -12,7 +12,7 @@ import { aiDecisions, apiKeys, auditEvents, cases, citizens, complaints, consent
 import { ApiError } from '@/lib/errors';
 
 export async function listUsers(db: DbOrTx, tenantId: string) {
-  return db.select({ id: users.id, email: users.email, name: users.displayName, role: memberships.role, isSenior: memberships.isSenior, sessionsRevokedAt: users.sessionsRevokedAt, createdAt: users.createdAt })
+  return db.select({ id: users.id, email: users.email, name: users.displayName, role: memberships.role, isSenior: memberships.isSenior, active: sql<boolean>`${memberships.deactivatedAt} is null`, sessionsRevokedAt: users.sessionsRevokedAt, createdAt: users.createdAt })
     .from(memberships).innerJoin(users, eq(users.id, memberships.userId)).where(eq(memberships.tenantId, tenantId)).orderBy(memberships.role, users.displayName);
 }
 
@@ -26,11 +26,41 @@ export const newUserBody = z.object({
 /** returns a one-time temporary password (shown once, never stored in clear) */
 export async function createUser(db: DbOrTx, tenantId: string, b: z.infer<typeof newUserBody>) {
   const temp = `tmp-${randomBytes(9).toString('base64url')}`;
-  const [u] = await db.insert(users).values({ kind: 'staff', email: b.email.toLowerCase(), displayName: b.displayName, passwordHash: await hashSecret(temp), locale: 'en' })
-    .onConflictDoUpdate({ target: users.email, set: { displayName: b.displayName } }).returning({ id: users.id });
+  // an address that already has an account (here or in another office) is never touched or pulled into this office
+  const [exists] = await db.select({ id: users.id }).from(users).where(eq(users.email, b.email.toLowerCase())).limit(1);
+  if (exists) throw new ApiError('CASE_STATE', 'That address already has an account. Use a different fictional .test address.');
+  const [u] = await db.insert(users).values({ kind: 'staff', email: b.email.toLowerCase(), displayName: b.displayName, passwordHash: await hashSecret(temp), locale: 'en' }).returning({ id: users.id });
   await db.insert(memberships).values({ userId: u!.id, tenantId, role: b.role, isSenior: b.isSenior })
     .onConflictDoUpdate({ target: [memberships.userId, memberships.tenantId], set: { role: b.role, isSenior: b.isSenior } });
   return { id: u!.id, temporaryPassword: temp };
+}
+
+export const userPatchBody = z.object({
+  role: z.enum(['officer', 'admin', 'auditor', 'helper']).optional(),
+  isSenior: z.boolean().optional(),
+  active: z.boolean().optional(),
+}).refine((b) => b.role !== undefined || b.isSenior !== undefined || b.active !== undefined, 'send role, isSenior or active');
+
+/**
+ * A6: change a user's role in THIS office, or deactivate / reactivate them. Their sessions are revoked on any change so
+ * it takes effect at once. An admin cannot lock themselves out, and an office always keeps one active admin.
+ */
+export async function updateUser(db: DbOrTx, tenantId: string, actorId: string, userId: string, b: z.infer<typeof userPatchBody>) {
+  const [m] = await db.select().from(memberships).where(and(eq(memberships.userId, userId), eq(memberships.tenantId, tenantId))).for('update').limit(1);
+  if (!m) throw new ApiError('NOT_FOUND');
+  const willRole = b.role ?? m.role;
+  const willActive = b.active ?? m.deactivatedAt === null;
+  if (userId === actorId && (willRole !== m.role || !willActive)) throw new ApiError('CASE_STATE', 'You cannot change your own role or deactivate yourself. Ask another admin.');
+  const losesAdmin = m.role === 'admin' && m.deactivatedAt === null && (willRole !== 'admin' || !willActive);
+  if (losesAdmin) {
+    const [others] = await db.select({ n: sql<number>`count(*)::int` }).from(memberships).where(and(eq(memberships.tenantId, tenantId), eq(memberships.role, 'admin'), isNull(memberships.deactivatedAt), sql`${memberships.userId} <> ${userId}`));
+    if (!others?.n) throw new ApiError('CASE_STATE', 'This is the only active admin of the office. Add another admin first.');
+  }
+  const set = { role: willRole, isSenior: willRole === 'officer' ? (b.isSenior ?? m.isSenior) : false, deactivatedAt: willActive ? null : (m.deactivatedAt ?? new Date()) };
+  await db.update(memberships).set(set).where(eq(memberships.id, m.id));
+  const changed = willRole !== m.role || willActive !== (m.deactivatedAt === null) || set.isSenior !== m.isSenior;
+  if (changed) await revokeSessions(db, userId);
+  return { id: userId, from: { role: m.role, active: m.deactivatedAt === null, isSenior: m.isSenior }, to: { role: set.role, active: willActive, isSenior: set.isSenior } };
 }
 
 export async function revokeSessions(db: DbOrTx, userId: string) {

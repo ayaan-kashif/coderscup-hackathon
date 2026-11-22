@@ -59,9 +59,10 @@ export async function authenticate(req: { headers: { get(name: string): string |
 
   // staff: the membership must still exist with the same role (roles can be changed or removed)
   if (!claims.tid) throw new ApiError('UNAUTHENTICATED', 'Staff token without a tenant.');
-  const [m] = await db.select({ role: memberships.role, isSenior: memberships.isSenior, sandbox: tenants.isSandbox })
+  const [m] = await db.select({ role: memberships.role, isSenior: memberships.isSenior, sandbox: tenants.isSandbox, deactivatedAt: memberships.deactivatedAt })
     .from(memberships).innerJoin(tenants, eq(tenants.id, memberships.tenantId))
     .where(and(eq(memberships.userId, claims.sub), eq(memberships.tenantId, claims.tid))).limit(1);
+  if (m?.deactivatedAt) throw new ApiError('UNAUTHENTICATED', 'This account was deactivated by an administrator of this office.');
   if (!m || m.role !== claims.app_role) throw new ApiError('UNAUTHENTICATED', 'Your role in this tenant changed. Sign in again.');
   // AUTH-1: once an admin or auditor has MFA on, a session without the TOTP step is not accepted (demo-picker tokens excepted)
   if ((m.role === 'admin' || m.role === 'auditor') && u.mfaEnabledAt && !claims.mfa && !claims.demo) throw new ApiError('UNAUTHENTICATED', 'Sign in again with your MFA code.', { extra: { next: 'mfa' } });

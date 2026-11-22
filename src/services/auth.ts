@@ -1,5 +1,5 @@
 import { randomInt } from 'node:crypto';
-import { and, asc, eq, sql } from 'drizzle-orm';
+import { and, asc, eq, isNull, sql } from 'drizzle-orm';
 import type { DbOrTx } from '@/db/client';
 import { citizens, memberships, tenants, users } from '@/db/schema/all';
 import type { Role } from '@/auth/actor';
@@ -24,7 +24,7 @@ export const MFA_ROLES = new Set<Role>(['admin', 'auditor']);
 
 async function staffMemberships(db: DbOrTx, userId: string) {
   return db.select({ tenantId: memberships.tenantId, role: memberships.role, isSenior: memberships.isSenior, code: tenants.code, name: tenants.name })
-    .from(memberships).innerJoin(tenants, eq(tenants.id, memberships.tenantId)).where(eq(memberships.userId, userId))
+    .from(memberships).innerJoin(tenants, eq(tenants.id, memberships.tenantId)).where(and(eq(memberships.userId, userId), isNull(memberships.deactivatedAt)))
     .orderBy(asc(tenants.isSandbox), asc(memberships.createdAt), asc(tenants.code));
 }
 

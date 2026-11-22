@@ -36,6 +36,8 @@ export const memberships = pgTable('memberships', {
   tenantId: uuid('tenant_id').notNull().references(() => tenants.id),
   role: membershipRole('role').notNull(),
   isSenior: boolean('is_senior').notNull().default(false),
+  /** A6: an admin deactivated this user in this office; history stays, sign-in and every request are refused */
+  deactivatedAt: ts('deactivated_at'),
   createdAt: createdAt(),
 }, (t) => [unique('memberships_user_tenant').on(t.userId, t.tenantId)]);
 

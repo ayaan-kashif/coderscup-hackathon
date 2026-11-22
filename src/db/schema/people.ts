@@ -3,13 +3,15 @@ import { boolean, check, date, index, integer, pgEnum, pgTable, text, unique, uu
 import { bytea, createdAt, id, ts } from './_types';
 import { districts, tenants } from './tenancy';
 
-export const membershipRole = pgEnum('membership_role', ['officer', 'admin', 'auditor', 'helper']);
+export const membershipRole = pgEnum('membership_role', ['officer', 'admin', 'auditor', 'helper', 'shopkeeper']);
 
 /** Every login: staff and helpers (email + password), citizens (phone + OTP, then PIN). */
 export const users = pgTable('users', {
   id: id(),
   kind: text('kind', { enum: ['staff', 'citizen'] }).notNull(),
   email: text('email').unique(),
+  /** shopkeepers sign in with a username (a-z, 0-9, dot, underscore; stored lowercase) */
+  username: text('username').unique(),
   /** fictional +92 00000 numbers only (the on-screen mock phone); a real WhatsApp number is never stored here */
   phone: text('phone').unique(),
   /** a real number: encrypted (AES-GCM) plus its HMAC lookup hash. The unique hash makes first-login upserts race-safe. */
@@ -29,7 +31,7 @@ export const users = pgTable('users', {
   lastLoginAt: ts('last_login_at'),
   createdAt: createdAt(),
 }, (t) => [
-  check('users_login_present', sql`${t.email} is not null or ${t.phone} is not null or ${t.phoneHash} is not null`),
+  check('users_login_present', sql`${t.email} is not null or ${t.phone} is not null or ${t.phoneHash} is not null or ${t.username} is not null`),
   // staff use the reserved .test domain only (AUTH-1)
   check('users_email_test_domain', sql`${t.email} is null or ${t.email} like '%.test'`),
 ]);
@@ -71,3 +73,11 @@ export const citizens = pgTable('citizens', {
   check('citizens_trust_picture_range', sql`${t.trustPictureId} is null or ${t.trustPictureId} between 1 and 30`),
   index('citizens_name_norm_trgm').using('gin', sql`${t.nameNorm} gin_trgm_ops`),
 ]);
+
+/** A shopkeeper's shop: one row per shopkeeper user. RLS is on with no policies; the app reads it through the server only. */
+export const shopProfiles = pgTable('shop_profiles', {
+  userId: uuid('user_id').primaryKey().references(() => users.id),
+  shopName: text('shop_name').notNull(),
+  districtId: uuid('district_id').notNull().references(() => districts.id),
+  createdAt: createdAt(),
+});

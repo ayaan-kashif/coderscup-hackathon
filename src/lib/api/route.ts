@@ -57,6 +57,8 @@ export type RouteSpec<B, Q, P> = {
   summary: string;
   tags: string[];
   auth: 'public' | 'optional' | 'required';
+  /** a shopkeeper session may call this route. Every route without it answers a shopkeeper with 403, whatever else it checks. */
+  shopkeeper?: boolean;
   /** minimum citizen stage; default 'full' (PIN verified) */
   citizenStage?: 'otp' | 'full';
   body?: ZodType<B>;
@@ -133,6 +135,8 @@ export function route<B = undefined, Q = undefined, P = undefined>(def: RouteDef
         tenantIsSandbox = a.tenantIsSandbox;
       }
       if (def.auth === 'required' && !actor) throw new ApiError('UNAUTHENTICATED', 'Sign in, or send "Authorization: Bearer <token>" or "X-API-Key: <key>".');
+      // a shopkeeper reaches only the routes marked for him: citizen, helper, staff and every other API is a 403
+      if (actor?.role === 'shopkeeper' && !def.shopkeeper) throw new ApiError('FORBIDDEN_ROLE', 'Your role cannot do this.', { auditReason: `ROLE_shopkeeper_CANNOT_${def.operationId}` });
       if (actor?.role === 'citizen') {
         const need = def.citizenStage ?? 'full';
         if (STAGE_RANK[actor.stage ?? 'otp'] < STAGE_RANK[need]) throw new ApiError('UNAUTHENTICATED', 'Enter your PIN to continue.', { extra: { next: 'pin' } });

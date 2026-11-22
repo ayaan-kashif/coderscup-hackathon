@@ -1,4 +1,4 @@
-import { index, integer, jsonb, pgTable, text, uuid } from 'drizzle-orm/pg-core';
+import { boolean, index, integer, jsonb, pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { createdAt, id, ts } from './_types';
 import { cases } from './cases';
 import { payoutChanges } from './money';
@@ -19,7 +19,11 @@ export const scamReports = pgTable('scam_reports', {
   extractedClaims: jsonb('extracted_claims').notNull(),
   ledgerCheck: jsonb('ledger_check'),
   probabilities: jsonb('probabilities'),
+  /** the plain-words reasons shown with the verdict (code, result, en, ur): so "My checks" can show them later */
+  reasons: jsonb('reasons'),
   /** scam desk: an officer's label settles a "not sure" verdict */
+  /** a shopkeeper's confirmed fake counts on the Scam Map and drafts district alerts only after he presses "Report this scam"; every other check counts at once (true) */
+  reported: boolean('reported').notNull().default(true),
   officerLabel: text('officer_label', { enum: ['fake', 'genuine'] }),
   labelledBy: uuid('labelled_by').references(() => users.id),
   labelledAt: ts('labelled_at'),

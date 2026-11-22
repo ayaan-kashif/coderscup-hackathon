@@ -7,7 +7,7 @@ import { checkMessage, scamCheckBody } from '@/services/scam';
  */
 export const POST = route({
   operationId: 'checkScam', method: 'POST', path: '/api/v1/scam/check', summary: 'Is this message real? Verdict with reasons', tags: ['Scams'],
-  auth: 'optional', body: scamCheckBody, idempotency: 'optional',
+  auth: 'optional', shopkeeper: true, body: scamCheckBody, idempotency: 'optional',
   rateLimit: ({ ip, actor }) => [{ name: 'scam_check', key: actor ? `a:${actor.id}` : `ip:${ip}`, limit: actor ? 30 : 10, windowSec: 600 }],
   audit: { action: 'scam.check', resourceType: 'scam_report' },
   // calls a (SIMULATED) mock service mid-request: no single wrapping transaction (each write is its own statement)

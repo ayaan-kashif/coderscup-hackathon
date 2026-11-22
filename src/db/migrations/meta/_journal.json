@@ -92,6 +92,13 @@
       "when": 1795343571509,
       "tag": "0012_citizen_onboarded_at",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1795346166326,
+      "tag": "0013_shopkeeper_role",
+      "breakpoints": true
     }
   ]
 }

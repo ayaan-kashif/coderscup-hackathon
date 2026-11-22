@@ -41,7 +41,7 @@ export const DEMO_CITIZENS: DemoCitizen[] = [
 ];
 
 /** Default demo role per role name, used by POST /api/v1/demo/tokens. */
-export const DEMO_ROLE_ACCOUNTS: Record<Role, { email?: string; phone?: string }> = {
+export const DEMO_ROLE_ACCOUNTS: Record<Exclude<Role, 'shopkeeper'>, { email?: string; phone?: string }> = {
   citizen: { phone: '+920000000001' },
   helper: { email: 'helper.shabana@sindh.amanat.test' },
   officer: { email: 'officer.imran@sindh.amanat.test' },

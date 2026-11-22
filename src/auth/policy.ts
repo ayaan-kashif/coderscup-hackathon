@@ -12,6 +12,7 @@ export type Action =
   | 'org.manage' | 'org.read'
   | 'audit.read' | 'audit.verify'
   | 'scam.check' | 'scam.alert.approve'
+  | 'scam.report' | 'shop.checks.read' | 'shop.alerts.read' | 'shop.self'
   | 'self.read'
   | 'case.write' | 'case.status' | 'case.explain' | 'case.freeze' | 'queue.read'
   | 'decision.read' | 'decision.replay' | 'aidecision.read'
@@ -73,7 +74,12 @@ export const MATRIX: Record<Action, Partial<Record<Role | 'api_key', Rule>>> = {
     auditor: T({ view: 'all' }),
   },
   'audit.verify': { admin: T(), auditor: T() },
-  'scam.check': { citizen: { scope: 'any' }, helper: { scope: 'any' }, officer: { scope: 'any' }, admin: { scope: 'any' }, api_key: { scope: 'any', apiScope: 'scam:check' } },
+  'scam.check': { citizen: { scope: 'any' }, helper: { scope: 'any' }, officer: { scope: 'any' }, admin: { scope: 'any' }, shopkeeper: { scope: 'any' }, api_key: { scope: 'any', apiScope: 'scam:check' } },
+  /** a shopkeeper's own checks and the approved alerts of his own district: nothing else about the programme */
+  'scam.report': { shopkeeper: { scope: 'own' } },
+  'shop.checks.read': { shopkeeper: { scope: 'own' } },
+  'shop.alerts.read': { shopkeeper: { scope: 'own' } },
+  'shop.self': { shopkeeper: { scope: 'own' } },
   'scam.alert.approve': { officer: T() },
   /** answers, documents, voice, submit, proof: her own case, or a helper under a live grant (HELP-4) */
   // a helper acts under the family's unlock AND only while that family's consent to the office is active (CONS-4)

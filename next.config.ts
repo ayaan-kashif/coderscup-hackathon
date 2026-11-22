@@ -34,6 +34,8 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // forbidden(): a signed-in shopkeeper who opens another portal gets a real 403
+  experimental: { authInterrupts: true },
   poweredByHeader: false,
   serverExternalPackages: ['@node-rs/argon2', '@electric-sql/pglite'],
   // the evaluation run and Break It read the frozen datasets and SPECIMEN images at runtime

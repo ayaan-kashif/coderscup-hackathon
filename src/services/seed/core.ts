@@ -2,7 +2,7 @@ import { DEFAULT_MODEL_IDS } from '@/ai/model-ids';
 import { and, eq, sql } from 'drizzle-orm';
 import type { DbOrTx } from '@/db/client';
 import {
-  chaosSettings, citizens, consents, districts, helperAssignments, memberships, MOCK_SERVICES, plans, programs, systemConfig, tenants, users,
+  chaosSettings, citizens, consents, districts, helperAssignments, memberships, MOCK_SERVICES, plans, programs, shopProfiles, systemConfig, tenants, users,
 } from '@/db/schema/all';
 import { encryptPii, hashSecret, piiLookupHash } from '@/auth/crypto';
 import { normaliseName } from '@/domain/matcher/normalise';
@@ -27,7 +27,7 @@ export const CONSENT_NOTICE_VERSION = 'saaya-notice-v1';
 export { ELIGIBILITY_CATEGORIES, NARROWABLE_CATEGORIES } from '../consent-categories';
 import { ELIGIBILITY_CATEGORIES } from '../consent-categories';
 
-export type SeedCoreOpts = { staffPassword: string; citizenPin: string; reset?: boolean };
+export type SeedCoreOpts = { staffPassword: string; citizenPin: string; reset?: boolean; /** from SHOPKEEPER_DEMO_PASSWORD: without it the demo shopkeeper is not seeded */ shopkeeperPassword?: string };
 
 export async function resetAll(db: DbOrTx) {
   const res = await db.execute<{ t: string }>(sql`select format('%I.%I', schemaname, tablename) as t from pg_tables where schemaname in ('public','mock')`);
@@ -117,6 +117,18 @@ export async function seedCore(db: DbOrTx, o: SeedCoreOpts) {
   }
   for (const [key, value] of Object.entries(DEFAULT_CONFIG)) {
     await db.insert(systemConfig).values({ key, tenantId: null, value }).onConflictDoNothing();
+  }
+
+  // the demo shopkeeper (fictional): Akram General Store in Hyderabad. His password comes from SHOPKEEPER_DEMO_PASSWORD and is only hashed here.
+  if (o.shopkeeperPassword) {
+    if (o.shopkeeperPassword.length < 8) throw new Error('SHOPKEEPER_DEMO_PASSWORD must be at least 8 characters');
+    const shopHash = await hashSecret(o.shopkeeperPassword);
+    const [su] = await db.insert(users).values({ kind: 'staff', username: 'akram.hyd', displayName: 'Akram General Store', passwordHash: shopHash, locale: 'ur' })
+      .onConflictDoUpdate({ target: users.username, set: { displayName: 'Akram General Store', passwordHash: shopHash } }).returning();
+    await db.insert(shopProfiles).values({ userId: su!.id, shopName: 'Akram General Store', districtId: districtIds.HYD! })
+      .onConflictDoUpdate({ target: shopProfiles.userId, set: { shopName: 'Akram General Store', districtId: districtIds.HYD! } });
+    await db.insert(memberships).values({ userId: su!.id, tenantId: tenantIds.sindh, role: 'shopkeeper' })
+      .onConflictDoUpdate({ target: [memberships.userId, memberships.tenantId], set: { role: 'shopkeeper' } });
   }
 
   return { tenantIds, districtIds, staffIds, citizenIds };

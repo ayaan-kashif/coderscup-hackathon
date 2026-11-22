@@ -1,6 +1,6 @@
 import 'server-only';
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { forbidden, redirect } from 'next/navigation';
 import { getDb } from '@/db/client';
 import type { Actor, Role } from './actor';
 import { authenticate } from './authenticate';
@@ -22,8 +22,11 @@ export async function getPageActor(): Promise<Actor | null> {
 /** Server-side page guard: the UI mirrors the API policy, it never replaces it. */
 export async function requireRole(...roles: Role[]): Promise<Actor> {
   const actor = await getPageActor();
-  if (!actor || !actor.role || !roles.includes(actor.role)) redirect(`/login?next=${encodeURIComponent(roles[0] === 'citizen' ? '/c' : `/${{ officer: 'o', admin: 'a', auditor: 'au', helper: 'h' }[roles[0] as Exclude<Role, 'citizen'>]}`)}`);
+  // a signed-in shopkeeper has no business on any other portal: a real 403, not a bounce to the login page
+  if (actor?.role === 'shopkeeper' && !roles.includes('shopkeeper')) forbidden();
+  if ((!actor || !actor.role || !roles.includes(actor.role)) && roles[0] === 'shopkeeper') redirect('/login/shopkeeper');
+  if (!actor || !actor.role || !roles.includes(actor.role)) redirect(`/login?next=${encodeURIComponent(roles[0] === 'citizen' ? '/c' : `/${{ officer: 'o', admin: 'a', auditor: 'au', helper: 'h', shopkeeper: 'shopkeeper' }[roles[0] as Exclude<Role, 'citizen'>]}`)}`);
   return actor;
 }
 
-export const HOME_FOR_ROLE: Record<Role, string> = { citizen: '/c', helper: '/h', officer: '/o', admin: '/a', auditor: '/au' };
+export const HOME_FOR_ROLE: Record<Role, string> = { citizen: '/c', helper: '/h', officer: '/o', admin: '/a', auditor: '/au', shopkeeper: '/shopkeeper' };

@@ -5,6 +5,7 @@ import { createTestDb, type TestDb } from './pglite';
 
 export const TEST_PASSWORD = 'test-only-password-123';
 export const TEST_PIN = '2580';
+export const TEST_SHOP_PASSWORD = 'shop-test-password-1';
 
 type Handler = (req: Request, ctx?: { params?: Promise<Record<string, string | string[]>> }) => Promise<Response>;
 
@@ -30,7 +31,7 @@ export async function seededDb(): Promise<TestDb & { ids: Awaited<ReturnType<typ
   resetBreakers();
   setTransport(undefined);
   const t = await createTestDb();
-  const ids = await seedCore(t.db, { staffPassword: TEST_PASSWORD, citizenPin: TEST_PIN });
+  const ids = await seedCore(t.db, { staffPassword: TEST_PASSWORD, citizenPin: TEST_PIN, shopkeeperPassword: TEST_SHOP_PASSWORD });
   return { ...t, ids };
 }
 

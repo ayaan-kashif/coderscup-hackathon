@@ -1,6 +1,6 @@
 /** PRD §13.2 */
-export type Role = 'citizen' | 'helper' | 'officer' | 'admin' | 'auditor';
-export const ROLES: readonly Role[] = ['citizen', 'helper', 'officer', 'admin', 'auditor'];
+export type Role = 'citizen' | 'helper' | 'officer' | 'admin' | 'auditor' | 'shopkeeper';
+export const ROLES: readonly Role[] = ['citizen', 'helper', 'officer', 'admin', 'auditor', 'shopkeeper'];
 
 export type Actor = {
   kind: 'user' | 'api_key' | 'system' | 'agent';

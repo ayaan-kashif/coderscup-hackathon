@@ -94,6 +94,12 @@ async function purge(db: DbOrTx, fks: Fk[], table: string, where: ReturnType<typ
   await db.execute(sql`delete from ${ident(table)} where ${where}`);
 }
 
+/** deletes a user and everything that hangs off it, children first (a nullable link to a user, such as a check he made, is cleared) */
+export async function purgeUserCascade(db: DbOrTx, userId: string) {
+  const fks = await loadFks(db);
+  await purge(db, fks, 'users', sql`"id" = ${userId}`);
+}
+
 /**
  * "Delete my account and data": her cases (answers, documents, voice, decisions, payments), consents, helper links, notifications,
  * her profile and her login. Only ids and hashes remain in the audit log, which is append-only and holds no personal data.

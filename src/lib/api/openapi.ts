@@ -11,6 +11,12 @@ import * as login from '../../../app/api/v1/auth/login/route';
 import * as logout from '../../../app/api/v1/auth/logout/route';
 import * as otpChannels from '../../../app/api/v1/auth/otp/channels/route';
 import * as otpRequest from '../../../app/api/v1/auth/otp/request/route';
+import * as shopLogin from '../../../app/api/v1/auth/shopkeeper/login/route';
+import * as shopSignup from '../../../app/api/v1/auth/shopkeeper/signup/route';
+import * as shopAlerts from '../../../app/api/v1/shop/alerts/route';
+import * as shopChecks from '../../../app/api/v1/shop/checks/route';
+import * as shopMe from '../../../app/api/v1/shop/me/route';
+import * as shopReports from '../../../app/api/v1/shop/reports/route';
 import * as otpVerify from '../../../app/api/v1/auth/otp/verify/route';
 import * as pinSet from '../../../app/api/v1/auth/pin/set/route';
 import * as pinVerify from '../../../app/api/v1/auth/pin/verify/route';
@@ -121,7 +127,7 @@ type AnySpec = RouteSpec<unknown, unknown, unknown>;
 type Mod = Record<string, unknown>;
 
 export const ROUTE_MODULES: Record<string, Mod> = {
-  health, status, me, meOnboarding, login, logout, otpChannels, otpRequest, otpVerify, pinSet, pinVerify, demoTokens, cases, caseById, caseStatus,
+  health, status, me, meOnboarding, login, logout, otpChannels, otpRequest, otpVerify, shopSignup, shopLogin, shopMe, shopChecks, shopAlerts, shopReports, pinSet, pinVerify, demoTokens, cases, caseById, caseStatus,
   adminConfig, adminChaos, auditEvents, auditVerify,
   rAiDecisions, rAiDecisionsById, rAssistIntent, rAssistPolicy, rCasesByIdAnswers, rCasesByIdAssign, rCasesByIdClose, rCasesByIdDecisions, rCasesByIdDocuments, rCasesByIdDocumentsDoc, rCasesByIdExplanation, rCasesByIdFreeze, rCasesByIdProof, rCasesByIdSubmit, rCasesByIdTimeline, rCasesByIdUnfreeze, rCasesByIdVoice, rComplaints, rComplaintsById, rComplaintsByIdResolve, rCorrections, rCorrectionsByIdApprove, rCorrectionsByIdReject, rDecisionsById, rDecisionsByIdReplay, rHelperActivity, rHelperFamilies, rHelperGrants, rHelperGrantsById, rMeAccessLog, rMeCases, rMeConsents, rMeConsentsByIdWithdraw, rMeCorrections, rMeNotifications, rPaymentsByIdReceipt, rPayoutChanges, rPayoutChangesByIdApprove, rPayoutChangesByIdBlock, rPayoutChangesByIdObject, rQueue, rScamAlerts, rScamAlertsByIdApprove, rScamAlertsByIdDismiss, rScamCheck, rScamDesk, rScamDuress, rScamDuressByIdResolve, rScamMap, rScamReportsByIdLabel,
   rAdminApiKeys, rAdminApiKeysByIdRevoke, rAdminUsers, rAdminUsersByIdRevokeSessions, rAdminWebhooks, rAdminWebhooksById, rAdminWebhooksDeliveries, rAdminWebhooksDeliveriesByIdReplay, rAuditAccess, rAuditBreakGlass, rDecisions, rEvalBreakIt, rEvalCostPreview, rEvalMetrics, rEvalRuns, rEvalRunsById, rRules, rRulesDrafts, rRulesDraftsById, rRulesDraftsByIdApprove, rRulesDraftsByIdPreview, rRulesDraftsByIdPublish, rRulesDraftsByIdTwin, rTwinRunsById,

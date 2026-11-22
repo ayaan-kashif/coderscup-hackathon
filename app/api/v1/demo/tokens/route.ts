@@ -11,7 +11,8 @@ import { ApiError } from '@/lib/errors';
 import { DEMO_ROLE_ACCOUNTS, DEMO_STAFF } from '@/services/seed/demo-accounts';
 
 const body = z.object({
-  role: z.enum(ROLES as unknown as ['citizen', 'helper', 'officer', 'admin', 'auditor']),
+  // the shopkeeper signs in with a username and password only: there is no demo token for it
+  role: z.enum(ROLES.filter((r) => r !== 'shopkeeper') as unknown as ['citizen', 'helper', 'officer', 'admin', 'auditor']),
   /** a specific seeded demo account; defaults to the persona for the role */
   email: z.string().email().refine((e) => e.endsWith('.test')).optional(),
   /** the demo access code, when the deployment sets DEMO_ACCESS_CODE */

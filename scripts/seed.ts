@@ -21,13 +21,15 @@ async function main() {
   const url = process.env.DATABASE_URL_DIRECT ?? process.env.DATABASE_URL;
   const staffPassword = process.env.DEMO_STAFF_PASSWORD;
   const citizenPin = process.env.DEMO_CITIZEN_PIN;
+  // optional: without it the demo shopkeeper (akram.hyd) is simply not created
+  const shopkeeperPassword = process.env.SHOPKEEPER_DEMO_PASSWORD || undefined;
   if (!url) throw new Error('Set DATABASE_URL_DIRECT or DATABASE_URL');
   if (!staffPassword || !citizenPin) throw new Error('Set DEMO_STAFF_PASSWORD and DEMO_CITIZEN_PIN (see .env.example)');
   const client = postgres(url, { max: 1, prepare: false, onnotice: () => {}, fetch_types: process.env.DB_FETCH_TYPES !== 'false' });
   const db = drizzle(client, { schema, logger: process.env.SQL_LOG === '1' }) as unknown as Db;
   const started = Date.now();
   const ids = await db.transaction(async (tx) => {
-    const ids = await seedCore(tx, { staffPassword, citizenPin, reset });
+    const ids = await seedCore(tx, { staffPassword, citizenPin, reset, shopkeeperPassword });
     const counts = await seedGenerated(tx, ids, { citizenPinHash: await hashSecret(citizenPin), citizenDuressPinHash: await duressHashFor(citizenPin) });
     console.log('generated data:', counts);
     return ids;

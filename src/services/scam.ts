@@ -19,7 +19,7 @@ import { generateStructured } from '@/ai/runtime';
 import { transcribeUrdu } from '@/ai/stt';
 import type { DbOrTx } from '@/db/client';
 import { rowsOf } from '@/db/rows';
-import { citizens, districts, scamAlerts, scamReports } from '@/db/schema/all';
+import { citizens, districts, scamAlerts, scamReports, shopProfiles } from '@/db/schema/all';
 import { ApiError } from '@/lib/errors';
 import { hashJson, sha256Hex } from '@/lib/hash';
 import { isSpike, mask, MIN_COUNT, SCAM_TYPES } from '@/lib/scam-map';
@@ -147,7 +147,11 @@ export async function checkMessage(db: DbOrTx, actor: Actor | null, b: z.infer<t
   // the reporter's district (signed-in citizen) or the district chosen on screen; the map never shows personal data
   let citizenRow: { id: string; districtId: string | null; cnicEnc: Buffer } | null = null;
   if (actor?.role === 'citizen' && actor.citizenId) [citizenRow = null] = await db.select({ id: citizens.id, districtId: citizens.districtId, cnicEnc: citizens.cnicEnc }).from(citizens).where(eq(citizens.id, actor.citizenId)).limit(1);
-  const [district] = b.districtCode ? await db.select().from(districts).where(eq(districts.code, b.districtCode.toUpperCase())).limit(1)
+  // a shopkeeper's district is his shop's: he cannot pick another one
+  const [shopDistrict] = actor?.role === 'shopkeeper'
+    ? await db.select().from(shopProfiles).innerJoin(districts, eq(districts.id, shopProfiles.districtId)).where(eq(shopProfiles.userId, actor.id)).limit(1).then((r) => r.map((x) => x.districts))
+    : [];
+  const [district] = shopDistrict ? [shopDistrict] : b.districtCode ? await db.select().from(districts).where(eq(districts.code, b.districtCode.toUpperCase())).limit(1)
     : citizenRow?.districtId ? await db.select().from(districts).where(eq(districts.id, citizenRow.districtId)).limit(1) : [];
   const tenantId = district?.tenantId ?? actor?.tenantId ?? null;
 
@@ -174,11 +178,16 @@ export async function checkMessage(db: DbOrTx, actor: Actor | null, b: z.infer<t
       ledger.matched = pays.some((p) => p.amount === claims.claimedPayment && (!claims.walletLast4 || String((p as { walletNo?: string }).walletNo ?? '').endsWith(claims.walletLast4)));
     } catch { ledger.error = 'ledger_unavailable'; }
   }
+  // a shopkeeper has no programme payments: his ledger is empty, so a payment claimed in a message "to him" is no such payment for him
+  const isShop = actor?.role === 'shopkeeper';
+  if (isShop && b.sentToMe && claims.claimedPayment) { ledger.ownMessage = true; ledger.checked = true; ledger.matched = false; }
   const jev = await classifyScam(db, tenantId, text.slice(0, 1500), claims);
   const v = combineVerdict(claims, { officialSenders, ledger, jev: jev.ok ? jev.value : null });
 
   const messageHash = sha256Hex(text.trim().toLowerCase());
   const [report] = await db.insert(scamReports).values({
+    // a shopkeeper's fake counts on the map, and can draft a district alert, only after he presses "Report this scam"
+    reported: !(isShop && v.verdict === 'fake'), reasons: v.lines,
     tenantId, districtId: district?.id ?? null, reporterUserId: actor?.kind === 'user' ? actor.id : null, messageHash, messageText: text.slice(0, 2000), channel: b.channel,
     verdict: v.verdict, scamType: v.scamType, extractedClaims: claims, ledgerCheck: { checked: ledger.checked, ownMessage: ledger.ownMessage, matched: ledger.matched, error: ledger.error }, probabilities: jev.ok ? jev.probabilities as object : null,
   }).returning({ id: scamReports.id });
@@ -187,7 +196,7 @@ export async function checkMessage(db: DbOrTx, actor: Actor | null, b: z.infer<t
     result: { verdict: v.verdict, scamType: v.scamType, checks: v.lines.map((l) => ({ code: l.code, result: l.result })), reportId: report!.id },
     userReason: `${v.action.en} ${v.lines.filter((l) => l.result === 'contradiction').map((l) => l.en).join(' ')}`.trim(), trace: { claims, ledger, jev: jev.ok ? jev.value : { unavailable: jev.reason } },
   });
-  const alert = v.verdict === 'fake' && district ? await maybeDraftAlert(db, district.id, district.tenantId, v.scamType ?? 'other') : null;
+  const alert = v.verdict === 'fake' && district && !isShop ? await maybeDraftAlert(db, district.id, district.tenantId, v.scamType ?? 'other') : null;
   return { reportId: report!.id, aiDecisionId, verdict: v.verdict, reasons: v.lines, action: v.action, claims, ledger: { checked: ledger.checked, matched: ledger.matched }, jev: jev.ok ? { requestType: jev.value.requestType, pNeedsPerson: jev.value.pNeedsPerson, model: jev.model } : null, alertDrafted: alert, district: district?.code ?? null, tenantId };
 }
 
@@ -199,7 +208,7 @@ async function anyTenant(db: DbOrTx) {
 /** SCAM-6: today ≥ 3× the 7-day daily average and ≥ 5 reports → a drafted district alert for an officer */
 export async function maybeDraftAlert(db: DbOrTx, districtId: string, tenantId: string | null, scamType: string) {
   if (!tenantId) return null;
-  const confirmed = or(eq(scamReports.verdict, 'fake'), eq(scamReports.officerLabel, 'fake'));
+  const confirmed = and(eq(scamReports.reported, true), or(eq(scamReports.verdict, 'fake'), eq(scamReports.officerLabel, 'fake')));
   const [today] = await db.select({ n: count() }).from(scamReports).where(and(eq(scamReports.districtId, districtId), confirmed, gte(scamReports.createdAt, sql`date_trunc('day', now())`)));
   const [week] = await db.select({ n: count() }).from(scamReports).where(and(eq(scamReports.districtId, districtId), confirmed, gte(scamReports.createdAt, sql`date_trunc('day', now()) - interval '7 days'`), sql`${scamReports.createdAt} < date_trunc('day', now())`));
   const avg = (week?.n ?? 0) / 7;
@@ -227,7 +236,7 @@ export async function scamMap(db: DbOrTx, f: ScamMapFilter | number = {}) {
     select d.id, d.code, d.name, d.lat, d.lng,
       to_char((r.created_at at time zone 'UTC')::date, 'YYYY-MM-DD') as day, r.scam_type as type, count(r.id)::int as n
     from districts d
-    left join scam_reports r on r.district_id = d.id and (r.verdict = 'fake' or r.officer_label = 'fake')
+    left join scam_reports r on r.district_id = d.id and r.reported and (r.verdict = 'fake' or r.officer_label = 'fake')
       and r.created_at >= (date_trunc('day', now() at time zone 'UTC') - make_interval(days => ${span - 1})) at time zone 'UTC'
     where true ${tenantId ? sql`and d.tenant_id = ${tenantId}` : sql``} ${district ? sql`and d.code = ${district}` : sql``}
     group by d.id, d.code, d.name, d.lat, d.lng, day, type order by d.code, day`));

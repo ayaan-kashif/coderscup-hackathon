@@ -16,3 +16,6 @@ test-results/
 playwright-report/
 
 .pglite-broken-*/
+
+# private sign-in list (emails, no secrets)
+STAFF-LOGINS.txt

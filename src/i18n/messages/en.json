@@ -21,9 +21,7 @@
     "title": "Staff sign-in",
     "email": "Email",
     "password": "Password",
-    "submit": "Sign in",
-    "demo": "Demo accounts",
-    "demoHint": "Fictional demo accounts for judges. Open a role to look around; no real data."
+    "submit": "Sign in"
   },
   "citizen": {
     "phoneTitle": "Your phone number",
@@ -152,7 +150,7 @@
       }
     ],
     "ctaTitle": "See it work end to end",
-    "ctaBody": "Sign in as a citizen, a helper or an officer in one click. Demo mode is on.",
+    "ctaBody": "Citizens apply with a phone code and PIN. Staff sign in with their own email and password.",
     "ctaStaff": "Staff sign-in",
     "footer": "Prototype for Coder's Cup '26. Every person, document and government system here is synthetic or a labelled mock."
   }

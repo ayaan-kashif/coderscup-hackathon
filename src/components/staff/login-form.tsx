@@ -2,13 +2,12 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 const HOME: Record<string, string> = { citizen: '/c', helper: '/h', officer: '/o', admin: '/a', auditor: '/au' };
 
-export function LoginForm({ demo, needsCode = false, next, labels }: { demo: boolean; needsCode?: boolean; next?: string; labels: Record<'email' | 'password' | 'submit' | 'demo' | 'demoHint', string> }) {
+export function LoginForm({ next, labels }: { next?: string; labels: Record<'email' | 'password' | 'submit', string> }) {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,7 +15,6 @@ export function LoginForm({ demo, needsCode = false, next, labels }: { demo: boo
   const [busy, setBusy] = useState(false);
   const [challenge, setChallenge] = useState<string | null>(null);
   const [code, setCode] = useState('');
-  const [accessCode, setAccessCode] = useState('');
 
   const go = (role: string) => router.push(next ?? HOME[role] ?? '/');
 
@@ -40,14 +38,6 @@ export function LoginForm({ demo, needsCode = false, next, labels }: { demo: boo
     if (r.ok) go(b.user.role); else { setError(`${b.code}: ${b.detail}`); setCode(''); }
   };
 
-  const demoLogin = async (role: string, account?: string) => {
-    setBusy(true);
-    const r = await fetch('/api/v1/demo/tokens', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ role, ...(account ? { email: account } : {}), ...(needsCode ? { accessCode } : {}) }) });
-    const b = await r.json().catch(() => ({}));
-    setBusy(false);
-    if (r.ok) router.push(HOME[role] ?? '/'); else setError(`${b.code}: ${b.detail}`);
-  };
-
   return (
     <div className="space-y-6">
       {challenge ? (
@@ -64,23 +54,6 @@ export function LoginForm({ demo, needsCode = false, next, labels }: { demo: boo
         {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
         <Button type="submit" className="w-full" disabled={busy}>{labels.submit}</Button>
       </form>
-      )}
-      {demo && (
-        <Card>
-          <CardHeader><CardTitle>{labels.demo}</CardTitle><CardDescription>{labels.demoHint}</CardDescription></CardHeader>
-          <CardContent className="grid gap-2">
-            {needsCode && (
-              <div className="space-y-2"><Label htmlFor="demo-code">Demo access code</Label><Input id="demo-code" type="password" autoComplete="off" value={accessCode} onChange={(e) => setAccessCode(e.target.value)} data-testid="demo-code" /></div>
-            )}
-            {(['officer', 'admin', 'auditor', 'helper', 'citizen'] as const).map((role) => (
-              <Button key={role} variant="outline" disabled={busy || (needsCode && !accessCode)} onClick={() => demoLogin(role)} data-testid={`demo-${role}`}>
-                Open as {role}
-              </Button>
-            ))}
-            <Button variant="ghost" disabled={busy || (needsCode && !accessCode)} onClick={() => demoLogin('officer', 'officer.bilal@punjab.amanat.test')}>officer — Punjab office</Button>
-            <Button variant="ghost" disabled={busy || (needsCode && !accessCode)} onClick={() => demoLogin('admin', 'admin.breakit@sandbox.amanat.test')}>admin — sandbox office</Button>
-          </CardContent>
-        </Card>
       )}
     </div>
   );

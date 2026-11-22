@@ -18,14 +18,26 @@ test('Urdu switches the layout to right-to-left', async ({ page }) => {
   await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
 });
 
-for (const [role, path, text] of [['officer', '/o', 'Review queue'], ['admin', '/a', 'Rules & Twin'], ['auditor', '/au', 'Decision search'], ['helper', '/h', 'Families (']] as const) {
-  test(`${role} signs in from the demo picker`, async ({ page }) => {
-    await page.goto('/login');
-    await page.getByTestId(`demo-${role}`).click();
-    await page.waitForURL(`**${path}`);
-    await expect(page.getByText(text).first()).toBeVisible();
-  });
-}
+test('the staff login page lists no accounts and has no role picker: a real email and password are required', async ({ page }) => {
+  await page.goto('/login');
+  await expect(page.getByLabel('Email')).toHaveValue('');
+  const html = await page.content();
+  expect(html).not.toMatch(/amanat\.test|\+9200000000|data-testid="demo-|Demo accounts/);
+  await expect(page.locator('input[type="password"]')).toBeVisible();
+});
+
+test.describe('staff roles open with a token', () => {
+  test.use({ serviceWorkers: 'block' }); // a fresh page load must not be served from the offline cache
+  for (const [role, path, text] of [['officer', '/o', 'Review queue'], ['admin', '/a', 'Rules & Twin'], ['auditor', '/au', 'Decision search'], ['helper', '/h', 'Families (']] as const) {
+    test(`${role} signs in (demo token for tests; the login page has no picker)`, async ({ page }) => {
+      await page.goto('/login');
+      const status = await page.evaluate(async (r) => (await fetch('/api/v1/demo/tokens', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ role: r }) })).status, role);
+      expect(status).toBe(201);
+      await page.goto(path);
+      await expect(page.getByText(text).first()).toBeVisible();
+    });
+  }
+});
 
 test('citizen signs in with the phone code from the mock inbox and the PIN', async ({ page, context, request }) => {
   const pin = process.env.DEMO_CITIZEN_PIN;
